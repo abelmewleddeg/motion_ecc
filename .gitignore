@@ -1,0 +1,13 @@
+Data/**
+*.pdf
+*.png
+*.bmp
+*.fig
+*.edf
+*.dat
+*.m~
+*.mat
+.DS_Store
+
+# except gamma.mat file
+!gamma.mat

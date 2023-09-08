@@ -1,0 +1,42 @@
+
+{
+    "scrDist": {
+        "LongName": "Screen Distance",
+        "Description": "Distance between the screen center and the eye.",
+        "Units": "centimeters"
+    },
+    "stimOri": {
+        "LongName": "Stimulus Orientation",
+        "Description": "Orientation of the stimulus (0 is horizontal and values move counterclockwise).",
+        "Units": "degrees"
+    },
+    "stimEcc": {
+        "LongName": "Stimulus Eccentricity",
+        "Description": "Distance from the center of the screen to the center of the stimulus.",
+        "Units": "degrees of visual angle"
+    },
+    "stimRadius": {
+        "LongName": "Stimulus Radius",
+        "Description": "Radius of the isolated stimulus and center stimulus.",
+        "Units": "degrees of visual angle"
+    },
+    "surroundRadius": {
+        "LongName": "Surround Radius",
+        "Description": "Radius of the surround stimulus.",
+        "Units": "degrees of visual angle"
+    },
+    "gapRatio": {
+        "LongName": "gapRatio",
+        "Description": "Ratio of the surroundRadius that is used for a gap. Note that the width of the cosine ramp used for soft edges also affects the appearance of the gap slightly  - const.stimCosEdge_deg",
+        "Units": "percent / 100"
+    },
+    "stimType": {
+        "LongName": "Stimulus Type",
+        "Description": "The type of stimulus texture to be used for center and surround.",
+        "Levels": {
+            "grating": "grating stimulus",
+            "noise": "peril noise stimulus"
+        }
+    }
+}
+
