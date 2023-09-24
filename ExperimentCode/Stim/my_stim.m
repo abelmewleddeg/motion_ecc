@@ -6,11 +6,31 @@ iR = const.phaseLine(2,trialID);
 
 testContrast = expDes.trialMat(trialID,2); % contrast value
 adjustedContrast = expDes.startingContrasts(1,trialID); % these can either be random or some starting value
-
+responseDir = expDes.responseDirection(1,trialID);
+%eccentricity
+% for Utrials = 1:length(trialIDs(1,:))
+if expDes.trialMat(trialID,3) == 2
+    const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr)
+elseif expDes.trialMat(trialID,3) == 4
+    const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr)
+elseif expDes.trialMat(trialID,3) == 6
+    const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr)
+end
+% end
+XYDist = sqrt(const.stimEccpix/2)
+if expDes.trialMat(trialID,2) == 45
+    xDist = const.stimEccpix; yDist = const.stimEccpix
+elseif expDes.trialMat(trialID,2) == 135
+   xDist = -(const.stimEccpix); yDist = const.stimEccpix
+elseif expDes.trialMat(trialID,2) == 225
+   xDist = -(const.stimEccpix); yDist = -(const.stimEccpix)
+elseif expDes.trialMat(trialID,2) == 315
+   xDist = const.stimEccpix; yDist = -(const.stimEccpix)
+end
 % eccentricity
-xDist = const.stimEccpix; yDist = 0;
+%xDist = const.stimEccpix; yDist = const.stimEccpix;
 
-dstRect_R = create_dstRect(const.visiblesize, xDist, yDist, scr, 1); % right side
+%dstRect_R = create_dstRect(const.visiblesize, xDist, yDist, scr, 1); % right side
 dstRect_L = create_dstRect(const.visiblesize, xDist, yDist, scr, 0); % left side
 
 waitframes = 1;
@@ -18,7 +38,7 @@ vblendtime = vbl + movieDurationSecs;
 
 flicker_time = movieDurationSecs/(movieDurationSecs*const.flicker_hz); 
 increment = flicker_time;
-flipphase = -1; phasenow = 1;
+flipphase = -1; phasenow = 90; %1;
 const.responded=0;
 movieframe_n = 1;
 
@@ -28,19 +48,21 @@ while ~(const.expStop) && ~(const.responded)
 
     if ~const.expStop  
          
-        if (movieDurationSecs-(vblendtime-vbl)) > flicker_time
-            phasenow = phasenow*flipphase;
-            flicker_time = flicker_time+increment;
-        end
-        
+        % if (movieDurationSecs-(vblendtime-vbl)) > flicker_time
+        % 
+        %     flicker_time = flicker_time+increment;
+        % end
+
+        phasenow = phasenow + const.speedPixel; %  10
+
         contrast_R = testContrast; contrast_L = testContrast;
         
         if strcmp(expDes.stimulus, 'perlinNoise')
-            auxParamsR = [contrast_R, iR+((90)*phasenow), const.scalar4noiseTarget, 0];
-            auxParamsL = [contrast_L, iL+((90)*phasenow), const.scalar4noiseTarget, 0];
+             auxParamsR = [contrast_R, iR, const.scalar4noiseTarget, phasenow];
+             auxParamsL = [contrast_L, iL, const.scalar4noiseTarget, phasenow];
         elseif strcmp(expDes.stimulus, 'grating')
-            auxParamsR = [iR+((90)*phasenow), const.stimSF_cpp, contrast_R, 0];
-            auxParamsL = [iL+((90)*phasenow), const.stimSF_cpp, contrast_L, 0];
+            auxParamsR = [iR+(phasenow), const.stimSF_cpp, contrast_R, 0];
+            auxParamsL = [iL+(phasenow), const.stimSF_cpp, contrast_L, 0];
         end
         
         % Set the right blend function for drawing the gabors
@@ -48,18 +70,18 @@ while ~(const.expStop) && ~(const.responded)
         
         %if phasenow - should i just present counterphase this way?
         % Draw grating texture, rotated by "angle":
-        Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect_R, const.maporientation(const.stimOri), ...
-            [], [], [], [], [], auxParamsR);
-
-        Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect_L, const.maporientation(const.stimOri), ...
-            [], [], [], [], [], auxParamsL);
+        % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect_R, const.maporientation(const.stimOri), ...
+            % [], [], [], [], [], auxParamsR);
+        
+        Screen('DrawTexture', const.window,  const.squarewavetex, [], dstRect_L, const.maporientation(const.stimOri), ...
+            [], [], [], [],[], auxParamsL);
         
         % add grey gradient masks
         Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
         
         Screen('DrawTexture', const.window, const.centermask, [], dstRect_L, [], [], [], [], [], []);
 
-        Screen('DrawTexture', const.window, const.centermask, [], dstRect_R, [], [], [], [], [], []);
+        % Screen('DrawTexture', const.window, const.centermask, [], dstRect_R, [], [], [], [], [], []);
 
 
         % Draw stimuli here, better at the start of the drawing loop
@@ -71,26 +93,31 @@ while ~(const.expStop) && ~(const.responded)
 
         % check for keyboard input
         [keyIsDown, ~, keyCode] = KbCheck(my_key.keyboardID);
-        if ~keyIsDown % if finger is lifted off key do not set a time contraint
-            reset = 1;
-        elseif keyIsDown && keyCode(my_key.escape)
+        % if ~keyIsDown % if finger is lifted off key do not set a time contraint
+        %     reset = 1;
+        if keyIsDown && keyCode(my_key.escape)
             ShowCursor; 
             const.forceQuit=1;
             const.expStop=1;
-        elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.space) 
+        elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.rightArrow) 
             const.responded=1; 
-        elseif (keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.rightArrow)) && reset
-            adjustedContrast = adjustedContrast+0.01;
-            reset = 0;
-            if adjustedContrast>1
-                adjustedContrast=1;
-            end
-        elseif (keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.leftArrow)) && reset
-            adjustedContrast = adjustedContrast-0.01;
-            reset = 0;
-            if adjustedContrast<0
-                adjustedContrast=0;
-            end
+            responseDir = 1;
+        elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.leftArrow) 
+            const.responded=1; 
+            responseDir = 0;
+            
+        % elseif (keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.rightArrow)) && reset
+        %     adjustedContrast = adjustedContrast+0.01;
+        %     reset = 1
+        %     % if adjustedContrast>1
+        %     %     adjustedContrast=1;
+        %     % end
+        % elseif (keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.leftArrow)) && reset
+        %     adjustedContrast = adjustedContrast-0.01;
+        %     reset = 1;
+        %     if adjustedContrast<0
+        %         adjustedContrast=0;
+        %     end
         end
 
         if const.makemovie && mod(frameCounter,15) == 0
@@ -108,7 +135,7 @@ while ~(const.expStop) && ~(const.responded)
 end
 
 % save submitted contrast:
-expDes.response(trialID, 1) = adjustedContrast;
+expDes.response(trialID, 1) = responseDir %adjustedContrast;
 
 %%
 

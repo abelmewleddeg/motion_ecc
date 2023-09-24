@@ -12,6 +12,8 @@ function [my_key]=keyConfig(const)
 % my_key : structure containing all keyboard names.
 % ----------------------------------------------------------------------
 
+disp('~~~~~ KEY ~~~~~~')
+
 % keyboard
 [keyboardIndices, productNames, ~] = GetKeyboardIndices;
 for i=1:length(productNames)                  % for each possible devices

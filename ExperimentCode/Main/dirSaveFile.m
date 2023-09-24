@@ -12,6 +12,8 @@ function [const] = dirSaveFile(const)
 % const : struct containing a lot of constant configuration
 % ----------------------------------------------------------------------
 
+disp('~~~~~ DIRSAVEFILE ~~~~~~')
+
 % Subject name:
 if const.DEBUG ~= 1
     const.subjID = input(sprintf('\n\tSubject ID (letters/digits): '),'s');

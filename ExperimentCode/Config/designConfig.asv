@@ -23,7 +23,7 @@ expDes.rng = rng(const.block);
 expDes.nb_repeat = 2; % number of unique repeats (for a contrast at a location)
 
 expDes.polarAngles = [45, 135, 225, 315];
-expDes.Eccens = [2, 4, 6];
+expDes.Eccens = [2, 5, 10];
 expDes.Dirs = [45, 135, 225, 315];
 
 expDes.mainStimTypes = [];
@@ -86,6 +86,6 @@ expDes.TrialsEnd_frame = expDes.totalframes;
 
 %% Saving procedure
 
-save(const.design_fileMat,'expDes'); 
+save(const.design_fileMat,'expDes');
 
 end

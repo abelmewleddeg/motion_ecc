@@ -15,6 +15,8 @@ function [scr, const]=scrConfig(const)
 
 %% General
 
+disp('~~~~~ SCR ~~~~~~')
+
 % Instructions
 const.text_size = 20;
 const.text_font = 'Helvetica';
@@ -200,3 +202,4 @@ Priority(topPriorityLevel);
 save(const.scr_fileMat,'scr');
 
 end
+

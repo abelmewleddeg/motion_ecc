@@ -17,6 +17,7 @@ varying vec4  baseColor;
 varying float seed;
 varying vec2  texSize;
 varying float scalar;
+varying float shift;
 
 /* Function prototype for the 3D simplex noise random number generator: */
 float perlinNoise(vec3 P);
@@ -38,7 +39,7 @@ void main()
      * 3. Scale up normalized 0-1 range to 0.0 - 289.0, the period size of the
      *    noise function.
      */
-    v.xy = floor(v.xy) * vec2(289.0) * texSize.xy;
+    v.xy = floor(v.xy+shift) * vec2(289.0) * texSize.xy;
 
     /* Assign random seed value as 3rd component of v: */
     v.z = seed;

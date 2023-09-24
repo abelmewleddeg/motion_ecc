@@ -12,6 +12,8 @@ function [textExp] = instructionConfig
 % textExp : struct containing all text of general instructions.
 % ----------------------------------------------------------------------
 
+disp('~~~~~ INSTRUCTION ~~~~~~')
+
 %% Main instruction :
 
 instruction = '-----------------  Ready to start? [space]  -----------------';

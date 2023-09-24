@@ -15,7 +15,10 @@ function [const]=constConfig(scr,const,expDes)
 
 %% Stimulus Properties             
 
+disp('~~~~~ CONST ~~~~~~')
 
+const.speedDeg = 8; %in degrees per second
+const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 % grating and noise can be rotated, but this is only very meaningful for
 % grating
 const.stimOri = 90;                                     % 90 deg (vertical orientation)
@@ -106,6 +109,8 @@ const.expStart = 0;
 
 % .mat file
 save(const.const_fileMat,'const');
+
+const
 
 
 end

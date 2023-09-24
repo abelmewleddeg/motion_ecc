@@ -23,6 +23,7 @@ varying vec4  baseColor;
 varying float seed;
 varying vec2  texSize;
 varying float scalar;
+varying float shift;
 
 void main()
 {
@@ -41,6 +42,8 @@ void main()
 
     /* Pass through scalar value from auxParameters0[2]: */
     scalar = auxParameters0[2];
+
+    shift = auxParameters0[3];
 
     /* Pass through reciprocal of size of the texture width x height = xy */
     texSize = 1.0 / sizeAngleFilterMode.xy;
