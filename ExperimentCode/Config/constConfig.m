@@ -21,7 +21,7 @@ const.speedDeg = 8; %in degrees per second
 const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 % grating and noise can be rotated, but this is only very meaningful for
 % grating
-const.stimOri = 90;                                     % 90 deg (vertical orientation)
+%const.stimOri = 90;                                     % 90 deg (vertical orientation)
 
 if strcmp(expDes.stimulus, 'grating')
     % stimulus spatial frequency
@@ -96,12 +96,21 @@ const.centermask=Screen('MakeTexture', const.window, mask);
 const.phaseLine = rand(3, expDes.nb_trials) .* 360;
 
 %% PTB orientation/direction conversion
-% 
-orientationids = 0:45:315; ptborientation = {90, 45, 0, 135, 90, 45, 0, 135};
+if strcmp(expDes.stimulus, 'grating')
+     orientationids = 0:45:315; ptborientation = {90, 45, 0, 135, 90, 45, 0, 135};
+     directionids = 0:45:315; ptbdirection = {180, 135, 90, 45, 0, 315, 270, 225};
+elseif strcmp(expDes.stimulus, 'perlinNoise')
+     orientationids = 0:45:315; ptborientation = {90, 45, 0, 135, 90, 45, 0, 135};
+     directionids = 0:45:315; ptbdirection = {225, 180, 135, 90, 45, 0, 315, 270,};
+end
 const.maporientation = containers.Map(orientationids,ptborientation);
- 
-directionids = 0:45:315; ptbdirection = {180, 135, 90, 45, 0, 315, 270, 225};
 const.mapdirection = containers.Map(directionids,ptbdirection);
+
+% orientationids = 0:45:315; ptborientation = {90, 45, 0, 135, 90, 45, 0, 135};
+% const.maporientation = containers.Map(orientationids,ptborientation);
+% 
+% directionids = 0:45:315; ptbdirection = {180, 135, 90, 45, 0, 315, 270, 225};
+% const.mapdirection = containers.Map(directionids,ptbdirection);
 
 %% Saving procedure :
 

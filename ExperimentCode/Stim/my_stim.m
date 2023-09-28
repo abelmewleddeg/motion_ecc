@@ -41,7 +41,7 @@ increment = flicker_time;
 flipphase = -1; phasenow = 90; %1;
 const.responded=0;
 movieframe_n = 1;
-
+testDirection = expDes.trialMat(trialID,4);
 % Animationloop:
 %while (vbl < vblendtime)
 while ~(const.expStop) && ~(const.responded)
@@ -73,8 +73,8 @@ while ~(const.expStop) && ~(const.responded)
         % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect_R, const.maporientation(const.stimOri), ...
             % [], [], [], [], [], auxParamsR);
         
-        Screen('DrawTexture', const.window,  const.squarewavetex, [], dstRect_L, const.maporientation(const.stimOri), ...
-            [], [], [], [],[], auxParamsL);
+        Screen('DrawTexture', const.window,  const.squarewavetex, [], dstRect_L, const.mapdirection(testDirection), ...
+            [], [], [], [],[], auxParamsL); %const.mapdirection(testDirection)
         
         % add grey gradient masks
         Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
