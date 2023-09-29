@@ -77,8 +77,7 @@ tiltAmount = 5;
 %%
 
 % Animationloop:
-%while (vbl < vblendtime)
-while ~(const.expStop) && ~(const.responded)
+while ~(const.expStop) && (vbl < vblendtime)
 
     if ~const.expStop  
          
@@ -125,22 +124,6 @@ while ~(const.expStop) && ~(const.responded)
 
         vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 
-        % check for keyboard input
-        [keyIsDown, ~, keyCode] = KbCheck(my_key.keyboardID);
-        % if ~keyIsDown % if finger is lifted off key do not set a time contraint
-        %     reset = 1;
-        if keyIsDown && keyCode(my_key.escape)
-            ShowCursor; 
-            const.forceQuit=1;
-            const.expStop=1;
-        elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.rightArrow) 
-            const.responded=1; 
-            responseDir = 1;
-        elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.leftArrow) 
-            const.responded=1; 
-            responseDir = 0;
-        end
-
         if const.makemovie && mod(frameCounter,15) == 0
             M = Screen('GetImage', const.window,[],[],0,3);
             imwrite(M,fullfile(const.moviefolder, [num2str(movieframe_n),'.png']));
@@ -154,9 +137,6 @@ while ~(const.expStop) && ~(const.responded)
     end
      
 end
-
-% save submitted contrast:
-expDes.response(trialID, 1) = responseDir %adjustedContrast;
 
 %%
 

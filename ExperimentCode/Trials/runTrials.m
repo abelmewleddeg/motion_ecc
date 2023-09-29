@@ -88,6 +88,8 @@ for ni=1:expDes.nb_trials
         [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl);
         expDes.stimulus_onsets(ni) = vbl-t0; % log the onset of each stimulus
         [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, ni, vbl);
+        expDes.respCue_onsets(ni) = vbl-t0; % log the onset of each response cue
+        [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, ni, vbl);
     end
 end
 
