@@ -52,7 +52,16 @@ expDes.contrasts = .5; %const.targetContrast';
 %     expDes.mainStimTypes = [expDes.mainStimTypes; tmp];
 % end
 
+[numClock, ~] = size(expDes.mainStimTypes);
+
 trialsequenceMAT = repmat(expDes.mainStimTypes, expDes.nb_repeat, 1);
+
+% distribute even number of clockwise / clounterclockwise responses
+% clockwiseStim is whether the stimulus is clockwise (1) or
+% counterclockwise (-1). Clockwise tilts are positive in my_stim.
+clockwiseStim = [ones(numClock, 1); -1*ones(numClock, 1)];
+trialsequenceMAT = [trialsequenceMAT, clockwiseStim];
+
 trialsequenceMAT = trialsequenceMAT(randperm(length(trialsequenceMAT)), :);
 
 [expDes.nb_trials, ~] = size(trialsequenceMAT);
@@ -64,6 +73,7 @@ expDes.mainStimTypes = array2table(expDes.mainStimTypes,'VariableNames',{'polarA
 % Experimental matrix
 trialIDs = 1:expDes.nb_trials;
 expDes.trialMat = [trialIDs', trialsequenceMAT];
+expDes.trialMat
 
 % starting contrasts per trial (for matching stimulus)
 expDes.startingContrasts = ones(1,expDes.nb_trials);
