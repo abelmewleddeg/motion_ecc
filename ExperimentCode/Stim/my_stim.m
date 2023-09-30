@@ -30,6 +30,9 @@ if expDes.stair_counter(1, staircaseIndx) == 1
     disp('first iteration of staircase')
 end
 
+
+% NEED TO FIX!!! if outcome of staircase is negative, what happens?
+
 tiltMagnitude = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
 
 tiltAmount = tiltMagnitude*tiltSign; % tiltSign is 1 (clockwise) or -1 (counterclockwise)

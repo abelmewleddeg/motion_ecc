@@ -12,7 +12,7 @@ TO DO:
 
 (5) Add response time to saved response matrix
 
-(6) Plot output of staircases + some measure of performance
+(6) Plot output of staircases + some measure of performance. What happens when output of staircase is negative? Set params to -20 to 20
 
 (7) Instructions? Practice?
 

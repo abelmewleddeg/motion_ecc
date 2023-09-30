@@ -66,10 +66,9 @@ end
 expDes.correctness{jj} = nan(1,expDes.nb_repeat/2);
 
 
-% To record for overall respMatrix
+% To record for overall respMatrix (check expDes.response)
 
 expDes.tiltangle = NaN(expDes.nb_trials,1);
-expDes.correct = NaN(expDes.nb_trials,1);
 
 %%
 
