@@ -1,5 +1,25 @@
 # Motion Eccentricity Project
 
+TO DO:
+
+(1) Add cortical magnification for the eccentricities
+
+(2) Code for 2 sessions; choose 2 polar angles randomly for a given subject, then test the other 2 in second session
+
+(3) Add neutral cue to prepare subject for target presentation
+
+(4) Ensure response cue is added
+
+(5) Add response time to saved response matrix
+
+(6) Plot output of staircases + some measure of performance
+
+(7) Instructions? Practice?
+
+(8) Figure out if vignetting is an issue
+
+~~~~~~~~~~~~~~~~~~
+
 Steps before running this experiment:
 
 (1) Install any dependencies (see below).
