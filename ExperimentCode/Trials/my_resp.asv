@@ -10,8 +10,27 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
           
             % THIS IS WHERE YOUR CODE GOES
            
-             % ...
+                        % Set line parameters
             
+            % lineLength = 0.2* const.stimEccpix; % Length of the line in pixels
+            % lineColor = [255 255 255]; % White color
+            % lineWidth = 2; % Line width in pixels
+            % 
+            % % Calculate the endpoints of the line at a 45-degree angle
+            % angleInDegrees = 45;
+            % % x1 = scr.windCenter_px(1,:) - lineLength / 2 * cosd(angleInDegrees);
+            % % y1 = scr.windCenter_px(:,1) - lineLength / 2 * sind(angleInDegrees);
+            % % x2 = scr.windCenter_px(1,:) + lineLength / 2 * cosd(angleInDegrees);
+            % % y2 = scr.windCenter_px(: ,1) + lineLength / 2 * sind(angleInDegrees);
+            % % x1 =100; y1= 100; x2 = 400; y2 = 300;
+            % x1 = scr.windCenter_px(1) + 0.5* const.stimEccpix;
+            % x2 = scr.windCenter_px(1) + 0.5* const.stimEccpix + const.stimEccpix
+            % y1 = scr.windCenter_px(2) + 0.5* const.stimEccpix;
+            % y2 = scr.windCenter_px(2) + 0.5* const.stimEccpix + const.stimEccpix
+            % Draw the line
+            % Screen('DrawLine', const.window, lineColor, x1, y1, x2, y2, lineWidth);
+            % ...
+
             Screen('DrawingFinished',const.window); % small ptb optimisation
 
             vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
