@@ -101,7 +101,7 @@ if strcmp(expDes.stimulus, 'grating')
      directionids = 0:45:315; ptbdirection = {180, 135, 90, 45, 0, 315, 270, 225};
 elseif strcmp(expDes.stimulus, 'perlinNoise')
      orientationids = 0:45:315; ptborientation = {90, 45, 0, 135, 90, 45, 0, 135};
-     directionids = 0:45:315; ptbdirection = {225, 180, 135, 90, 45, 0, 315, 270,};
+     directionids = 0:45:315; ptbdirection = {225, 180, 135, 90, 45, 0, 315, 270};
 end
 const.maporientation = containers.Map(orientationids,ptborientation);
 const.mapdirection = containers.Map(directionids,ptbdirection);
