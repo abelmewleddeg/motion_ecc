@@ -1,4 +1,4 @@
-function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
+   function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
@@ -28,14 +28,26 @@ currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
 % this should be a matrix of nans initialized in const. (col per staircase- each with the counter?)
 if expDes.stair_counter(1, staircaseIndx) == 1
     disp('first iteration of staircase')
+    % just trying this to start at negative for counterclock
+%     if tiltSign<0
+%         % tiltSign is 1 (clockwise) or -1 (counterclockwise)
+%         expDes.initStairCaseTilt = expDes.minStairThreshold;
+%         %tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold * tiltSign;
+%     else
+%         % will this work?
+%         expDes.initStairCaseTilt = expDes.maxStairThreshold;
+%     end
 end
 
+tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
 
-% NEED TO FIX!!! if outcome of staircase is negative, what happens?
+disp('Sign to start staircase:')
+disp(tiltSign)
+disp('Tilt value:')
+disp(tiltAmount)
+disp('staircaseIndx:')
+disp(staircaseIndx)
 
-tiltMagnitude = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
-
-tiltAmount = tiltMagnitude*tiltSign; % tiltSign is 1 (clockwise) or -1 (counterclockwise)
 %%
 
 % Animationloop:
@@ -88,7 +100,7 @@ end
 
 
 expDes.tiltangle(trialID) = tiltAmount;
-expDes.tiltmagnitude(trialID) = tiltMagnitude;
+%expDes.tiltmagnitude(trialID) = tiltMagnitude;
 
 %%
 

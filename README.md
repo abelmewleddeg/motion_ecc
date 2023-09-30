@@ -2,6 +2,8 @@
 
 TO DO:
 
+(0) Fix eccentricity pixels so that x,y are the hypotenuse of set ecc in deg
+
 (1) Add cortical magnification for the eccentricities
 
 (2) Code for 2 sessions; choose 2 polar angles randomly for a given subject, then test the other 2 in second session
@@ -12,7 +14,7 @@ TO DO:
 
 (5) Add response time to saved response matrix
 
-(6) Plot output of staircases + some measure of performance. What happens when output of staircase is negative? Set params to -20 to 20
+(6) Plot output of staircases + some measure of performance. What happens when output of staircase is negative? Set params to -20 to 20. Probably c/cc cannot be defined beforehand.
 
 (7) Instructions? Practice?
 

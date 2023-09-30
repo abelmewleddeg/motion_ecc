@@ -46,13 +46,24 @@ expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
 
 %% initialize staircases
 
-expDes.minStairThreshold = 0.01;
+expDes.minStairThreshold = -20; %0.01;
 expDes.maxStairThreshold = 20; % deg
-expDes.initStairCaseTilt = expDes.maxStairThreshold;
 expDes.stair_counter = ones(1,expDes.numStaircases);
 
 for jj = 1:expDes.numStaircases
+    
+    % find whether this staircase is starting at clock or counterclockwise
+    % direction
+    designRow = min(find(expDes.trialMat(:,6)==jj));
+    startClockwise = expDes.trialMat(designRow, 5);
+    
     % init staircases with just initial values!
+    if startClockwise > 0
+        expDes.initStairCaseTilt = expDes.maxStairThreshold;
+    else
+        expDes.initStairCaseTilt = expDes.minStairThreshold;
+    end
+        
     %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
     expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[4 1.5],'levitt'); 
     expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
@@ -62,7 +73,7 @@ for jj = 1:expDes.numStaircases
     expDes.stairs{jj}.direction = [];
     expDes.stairs{jj}.reversals = []; 
 end
-
+ 
 expDes.correctness{jj} = nan(1,expDes.nb_repeat/2);
 
 
