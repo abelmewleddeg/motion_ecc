@@ -46,36 +46,40 @@ expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
 
 %% initialize staircases
 
-expDes.numStaircases = 2;
-expDes.minStairThreshold = 0.01;
+expDes.minStairThreshold = -20; %0.01;
 expDes.maxStairThreshold = 20; % deg
-expDes.initStairCaseTilt = expDes.maxStairThreshold;
+expDes.stair_counter = ones(1,expDes.numStaircases);
 
 for jj = 1:expDes.numStaircases
+    
+    % find whether this staircase is starting at clock or counterclockwise
+    % direction
+    designRow = min(find(expDes.trialMat(:,6)==jj));
+    startClockwise = expDes.trialMat(designRow, 5);
+    
     % init staircases with just initial values!
-    %expDes.stairs1 = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
-    expDes.stairs1 = upDownStaircase(1,1,expDes.initStairCaseTilt,[4 1.5],'levitt'); 
-    expDes.stairs1.minThreshold = expDes.minStairThreshold;
-    expDes.stairs1.maxThreshold = expDes.maxStairThreshold;     
+    if startClockwise > 0
+        expDes.initStairCaseTilt = expDes.maxStairThreshold;
+    else
+        expDes.initStairCaseTilt = expDes.minStairThreshold;
+    end
+        
+    %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
+    expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[4 1.5],'levitt'); 
+    expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
+    expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;     
     
-    %expDes.stairs2 = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest');
-    expDes.stairs2 = upDownStaircase(1,1,expDes.initStairCaseTilt,[4 1.5],'levitt'); 
-    expDes.stairs2.minThreshold = expDes.minStairThreshold;
-    expDes.stairs2.maxThreshold = expDes.maxStairThreshold;     
+    expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
+    expDes.stairs{jj}.direction = [];
+    expDes.stairs{jj}.reversals = []; 
 end
+ 
+expDes.correctness{jj} = nan(1,expDes.nb_repeat/2);
 
-for jj = 1:expDes.numStaircases
-    expDes.stairs1.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
-    expDes.stairs1.direction = [];
-    expDes.stairs1.reversals = []; 
-    
-    expDes.stairs2.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
-    expDes.stairs2.direction = [];
-    expDes.stairs2.reversals = []; 
-end
+
+% To record for overall respMatrix (check expDes.response)
 
 expDes.tiltangle = NaN(expDes.nb_trials,1);
-expDes.correctness = {nan(1,expDes.nb_trials/2); nan(1, expDes.nb_trials/2)};
 
 %%
 

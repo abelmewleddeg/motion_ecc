@@ -17,6 +17,8 @@ function [const]=constConfig(scr,const,expDes)
 
 disp('~~~~~ CONST ~~~~~~')
 
+const.stimContrast = 0.5;
+
 const.speedDeg = 8; %in degrees per second
 const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 % grating and noise can be rotated, but this is only very meaningful for
@@ -33,8 +35,6 @@ elseif strcmp(expDes.stimulus, 'perlinNoise')
     % stimulus scalar for noise
     const.scalar4noiseTarget = 0.05; % unitless
 end
-
-const.flicker_hz = 4; % in hertz
 
 %% Define width of the cosine ramp (and check that smaller than stimulus/surround)
 
@@ -118,8 +118,5 @@ const.expStart = 0;
 
 % .mat file
 save(const.const_fileMat,'const');
-
-const
-
 
 end
