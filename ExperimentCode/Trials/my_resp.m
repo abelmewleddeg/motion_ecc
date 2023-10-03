@@ -4,14 +4,39 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
 
     while ~(const.expStop) && ~(const.responded)
     
-        if ~const.expStop  
+        if ~const.expStop  scr.windCenter_px(1)
 
-            my_fixation(scr,const,[0 0 1]) %const.black
+           
           
             % THIS IS WHERE YOUR CODE GOES
-           
+           if expDes.trialMat(trialID,2) == 45
+                x1 =  scr.windCenter_px(1) + const.stimEccpix;
+                y1 = scr.windCenter_px(2) - const.stimEccpix;
+           elseif  expDes.trialMat(trialID,2) == 135
+                x1 = scr.windCenter_px(1) - const.stimEccpix;
+                y1 = scr.windCenter_px(2) - const.stimEccpix;
+           elseif  expDes.trialMat(trialID,2) == 225
+                x1 = scr.windCenter_px(1) - const.stimEccpix;
+                y1 = scr.windCenter_px(2) + const.stimEccpix;
+           elseif  expDes.trialMat(trialID,2) == 315
+                x1 = scr.windCenter_px(1) + const.stimEccpix;
+                y1 = scr.windCenter_px(2) + const.stimEccpix;
+           end
+
+           if expDes.trialMat(trialID,4) == 45 || expDes.trialMat(trialID,4) == 225
+               x2 = scr.windCenter_px(1) - const.visiblesize/4;
+               y2 = scr.windCenter_px(2) + const.visiblesize/4;
+               x3 = scr.windCenter_px(1) + const.visiblesize/4;
+               y3 = scr.windCenter_px(2) - const.visiblesize/4;
+           elseif expDes.trialMat(trialID,4) == 135 || expDes.trialMat(trialID,4) == 315
+               x2 = scr.windCenter_px(1) + const.visiblesize/4;
+               y2 = scr.windCenter_px(2) + const.visiblesize/4;
+               x3 = scr.windCenter_px(1) - const.visiblesize/4;
+               y3 = scr.windCenter_px(2) - const.visiblesize/4;
+           end
              % ...
-            
+            Screen('DrawLine',const.window, [255 255 255],x2,y2,x3,y3,3) % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
+            my_fixation(scr,const,[0 0 1]) %const.black
             Screen('DrawingFinished',const.window); % small ptb optimisation
 
             vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);

@@ -31,7 +31,7 @@ if ~ (mod(expDes.nb_repeat,2)==0)
 end
 
 expDes.polarAngles = [45, 135]; %, 225, 315];
-expDes.Eccens = [2, 4, 6];
+expDes.Eccens = [5, 10, 15];
 expDes.Dirs = [45, 135, 225, 315];
 
 expDes.mainStimTypes = [];

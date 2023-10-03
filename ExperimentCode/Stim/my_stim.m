@@ -1,4 +1,4 @@
-   function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
+                                                                                                                                                                                                                                                                                                                        function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
@@ -7,7 +7,7 @@ testDirection = expDes.trialMat(trialID,4); % e.g. 90, 180 drift direction
 
 % eccentricity
 const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr);
-xDist = const.stimEccpix; yDist = const.stimEccpix;
+xDist = sqrt((const.stimEccpix^2)/2); yDist = sqrt((const.stimEccpix^2)/2);
 
 % visible size
 dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2)); 
@@ -120,6 +120,8 @@ function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc)
     xDist = scr.windCenter_px(1)+xDist-(visiblesize/2); % center + (+- distance added in pixels)
     yDist = scr.windCenter_px(2)+yDist-(visiblesize/2);  % check with -(vis part.. 
     dstRect=[xDist yDist visiblesize+xDist visiblesize+yDist];
+    % const.distance = [xDist,yDist];
+    % const.visiblesize = visiblesize/2
 end
 
 end
