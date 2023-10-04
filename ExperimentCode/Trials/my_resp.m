@@ -52,10 +52,21 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
                x4 = x3 - const.visiblesize/10;
                y4 = y3 - const.visiblesize/10;
            end
-             % ...
+
+           % draw arrow head
+           if expDes.fillArrow
+               head = [x3 y3];
+               width = 10;
+               points = [x3,y3;x4,y3;x3,y4];
+               Screen('FillPoly', const.window, [255 255 255], points);
+           else
+                Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
+                Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
+           end
+
+            % main response line orientation
             Screen('DrawLine',const.window, [255 255 255],x2,y2,x3,y3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
-            Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
-            Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
+
             my_fixation(scr,const,[0 0 1]) %const.black
             Screen('DrawingFinished',const.window); % small ptb optimisation
 

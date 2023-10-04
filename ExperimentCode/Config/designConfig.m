@@ -15,6 +15,9 @@ function [expDes]=designConfig(scr,const)
 
 disp('~~~~~ DESIGN ~~~~~~')
 
+% this is to fill the response cue arrow
+expDes.fillArrow = 1; % 0 or 1
+
 % save random number generator / seed for each run
 expDes.rng = rng(const.block);
 
