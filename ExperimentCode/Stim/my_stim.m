@@ -113,8 +113,11 @@ function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc)
         yDist = -yDist;
     elseif paLoc == 225
         xDist = -xDist;
-%     elseif paLoc == 315
-%         continue
+    elseif paLoc == 315
+        xDsit = xDsit;
+    else
+        const.expStop =1;
+       error('PA location not set up in my_stim and my_resp. Please configure.') 
     end
 
     xDist = scr.windCenter_px(1)+xDist-(visiblesize/2); % center + (+- distance added in pixels)
