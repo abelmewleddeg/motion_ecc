@@ -19,7 +19,7 @@ disp('~~~~~ CONST ~~~~~~')
 
 const.stimContrast = 0.5;
 
-const.speedDeg = 4; %in degrees per second
+const.speedDeg = 8; %in degrees per second
 const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 % grating and noise can be rotated, but this is only very meaningful for
 % grating
