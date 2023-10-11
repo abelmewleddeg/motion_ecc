@@ -74,7 +74,7 @@ for jj = 1:expDes.numStaircases
     expDes.stairs{jj}.reversals = []; 
 end
  
-expDes.correctness{jj} = nan(1,expDes.nb_repeat/2);
+expDes.correctness{jj} = nan(1,expDes.nb_trials);
 
 
 % To record for overall respMatrix (check expDes.response)
@@ -94,6 +94,7 @@ for ni=1:expDes.nb_trials
         [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, ni, vbl);
         expDes.respCue_onsets(ni) = vbl-t0; % log the onset of each response cue
         [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, ni, vbl);
+        expDes.rt_onset(ni) = vbl-t0; % log the onset of each response
     end
 end
 

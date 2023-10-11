@@ -43,11 +43,11 @@ const.stimCosEdge_deg = 0.3;
 const.stimCosEdge_pix = vaDeg2pix(const.stimCosEdge_deg, scr);
 
 % calculate the amount of area of surround exclusing target
-const.nonTargetRadiuspix = const.surroundRadiuspix - const.stimRadiuspix;
-const.surround2GapRadiusPix = const.nonTargetRadiuspix*(const.gapRatio); % outer boundary of the gap
-const.gap_pxfromBoundary = const.surroundRadiuspix*(const.gapRatio);
-const.gapWidth = (const.surroundRadiuspix-const.stimRadiuspix)*const.gapRatio;
-const.surroundWidth = const.surroundRadiuspix - const.gapWidth - const.stimRadiuspix;
+% const.nonTargetRadiuspix = const.surroundRadiuspix - const.stimRadiuspix;
+% const.surround2GapRadiusPix = const.nonTargetRadiuspix*(const.gapRatio); % outer boundary of the gap
+% const.gap_pxfromBoundary = const.surroundRadiuspix*(const.gapRatio);
+% const.gapWidth = (const.surroundRadiuspix-const.stimRadiuspix)*const.gapRatio;
+% const.surroundWidth = const.surroundRadiuspix - const.gapWidth - const.stimRadiuspix;
 
 % cosine ramp is applied at the edge of the center stimulus
 % and is applied at the two edges of the surround stimulus
@@ -59,12 +59,12 @@ if const.stimCosEdge_pix > const.stimRadiuspix
     const.stimCosEdge_pix = const.stimRadiuspix/4; % just make ramp 1/4 of the target radius
     const.stimCosEdge_deg = pix2vaDeg(const.stimCosEdge_pix, scr);
 end
-if 2*const.stimCosEdge_pix > const.surroundWidth
-    disp('The soft edges (cosine ramp*2) exceeds the surround radius..')
-    disp('Decreasing the width of the ramp to 1/(4*2) surround radius..')
-    const.stimCosEdge_pix = const.surroundWidth/(4*2); % just make ramp 1/4 of the target radius
-    const.stimCosEdge_deg = pix2vaDeg(const.stimCosEdge_pix, scr);
-end
+% if 2*const.stimCosEdge_pix > const.surroundWidth
+%     disp('The soft edges (cosine ramp*2) exceeds the surround radius..')
+%     disp('Decreasing the width of the ramp to 1/(4*2) surround radius..')
+%     const.stimCosEdge_pix = const.surroundWidth/(4*2); % just make ramp 1/4 of the target radius
+%     const.stimCosEdge_deg = pix2vaDeg(const.stimCosEdge_pix, scr);
+% end
 
 %% CENTER GRATING W/ RAMP
 

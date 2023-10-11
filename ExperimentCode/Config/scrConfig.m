@@ -41,13 +41,11 @@ scr.scr_num = max(Screen('Screens')); % use max screen (typically external monit
 scr.scrX_cm = scrX_mm/10; scr.scrY_cm = scrY_mm/10;
 
 filepath = fullfile(sursuppRootPath, 'parameters.tsv');
-params = readtable(filepath, "FileType","text",'Delimiter', '\t');
-
-scr.scrViewingDist_cm = params.scrDist; % load in viewing distance
+%params = readtable(filepath, "FileType","text",'Delimiter', '\t');
 
 % save other params to const struct
-const.gapRatio = params.gapRatio; 
-const.stimType = params.stimType;
+%const.gapRatio = params.gapRatio; 
+const.stimType = 'noise'; % or 'grating' %params.stimType;
 
 % find screen details
 if ~computerDetails.windows
@@ -58,12 +56,24 @@ if ~computerDetails.windows
             if scr.scr_num == 1
                 scr.scrX_cm = 62; scr.scrY_cm = 34;
             end
+            scr.scrViewingDist_cm = 57;
             Screen('Preference', 'SkipSyncTests', 1);
         otherwise
             scr.experimenter = 'Unknown';
+            scr.scrViewingDist_cm = 57;
     end
 else    % PC (field names are different)
-    scr.experimenter = 'Unknown';
+    switch computerDetails.system
+        case 'NT-10.0.9200 - '
+            scr.experimenter = 'NYUAD Mock Scanner';
+            scr.scrViewingDist_cm = 89;
+            scr.scr_num = 1;
+            scr.scrX_cm = 69.5; scr.scrY_cm = 39.25;
+            const.keyboard = '';
+        otherwise
+            scr.experimenter = 'Unknown';
+            scr.scrViewingDist_cm = 57;
+    end
 end
 
 if strcmp(scr.experimenter, 'Unknown') % default
@@ -82,11 +92,14 @@ scr.scrPixelDepth_bpp = resolution.pixelSize; % bits per pixel
 
 [scr.windX_px, scr.windY_px]=Screen('WindowSize', scr.scr_num);
 
+const.stimRadius_deg = 1.5;
+
 % load in eccentricity values and convert to pixels
-const.stimEcc_deg = params.stimEcc; const.stimEccpix = vaDeg2pix(const.stimEcc_deg, scr); 
-const.stimRadius_deg = params.stimRadius; const.stimRadiuspix = vaDeg2pix(const.stimRadius_deg, scr); 
-const.surroundRadius_deg = params.surroundRadius; const.surroundRadiuspix = vaDeg2pix(const.surroundRadius_deg, scr);
-const.gapRatio = params.gapRatio;
+% const.stimEcc_deg = params.stimEcc; const.stimEccpix = vaDeg2pix(const.stimEcc_deg, scr); 
+% const.stimRadius_deg = params.stimRadius; 
+const.stimRadiuspix = vaDeg2pix(const.stimRadius_deg, scr); 
+% const.surroundRadius_deg = params.surroundRadius; const.surroundRadiuspix = vaDeg2pix(const.surroundRadius_deg, scr);
+%const.gapRatio = params.gapRatio;
 
 if const.miniWindow == 1 || const.DEBUG == 1
     %PsychDebugWindowConfiguration(0, 0.5)
@@ -103,42 +116,42 @@ else
 end
 
 % check if lawful parameter size relative to screen
-if const.surroundRadiuspix >= const.stimEccpix
-    disp('Surround radius must NOT exceed stimulus eccentricity.')
-    scale2screen = 1;
-end
-if const.surroundRadiuspix >= scr.windY_px/2
-    disp('Surround radius must NOT exceed half the screen height.')
-    scale2screen = 1;
-end
-if const.surroundRadiuspix+const.stimEccpix >= scr.windX_px/2
-    disp('Surround radius + eccentricity must NOT exceed the screen width.')
-    scale2screen = 1;
-end
+% if const.surroundRadiuspix >= const.stimEccpix
+%     disp('Surround radius must NOT exceed stimulus eccentricity.')
+%     scale2screen = 1;
+% end
+% if const.surroundRadiuspix >= scr.windY_px/2
+%     disp('Surround radius must NOT exceed half the screen height.')
+%     scale2screen = 1;
+% end
+% if const.surroundRadiuspix+const.stimEccpix >= scr.windX_px/2
+%     disp('Surround radius + eccentricity must NOT exceed the screen width.')
+%     scale2screen = 1;
+% end
 %
 
-if scale2screen % this is mainly for testing
-    disp('Scaling params to fit current window..')
-    disp('and setting eccentricity to maximize stimulus range..')
-    
-    const.stimEccpix = scr.windX_px/4;
-    const.stimEcc_deg = pix2vaDeg(const.stimEccpix, scr);
-    
-    radiusConstraints = [scr.windX_px/2, scr.windY_px/2, const.stimEccpix];
-    minConstraint = min(radiusConstraints);
-    
-    scalingFactor = minConstraint/const.surroundRadiuspix;
-    const.surroundRadiuspix = minConstraint;
-    const.surroundRadius_deg = pix2vaDeg(const.surroundRadiuspix, scr);
-    const.stimRadiuspix = const.stimRadiuspix*scalingFactor;
-    const.stimRadius_deg = pix2vaDeg(const.stimRadiuspix, scr);
-end
+% if scale2screen % this is mainly for testing
+%     disp('Scaling params to fit current window..')
+%     disp('and setting eccentricity to maximize stimulus range..')
+%     
+%     const.stimEccpix = scr.windX_px/4;
+%     const.stimEcc_deg = pix2vaDeg(const.stimEccpix, scr);
+%     
+%     radiusConstraints = [scr.windX_px/2, scr.windY_px/2, const.stimEccpix];
+%     minConstraint = min(radiusConstraints);
+%     
+%     scalingFactor = minConstraint/const.surroundRadiuspix;
+%     const.surroundRadiuspix = minConstraint;
+%     const.surroundRadius_deg = pix2vaDeg(const.surroundRadiuspix, scr);
+%     const.stimRadiuspix = const.stimRadiuspix*scalingFactor;
+%     const.stimRadius_deg = pix2vaDeg(const.stimRadiuspix, scr);
+% end
 
-if ~((const.gapRatio >= 0) && (const.gapRatio <= 1))
-    disp('Gap ratio must be between 0 and 1..')
-    disp('Setting to default value of 0.5')
-    const.gapRatio = 0.5;
-end
+% if ~((const.gapRatio >= 0) && (const.gapRatio <= 1))
+%     disp('Gap ratio must be between 0 and 1..')
+%     disp('Setting to default value of 0.5')
+%     const.gapRatio = 0.5;
+% end
 
 
 %% Fixation Properties

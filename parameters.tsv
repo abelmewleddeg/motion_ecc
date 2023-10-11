@@ -1,2 +1,2 @@
-scrDist	stimEcc	stimRadius	surroundRadius	gapRatio	stimType
-57	8	2	5	0	noise
+stimEcc	stimRadius	surroundRadius	gapRatio	stimType
+0	2	5	0	noise
