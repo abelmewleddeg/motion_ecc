@@ -29,8 +29,8 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
                y2 = scr.windCenter_px(2) + const.visiblesize/4;
                x3 = scr.windCenter_px(1) + const.visiblesize/4;
                y3 = scr.windCenter_px(2) - const.visiblesize/4;
-               x4 = x3 - const.visiblesize/10
-               y4 = y3 + const.visiblesize/10
+               x4 = x3 - const.visiblesize/10;
+               y4 = y3 + const.visiblesize/10;
            elseif expDes.trialMat(trialID,4) == 225
                x2 = scr.windCenter_px(1) + const.visiblesize/4;
                y2 = scr.windCenter_px(2) - const.visiblesize/4;
