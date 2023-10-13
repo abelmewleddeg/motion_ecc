@@ -17,7 +17,7 @@ disp('~~~~~ DESIGN ~~~~~~')
 
 possiblePAs = [45, 135, 225, 315];
 
-if const.block==1
+if const.block==1 || const.DEBUG
     %TO DO: pick ;2 random locations from possiblePAs;
     const.PArandi = randperm(length(possiblePAs));
     expDes.polarAngles = possiblePAs(const.PArandi([1 2]));
@@ -42,7 +42,7 @@ else %eif const.block==2
     % TO DO: then select two randomly from possiblePAs that are NOT in this array that is in possible locs.
     
     drawfromPAs = setdiff(possiblePAs,completedPAs);
-    const.PArandi = randperm(length(drawfromPAs));
+     const.PArandi = randperm(length(drawfromPAs));
 
     if length(drawfromPAs) <= 1
         error('ONE OR LESS POLAR ANGLE LOCATIONS IN SESSION. PLEASE MODIFY.')
