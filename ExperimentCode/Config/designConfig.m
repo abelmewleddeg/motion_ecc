@@ -15,6 +15,43 @@ function [expDes]=designConfig(scr,const)
 
 disp('~~~~~ DESIGN ~~~~~~')
 
+possiblePAs = [45, 135, 225, 315];
+
+if const.block==1
+    %TO DO: pick ;2 random locations from possiblePAs;
+    const.PArandi = randperm(length(possiblePAs));
+    expDes.polarAngles = possiblePAs(const.PArandi([1 2]));
+
+else %eif const.block==2
+
+    npriorB = const.block-1;
+    completedPAs = [];
+    for bb=1:npriorB
+
+        % LOAD IN THE DSEIGN FILE FROM RUN 1, expDes.polarAngles
+        filename = sprintf('S%s_design_Block%i.mat',const.subjID,bb);
+        % % const.blockDir is your path strrep(const.blockDir, 'Block2', 'Block1')
+        block1dir = strrep(const.blockDir, sprintf('Block%s', num2str(const.block)), sprintf('Block%s', num2str(bb)));
+        tmp_oldsession = load(fullfile(block1dir, filename));
+        old_polarangles = tmp_oldsession.expDes.polarAngles;
+        
+        completedPAs = [completedPAs old_polarangles];
+
+    end
+
+    % TO DO: then select two randomly from possiblePAs that are NOT in this array that is in possible locs.
+    
+    drawfromPAs = setdiff(possiblePAs,completedPAs);
+    const.PArandi = randperm(length(drawfromPAs));
+
+    if length(drawfromPAs) <= 1
+        error('ONE OR LESS POLAR ANGLE LOCATIONS IN SESSION. PLEASE MODIFY.')
+    else
+        expDes.polarAngles = drawfromPAs(const.PArandi([1 2]));
+    end
+ 
+end
+
 % this is to fill the response cue arrow
 expDes.fillArrow = 1; % 0 or 1
 
@@ -33,7 +70,6 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.polarAngles = [45, 135]; %, 225, 315];
 expDes.Eccens = [4, 8, 12];
 expDes.Dirs = [45, 135, 225, 315];
 

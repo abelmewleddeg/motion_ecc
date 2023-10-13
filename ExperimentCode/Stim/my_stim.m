@@ -10,7 +10,7 @@ const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr);
 xDist = sqrt((const.stimEccpix^2)/2); yDist = sqrt((const.stimEccpix^2)/2);
 
 % visible size
-dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2)); 
+dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2), const); 
 
 waitframes = 1;
 vblendtime = vbl + movieDurationSecs;
@@ -104,7 +104,7 @@ expDes.tiltangle(trialID) = tiltAmount;
 
 %%
 
-function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc)
+function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc, const)
 
     if paLoc == 45
         yDist = -yDist;
@@ -113,8 +113,11 @@ function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc)
         yDist = -yDist;
     elseif paLoc == 225
         xDist = -xDist;
-%     elseif paLoc == 315
-%         continue
+    elseif paLoc == 315
+        xDist = xDist;
+    else
+        const.expStop =1;
+        error('PA location not set up in my_stim and my_resp. Please configure.') 
     end
 
     xDist = scr.windCenter_px(1)+xDist-(visiblesize/2); % center + (+- distance added in pixels)
