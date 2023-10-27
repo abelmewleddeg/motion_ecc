@@ -15,6 +15,10 @@ function [scr, const]=scrConfig(const)
 
 %% General
 
+disp('~~~~~ Load HID Devices.. ~~~~~~')
+
+LoadPsychHID
+
 disp('~~~~~ SCR ~~~~~~')
 
 % Instructions

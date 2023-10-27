@@ -87,6 +87,16 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.leftArrow) % counterclockwise
                 const.responded=1; 
                 responseDir = -1;
+            elseif keyIsDown && keyCode(my_key.DIAL_C)
+                disp('clockwise')
+                %key = KbName(find(keyCode))
+                const.responded=1; 
+                responseDir = 1;
+            elseif keyIsDown %&& keyCode(my_key.DIAL_)
+                disp('counterclockwise')
+                key = KbName(find(keyCode))
+                const.responded=1; 
+                responseDir = -1;
             end
             
         end

@@ -62,7 +62,7 @@ expDes.rng = rng(const.block);
 
 % number of repeats (actual trial number is double this number to
 % distribute clockwise / counterclockwise trials evenly of a condition)
-expDes.nb_repeat = 1; 
+expDes.nb_repeat = 6; 
 
 expDes.contrasts = .5;
 

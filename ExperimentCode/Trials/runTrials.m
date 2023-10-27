@@ -84,6 +84,12 @@ expDes.tiltangle = NaN(expDes.nb_trials,1);
 %%
 
 for ni=1:expDes.nb_trials
+
+
+    % add block structure
+    % make sure approxtruial per block is defined in designconfig (line
+    % 70-71 in the example code). initialize blocktracker outside the loop
+    % (line 42 in runtrials).
     
     fprintf('TRIAL %i ... ', ni)
 

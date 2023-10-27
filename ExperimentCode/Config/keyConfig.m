@@ -29,5 +29,5 @@ my_key.escape       = KbName('ESCAPE');
 my_key.space        = KbName('Space');
 my_key.rightArrow   = KbName('RightArrow');
 my_key.leftArrow    = KbName('LeftArrow');
-
+my_key.DIAL_C       = KbName('f17');
 end
