@@ -34,6 +34,7 @@ const.lightgray =   [  0.75,   0.75,   0.75 ];
 % Time
 const.my_clock_ini = clock;
 scale2screen = 0;
+fixIFI = 0;
     
 %% Screen
 computerDetails = Screen('Computer');  % check computer specs
@@ -74,6 +75,13 @@ else    % PC (field names are different)
             scr.scr_num = 1;
             scr.scrX_cm = 69.5; scr.scrY_cm = 39.25;
             const.keyboard = '';
+        case 'NT-11.0.9200 - '
+             scr.experimenter = 'Predator Helios 300';
+            scr.scrViewingDist_cm = 57;
+            const.keyboard = '';
+            if ~scr.scr_num  
+                fixIFI = 1;
+            end
         otherwise
             scr.experimenter = 'Unknown';
             scr.scrViewingDist_cm = 57;
@@ -185,8 +193,13 @@ scr.vbl = Screen('Flip', const.window);
 % Query the frame duration
 scr.ifi = Screen('GetFlipInterval', const.window);
 
+% fix the Helios incorrect reading here
+if fixIFI
+    scr.ifi = 1/144;
+end
+
 %% load in gamma table for appropriate contrast
-if ~const.DEBUG
+  if ~const.DEBUG
     gammaVals = load(const.gammaTablePath);
     const.gammaVals = gammaVals.gamma;
     [~, const.calibSuccess] = Screen('LoadNormalizedGammaTable', const.window, const.gammaVals.*[1 1 1]);

@@ -1,4 +1,4 @@
-%clear all;
+clear all;
 %InitializePsychSound()
 %PsychPortAudio('GetDevices')
 LoadPsychHID
@@ -13,7 +13,7 @@ my_key.DIAL_C       = KbName('f17');
 %%
 counter = 1;
 
-while counter<5
+while counter<1000
     %[keyIsDown, ~, keyCode] = KbCheck(1);
     [keyIsDown, ~, keyCode] = PsychHID('KbCheck'); %,1);
 

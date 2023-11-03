@@ -62,7 +62,7 @@ expDes.rng = rng(const.block);
 
 % number of repeats (actual trial number is double this number to
 % distribute clockwise / counterclockwise trials evenly of a condition)
-expDes.nb_repeat = 6; 
+expDes.nb_repeat = 30; 
 
 expDes.contrasts = .5;
 
@@ -131,6 +131,8 @@ expDes.response = nan(expDes.nb_trials,2);
 expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
 expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
 expDes.total_s = (expDes.nb_trials*(expDes.stimDur_s+expDes.itiDur_s));
+expDes.NumBlocks = 5;
+expDes.ApprxTrialperBlock = round(expDes.nb_trials/expDes.NumBlocks);
 
 expDes.stimDur_nFrames  =     round(expDes.stimDur_s/scr.ifi); % # frames
 expDes.itiDur_nFrames  =      round(expDes.itiDur_s/scr.ifi); % # frames

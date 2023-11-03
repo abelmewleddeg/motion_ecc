@@ -42,6 +42,7 @@ vbl = Screen('Flip',const.window);
 t0=vbl;
 expDes.trial_onsets = nan(1,(expDes.nb_trials));
 expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
+blockTracker = 1;
     
 
 %% initialize staircases
@@ -65,16 +66,16 @@ for jj = 1:expDes.numStaircases
     end
         
     %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
-    expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[4 1.5],'levitt'); 
+    expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
     expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
     expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;     
     
     expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
     expDes.stairs{jj}.direction = [];
     expDes.stairs{jj}.reversals = []; 
+    expDes.correctness{jj} = nan(1,expDes.nb_repeat);
 end
  
-expDes.correctness{jj} = nan(1,expDes.nb_trials);
 
 
 % To record for overall respMatrix (check expDes.response)
@@ -85,11 +86,21 @@ expDes.tiltangle = NaN(expDes.nb_trials,1);
 
 for ni=1:expDes.nb_trials
 
-
+    
     % add block structure
     % make sure approxtruial per block is defined in designconfig (line
     % 70-71 in the example code). initialize blocktracker outside the loop
     % (line 42 in runtrials).
+
+     % for breaks
+    if mod(ni,expDes.ApprxTrialperBlock)==0 && ni ~= 0 && ni ~= expDes.nb_trials
+        blockbreak = sprintf(' Completed %s/%s blocks. Press [space] to continue. ',num2str(blockTracker), num2str(expDes.NumBlocks));
+        textExp.blockbreak = {blockbreak};
+        keyCode = instructions(scr,const,my_key,textExp.blockbreak);
+        if keyCode(my_key.escape), return, end
+        FlushEvents('KeyDown');
+        blockTracker = blockTracker+1;
+    end
     
     fprintf('TRIAL %i ... ', ni)
 

@@ -1,7 +1,16 @@
-                                                                                                                                                                                                                                                                                                                        function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
+function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
+
+% which staircase + what iteration
+staircaseIndx = expDes.trialMat(trialID,6);
+currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
+
+if ~(expDes.trialMat(trialID, 5)* expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold > 0)
+    expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+end
+
 tiltSign = expDes.trialMat(trialID, 5); % -1 or 1 ()
 testDirection = expDes.trialMat(trialID,4); % e.g. 90, 180 drift direction
 
@@ -21,10 +30,6 @@ phasenow = 90;
 
 %% STAIRCASE FOR TILT ANGLE
 
-% which staircase + what iteration
-staircaseIndx = expDes.trialMat(trialID,6);
-currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
-
 % this should be a matrix of nans initialized in const. (col per staircase- each with the counter?)
 if expDes.stair_counter(1, staircaseIndx) == 1
     disp('first iteration of staircase')
@@ -38,6 +43,15 @@ if expDes.stair_counter(1, staircaseIndx) == 1
 %         expDes.initStairCaseTilt = expDes.maxStairThreshold;
 %     end
 end
+
+disp('Staircase Idx:')
+staircaseIndx
+latestIter = length(expDes.stairs{staircaseIndx});
+disp('Last element:')
+latestIter
+currStaircaseIteration
+% expDes.stairs{staircaseIndx}(latestIter).threshold
+expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold
 
 tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
 
