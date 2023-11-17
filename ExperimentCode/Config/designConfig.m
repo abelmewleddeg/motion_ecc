@@ -15,12 +15,12 @@ function [expDes]=designConfig(scr,const)
 
 disp('~~~~~ DESIGN ~~~~~~')
 
-possiblePAs = [45, 135, 225, 315];
+ possiblePAs = [[45,135];[225,315]]
 
 if const.block==1 || const.DEBUG
     %TO DO: pick ;2 random locations from possiblePAs;
-    const.PArandi = randperm(length(possiblePAs));
-    expDes.polarAngles = possiblePAs(const.PArandi([1 2]));
+    const.PArandi = randperm(length(possiblePAs(1,:)))
+    expDes.polarAngles = (possiblePAs(:,const.PArandi(1,1)))';
 
 else %eif const.block==2
 
@@ -48,7 +48,7 @@ else %eif const.block==2
         error('ONE OR LESS POLAR ANGLE LOCATIONS IN SESSION. PLEASE MODIFY.')
     else
         expDes.polarAngles = drawfromPAs(const.PArandi([1 2]));
-    end
+     end
  
 end
 

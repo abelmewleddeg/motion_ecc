@@ -1,6 +1,8 @@
 Data/**
 *.pdf
 *.png
+*.jpg
+*.jpeg
 *.bmp
 *.fig
 *.edf
@@ -9,6 +11,7 @@ Data/**
 *.mat
 .DS_Store
 *.asv
+
 
 # except gamma.mat file
 !gamma.mat
