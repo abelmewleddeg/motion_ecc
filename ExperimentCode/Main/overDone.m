@@ -11,9 +11,11 @@ function overDone(const, expDes)
 % Output(s):
 % none
 % ----------------------------------------------------------------------
-fid = fopen(const.blockLog, 'a');
-fprintf(fid, '\n');
-fprintf(fid, 'Block%i', const.block);
+if ~const.expStop % only log the block if completed
+    fid = fopen(const.blockLog, 'a');
+    fprintf(fid, '\n');
+    fprintf(fid, 'Block%i', const.block);
+end
 
 % .mat file
 save(const.design_fileMat,'expDes');

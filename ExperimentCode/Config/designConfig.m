@@ -124,12 +124,12 @@ expDes.response = nan(expDes.nb_trials,2);
 
 %% Experiental timing settings
 if const.staircasemode > 0
-    expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
-    expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
+    expDes.stimDur_s  = .01; %.3;   % 0.5 sec stimulus duration
+    expDes.itiDur_s  = 0.01; %.8;      % 2 inter-trial interval (fixation)
     expDes.NumBlocks = 5;
 else
-    expDes.stimDur_s  = 1; %.3;   % 0.5 sec stimulus duration
-    expDes.itiDur_s  = .8; %.8;      % 2 inter-trial interval (fixation)
+    expDes.stimDur_s  = .01; %1; %.3;   % 0.5 sec stimulus duration
+    expDes.itiDur_s  = 0.01; %.8; %.8;      % 2 inter-trial interval (fixation)
     expDes.NumBlocks = 1;
 end
 expDes.total_s = (expDes.nb_trials*(expDes.stimDur_s+expDes.itiDur_s));
