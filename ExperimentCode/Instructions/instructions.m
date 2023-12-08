@@ -20,7 +20,8 @@ y_mid = scr.windCenter_px(2);
 %while KbCheck(-1); end
 while KbCheck(my_key.keyboardID); end
 KbName('UnifyKeyNames');
-
+MainDirectory = sursuppRootPath;
+imagefile = fullfile(MainDirectory,'ExperimentCode','Instructions','InstructionsFigure.jpeg');
 push_button = 0;
 while ~push_button
     
@@ -42,8 +43,7 @@ while ~push_button
     end
     addi = addi+2;
     my_fixation(scr,const,const.black)
-    if const.instrct == 0;
-        imagefile = fullfile("C:\Users\rokers lab 2\Downloads\exapleInstructions_Abel.jpeg");
+    if const.instrct == 0
         image = imread(imagefile);
         imageTexture = Screen('MakeTexture',const.window,image);
         imageSize = size(image);
