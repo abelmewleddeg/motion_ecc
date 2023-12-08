@@ -100,6 +100,7 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             elseif keyIsDown % to check for button press
                 find(keyCode)
             end
+            
 
             % % FAKE RESPONSES (TAKE OUT LATER)
             % const.responded=1; 
@@ -109,10 +110,10 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             % else
             %     responseDir = 1;
             % end 
-            
+
         end
-       
     end
+    vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 
 
 % save submitted contrast:

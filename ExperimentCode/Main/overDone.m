@@ -11,7 +11,6 @@ function overDone(const, expDes)
 % Output(s):
 % none
 % ----------------------------------------------------------------------
-
 fid = fopen(const.blockLog, 'a');
 fprintf(fid, '\n');
 fprintf(fid, 'Block%i', const.block);
@@ -34,6 +33,12 @@ Screen('CloseAll');
 sca;
 timeDur=toc/60;
 fprintf(1,'\nTotal time : %2.0f min.\n\n',timeDur);
+% if keyIsDown && ~keyCode(my_key.escape)
+if ~const.expStop
+    plottt(const,expDes)
+end
+% end
+
 
 %PsychPortAudio('Stop', const.pahandle);
 %PsychPortAudio('Close', const.pahandle); %added

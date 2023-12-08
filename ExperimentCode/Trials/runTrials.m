@@ -22,7 +22,7 @@ function [expDes, const] = runTrials(scr,const,expDes,my_key,textExp)
 if ~const.DEBUG
     HideCursor(scr.scr_num);
 end
-
+const.instrct = 0;
 keyCode = instructions(scr,const,my_key,textExp.instruction);
 tic
 
@@ -86,14 +86,14 @@ expDes.tiltangle = NaN(expDes.nb_trials,1);
 
 for ni=1:expDes.nb_trials
 
-    
+    const.instrct = 1;
     % add block structure
     % make sure approxtruial per block is defined in designconfig (line
     % 70-71 in the example code). initialize blocktracker outside the loop
     % (line 42 in runtrials).
 
      % for breaks
-    if mod(ni,expDes.ApprxTrialperBlock)==0 && ni ~= 0 && ni ~= expDes.nb_trials
+    if mod(ni,expDes.ApprxTrialperBlock)==0 && ni ~= 0 && ni ~= expDes.nb_trials && ~const.expStop
         blockbreak = sprintf(' Completed %s/%s blocks. Press [space] to continue. ',num2str(blockTracker), num2str(expDes.NumBlocks));
         textExp.blockbreak = {blockbreak};
         keyCode = instructions(scr,const,my_key,textExp.blockbreak);
