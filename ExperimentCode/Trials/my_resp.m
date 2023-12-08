@@ -169,6 +169,8 @@ else
     elseif expDes.tiltangle(trialID, 1)*responseDir < 0
         expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
         feedbackRGB = [1 0 0];
+    else % nan (to prevent error when quitting)
+        feedbackRGB = [0 0 1];
     end
     save(const.design_fileMat,'expDes');
     

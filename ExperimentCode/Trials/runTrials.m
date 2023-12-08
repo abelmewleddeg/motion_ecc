@@ -115,11 +115,9 @@ for ni=1:expDes.nb_trials
         [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, ni, vbl);
         expDes.rt_onset(ni) = vbl-t0; % log the onset of each response
         
-%         if const.staircasemode == 0
-%             % feedback for the practice only
-%             feedback = [1 0 0];
-%             [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, feedback);
-%         end
+        performance_PC = 100*(nansum(expDes.response(:,2))/sum(~isnan(expDes.response(:,2))));
+        disp(sprintf('CUMULATIVE PERCENT CORRECT: %s', num2str(performance_PC)))
+        
     end
 end
 

@@ -42,7 +42,9 @@ if const.staircasemode == 0
     performance_PC = 100*(sum(expDes.response(:,2))/length(expDes.response(:,2)));
     disp(sprintf('PERCENT CORRECT: %s', num2str(performance_PC)))
     
-    if performance_PC < 75
+    if isnan(performance_PC)
+        disp('Not enough data to determine performance. Please finish entire block.')
+    elseif performance_PC < 75
         disp('SUBJECT NEEDS TO DO ANOTHER PRACTICE BLOCK, OR CAN QUIT.')
     else
         disp('SUBJECT PASSES PERFORMANCE THRRESHOLD.')
