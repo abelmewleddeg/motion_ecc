@@ -62,7 +62,12 @@ expDes.rng = rng(const.block);
 
 % number of repeats (actual trial number is double this number to
 % distribute clockwise / counterclockwise trials evenly of a condition)
-expDes.nb_repeat = 30; 
+
+if const.staircasemode == 0 % for practice
+    expDes.nb_repeat = 6; 
+else
+    expDes.nb_repeat = 30; 
+end
 
 expDes.contrasts = .5;
 
@@ -71,6 +76,12 @@ if ~ (mod(expDes.nb_repeat,2)==0)
 end
 
 expDes.Eccens = [4, 8, 12];
+
+% limit the practice to only 1 eccentricity
+if const.staircasemode == 0
+    expDes.Eccens = expDes.Eccens(2); % take the middle eccentricity for practice
+end
+
 expDes.Dirs = [45, 135, 225, 315];
 
 expDes.mainStimTypes = [];
@@ -104,6 +115,12 @@ clockwiseStim = [ones(numClock, 1); -1*ones(numClock, 1)];
 % at a paLoc at an eccen that is clockwise)
 expDes.numStaircases = 2*numClock;
 staircaseLabels = (1:expDes.numStaircases)';
+    
+if const.staircasemode == 0
+    expDes.numStaircases = 0;
+    staircaseLabels = staircaseLabels*nan;
+end
+
 trialsequenceMAT = [trialsequenceMAT, clockwiseStim, staircaseLabels];
 
 % create trialMat with total trial number (since already doubled to
@@ -128,14 +145,15 @@ expDes.response = nan(expDes.nb_trials,2);
 
 %% Experiental timing settings
 if const.staircasemode > 0
-    expDes.stimDur_s  = 0.01; %.3;   % 0.5 sec stimulus duration
-    expDes.itiDur_s  = 0; %.8;      % 2 inter-trial interval (fixation)
+    expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
+    expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
+    expDes.NumBlocks = 5;
 else
     expDes.stimDur_s  = 1; %.3;   % 0.5 sec stimulus duration
     expDes.itiDur_s  = .8; %.8;      % 2 inter-trial interval (fixation)
+    expDes.NumBlocks = 1;
 end
 expDes.total_s = (expDes.nb_trials*(expDes.stimDur_s+expDes.itiDur_s));
-expDes.NumBlocks = 5;
 expDes.ApprxTrialperBlock = round(expDes.nb_trials/expDes.NumBlocks);
 
 expDes.stimDur_nFrames  =     round(expDes.stimDur_s/scr.ifi); % # frames
