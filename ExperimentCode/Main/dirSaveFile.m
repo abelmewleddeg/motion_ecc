@@ -16,9 +16,10 @@ disp('~~~~~ DIRSAVEFILE ~~~~~~')
 
 % Subject name:
 if const.DEBUG ~= 1
-    const.subjID = input(sprintf('\n\tSubject ID (letters/digits): '),'s');
+    prompt = sprintf('\n\tSubject ID (digits only): ');
+    [const.subjID_numeric, const.subjID] = getNumericInput(prompt);
 else
-    const.subjID = 'XX';
+    const.subjID = '00';
 end
 
 % Subject Directory
@@ -60,4 +61,29 @@ if const.makemovie
     end
 end
 
+end
+
+%%
+
+function [userInput, userInput_s] = getNumericInput(prompt)
+
+    while true
+        userInput_s = input(prompt, 's');
+        
+        if length(userInput_s) < 2
+            userInput_s = ['0', userInput_s];
+        end
+        
+        if isempty(userInput_s) || ~all(isstrprop(userInput_s, 'digit'))
+            disp('Invalid input. Please enter only digits.');
+        else
+            userInput = str2double(userInput_s);
+            
+            if ~isnan(userInput)
+                break;
+            else
+                disp('Invalid input. Please enter only digits.');
+            end
+        end
+    end
 end
