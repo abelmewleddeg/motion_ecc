@@ -1,5 +1,11 @@
-function [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl)
+function [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, color)
 
+if nargin < 6
+    error('At least 6 arguments required')
+elseif nargin < 7
+    color = const.black;
+end
+    
 try
     waitframes = 1;
     %vbl = Screen('Flip',const.window);
@@ -11,7 +17,7 @@ try
         if ~const.expStop
 
             % draw stimuli here, better at the start of the drawing loop
-            my_fixation(scr,const,const.black)
+            my_fixation(scr,const,color)
             Screen('DrawingFinished',const.window); % small ptb optimisation
             vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 

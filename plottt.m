@@ -8,13 +8,13 @@
 % load('Spracticeabel_design_Block1.mat')
 %load('SAbelTest_design_Block1.mat')
 
-expDes.trialMat(:,7) = expDes.response(:,1)
+expDes.trialMat(:,7) = expDes.response(:,1);
 
 pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
 addpath(genpath('~/psignifit'))
 options.sigmoidName  = 'norm';
-options.fixedPars      = [nan ; nan ; 0; 0.01; nan]
+options.fixedPars      = [nan ; nan ; 0; 0.01; nan];
 options.expType = 'equalAsymptote';
 plotOptions.xLabel         = 'Tilt Angle';     % xLabel
 plotOptions.yLabel         = '% of clockwise responses'; 

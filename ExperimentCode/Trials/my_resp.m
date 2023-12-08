@@ -7,23 +7,6 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
     
         if ~const.expStop
 
-           
-          
-            % THIS IS WHERE YOUR CODE GOES
-           % if expDes.trialMat(trialID,2) == 45
-           %      x1 =  scr.windCenter_px(1) + const.stimEccpix;
-           %      y1 = scr.windCenter_px(2) - const.stimEccpix;
-           % elseif  expDes.trialMat(trialID,2) == 135
-           %      x1 = scr.windCenter_px(1) - const.stimEccpix;
-           %      y1 = scr.windCenter_px(2) - const.stimEccpix;
-           % elseif  expDes.trialMat(trialID,2) == 225
-           %      x1 = scr.windCenter_px(1) - const.stimEccpix;
-           %      y1 = scr.windCenter_px(2) + const.stimEccpix;
-           % elseif  expDes.trialMat(trialID,2) == 315
-           %      x1 = scr.windCenter_px(1) + const.stimEccpix;
-           %      y1 = scr.windCenter_px(2) + const.stimEccpix;
-           % end
-
            if expDes.trialMat(trialID,4) == 45
                x2 = scr.windCenter_px(1) - const.visiblesize/4;
                y2 = scr.windCenter_px(2) + const.visiblesize/4;
@@ -102,14 +85,14 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             end
             
 
-            % % FAKE RESPONSES (TAKE OUT LATER)
-            % const.responded=1; 
-            % simResp = rand; 
-            % if simResp > 0.5
-            %     responseDir = -1;
-            % else
-            %     responseDir = 1;
-            % end 
+%             % FAKE RESPONSES (TAKE OUT LATER)
+%             const.responded=1; 
+%             simResp = rand; 
+%             if simResp > 0.5
+%                 responseDir = -1;
+%             else
+%                 responseDir = 1;
+%             end 
 
         end
     end
@@ -121,63 +104,77 @@ expDes.response(trialID,1) = responseDir;
     
 %% STAIRCASE
 
-staircaseIndx = expDes.trialMat(trialID,6);
-currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
+if const.staircasemode > 0
+    staircaseIndx = expDes.trialMat(trialID,6);
+    currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
 
-% if the tiltangle is the same SIGN as the responseDir (e.g., -4.5 and -1 OR 4.5 and 1):
-%if expDes.trialMat(trialID, 5) == responseDir
-if ~isnan(responseDir)
-    
-    disp('~~~~~~~')
-    staircaseIndx
-    currStaircaseIteration
-    size(expDes.correctness)
-    size(expDes.correctness{staircaseIndx})
-    disp('~~~~~~~')
-    
+    % if the tiltangle is the same SIGN as the responseDir (e.g., -4.5 and -1 OR 4.5 and 1):
+    %if expDes.trialMat(trialID, 5) == responseDir
+    if ~isnan(responseDir)
+
+        disp('~~~~~~~')
+        staircaseIndx
+        currStaircaseIteration
+        size(expDes.correctness)
+        size(expDes.correctness{staircaseIndx})
+        disp('~~~~~~~')
+
+        if expDes.tiltangle(trialID, 1)*responseDir > 0 
+            expDes.correctness{staircaseIndx}(currStaircaseIteration) = 1; % correct
+            expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
+        elseif expDes.tiltangle(trialID, 1)*responseDir < 0
+            expDes.correctness{staircaseIndx}(currStaircaseIteration) = 0; % incorrect
+            expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
+        end
+        save(const.design_fileMat,'expDes');
+
+
+        % if the correctness from previous trial is not NAN and is not the the
+        % last trial-1 - run the staircase to obtain new threshold for this
+        % trial
+        % corrNow flips correct/incorrect for the backwards staircase. This
+        % variable is ONLY used here
+        if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) && trialID<expDes.nb_trials-1 % if correct has valid value
+            % b/c staircase algorithm makes things "harder" by decreasing the
+            % thresh - consider correct/incorrect FLIPPED for counterclockwise
+            %if expDes.tiltangle(trialID, 1)<0
+            if expDes.trialMat(trialID, 5) == -1 % this (-1 == cc) is upated based on threshold from staircase (in my_stim)
+                corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
+                % flipping correct and incorrect for the counterclockwise
+                % (reverse) staircase. 
+                if corrNow == 1
+                    corrNow = 0;
+                elseif corrNow == 0
+                    corrNow = 1;
+                end
+            elseif expDes.trialMat(trialID, 5) == 1 % (1 = c)
+                corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
+            end
+            expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = upDownStaircase(expDes.stairs{staircaseIndx}(currStaircaseIteration), corrNow);
+
+            %add if statement to prevent tilt value to equal 0
+            if expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold == 0
+               expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1%expDes.trialMat(currStaircaseIteration+1, 5);
+             end
+
+        end
+        % iterate over that particular staircase
+        expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
+
+    end
+else
     if expDes.tiltangle(trialID, 1)*responseDir > 0 
-        expDes.correctness{staircaseIndx}(currStaircaseIteration) = 1; % correct
         expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
+        feedbackRGB = [0 1 0];
     elseif expDes.tiltangle(trialID, 1)*responseDir < 0
-        expDes.correctness{staircaseIndx}(currStaircaseIteration) = 0; % incorrect
         expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
+        feedbackRGB = [1 0 0];
     end
     save(const.design_fileMat,'expDes');
-
     
-    % if the correctness from previous trial is not NAN and is not the the
-    % last trial-1 - run the staircase to obtain new threshold for this
-    % trial
-    % corrNow flips correct/incorrect for the backwards staircase. This
-    % variable is ONLY used here
-    if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) && trialID<expDes.nb_trials-1 % if correct has valid value
-        % b/c staircase algorithm makes things "harder" by decreasing the
-        % thresh - consider correct/incorrect FLIPPED for counterclockwise
-        %if expDes.tiltangle(trialID, 1)<0
-        if expDes.trialMat(trialID, 5) == -1 % this (-1 == cc) is upated based on threshold from staircase (in my_stim)
-            corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
-            % flipping correct and incorrect for the counterclockwise
-            % (reverse) staircase. 
-            if corrNow == 1
-                corrNow = 0;
-            elseif corrNow == 0
-                corrNow = 1;
-            end
-        elseif expDes.trialMat(trialID, 5) == 1 % (1 = c)
-            corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
-        end
-        expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = upDownStaircase(expDes.stairs{staircaseIndx}(currStaircaseIteration), corrNow);
-
-        %add if statement to prevent tilt value to equal 0
-        if expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold == 0
-           expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1%expDes.trialMat(currStaircaseIteration+1, 5);
-         end
-
-    end
-    % iterate over that particular staircase
-    expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
-
+    
+    [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, feedbackRGB);
+    
 end
-%%
 
 end

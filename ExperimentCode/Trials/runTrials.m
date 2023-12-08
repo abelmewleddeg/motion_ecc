@@ -47,33 +47,35 @@ blockTracker = 1;
 
 %% initialize staircases
 
-expDes.minStairThreshold = -20; %0.01;
-expDes.maxStairThreshold = 20; % deg
-expDes.stair_counter = ones(1,expDes.numStaircases);
+if const.staircasemode > 0
+    expDes.minStairThreshold = -20; %0.01;
+    expDes.maxStairThreshold = 20; % deg
+    expDes.stair_counter = ones(1,expDes.numStaircases);
 
-for jj = 1:expDes.numStaircases
-    
-    % find whether this staircase is starting at clock or counterclockwise
-    % direction
-    designRow = min(find(expDes.trialMat(:,6)==jj));
-    startClockwise = expDes.trialMat(designRow, 5);
-    
-    % init staircases with just initial values!
-    if startClockwise > 0
-        expDes.initStairCaseTilt = expDes.maxStairThreshold;
-    else
-        expDes.initStairCaseTilt = expDes.minStairThreshold;
+    for jj = 1:expDes.numStaircases
+
+        % find whether this staircase is starting at clock or counterclockwise
+        % direction
+        designRow = min(find(expDes.trialMat(:,6)==jj));
+        startClockwise = expDes.trialMat(designRow, 5);
+
+        % init staircases with just initial values!
+        if startClockwise > 0
+            expDes.initStairCaseTilt = expDes.maxStairThreshold;
+        else
+            expDes.initStairCaseTilt = expDes.minStairThreshold;
+        end
+
+        %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
+        expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
+        expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
+        expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;     
+
+        expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
+        expDes.stairs{jj}.direction = [];
+        expDes.stairs{jj}.reversals = []; 
+        expDes.correctness{jj} = nan(1,expDes.nb_repeat);
     end
-        
-    %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
-    expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
-    expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
-    expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;     
-    
-    expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
-    expDes.stairs{jj}.direction = [];
-    expDes.stairs{jj}.reversals = []; 
-    expDes.correctness{jj} = nan(1,expDes.nb_repeat);
 end
  
 
@@ -112,6 +114,12 @@ for ni=1:expDes.nb_trials
         expDes.respCue_onsets(ni) = vbl-t0; % log the onset of each response cue
         [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, ni, vbl);
         expDes.rt_onset(ni) = vbl-t0; % log the onset of each response
+        
+%         if const.staircasemode == 0
+%             % feedback for the practice only
+%             feedback = [1 0 0];
+%             [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, feedback);
+%         end
     end
 end
 

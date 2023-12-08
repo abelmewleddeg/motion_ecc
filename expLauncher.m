@@ -17,6 +17,9 @@ const.DEBUG = 0;       % skips subject details / data saving
 const.miniWindow = 0;  % for debugging purposes only
 const.makemovie =0;   % capture movie of trial (slows down performance)
 
+% staircasemode = [0=no staircase/practice; 1=updown; 2=bayesian]
+const.staircasemode = 0;
+
 Screen('Preference', 'SkipSyncTests', 1);
 
 % Verify that path is correct
