@@ -8,8 +8,20 @@ if const.staircasemode > 0
     staircaseIndx = expDes.trialMat(trialID,6);
     currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
 
-    if ~(expDes.trialMat(trialID, 5)* expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold > 0)
-        expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+    % correcting the trialMat of predefined c / cc values for when
+    % staircase iteration goes the other way
+    if const.staircasemode == 1
+        if ~(expDes.trialMat(trialID, 5)* expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold > 0)
+            expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+        end
+    elseif const.staircasemode == 2
+        
+        tiltAmount = qpQuery(expDes.stairs{staircaseIndx});
+        
+        if ~(expDes.trialMat(trialID, 5)* tiltAmount > 0)
+            expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+        end
+        
     end
 end
     
@@ -53,10 +65,11 @@ if const.staircasemode > 0
     disp('Last element:')
     latestIter
     currStaircaseIteration
-    % expDes.stairs{staircaseIndx}(latestIter).threshold
-    expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold
-
-    tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
+    
+    if const.staircasemode == 1
+        expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold
+        tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
+    end
 
     disp('Sign to start staircase:')
     disp(tiltSign)

@@ -18,7 +18,7 @@ const.miniWindow = 0;  % for debugging purposes only
 const.makemovie =0;   % capture movie of trial (slows down performance)
 
 % staircasemode = [0=no staircase/practice; 1=updown; 2=bayesian]
-const.staircasemode = 1;
+const.staircasemode = 2;
 
 Screen('Preference', 'SkipSyncTests', 1);
 

@@ -48,33 +48,57 @@ blockTracker = 1;
 %% initialize staircases
 
 if const.staircasemode > 0
-    expDes.minStairThreshold = -20; %0.01;
-    expDes.maxStairThreshold = 20; % deg
+    
+    lowerBound = -20;
+    upperBound = 20;
     expDes.stair_counter = ones(1,expDes.numStaircases);
+    
+    if const.staircasemode == 1 % updown
+        expDes.minStairThreshold = lowerBound;
+        expDes.maxStairThreshold = upperBound; % deg
+        
+        for jj = 1:expDes.numStaircases
 
-    for jj = 1:expDes.numStaircases
+            % find whether this staircase is starting at clock or counterclockwise
+            % direction
+            designRow = min(find(expDes.trialMat(:,6)==jj));
+            startClockwise = expDes.trialMat(designRow, 5);
 
-        % find whether this staircase is starting at clock or counterclockwise
-        % direction
-        designRow = min(find(expDes.trialMat(:,6)==jj));
-        startClockwise = expDes.trialMat(designRow, 5);
+            % init staircases with just initial values!
+            if startClockwise > 0
+                expDes.initStairCaseTilt = expDes.maxStairThreshold;
+            else
+                expDes.initStairCaseTilt = expDes.minStairThreshold;
+            end
 
-        % init staircases with just initial values!
-        if startClockwise > 0
-            expDes.initStairCaseTilt = expDes.maxStairThreshold;
-        else
-            expDes.initStairCaseTilt = expDes.minStairThreshold;
+            %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
+            expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
+            expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
+            expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;  
+
+            expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
+            expDes.stairs{jj}.direction = [];
+            expDes.stairs{jj}.reversals = []; 
+            expDes.correctness{jj} = nan(1,expDes.nb_repeat);
         end
-
-        %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
-        expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
-        expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
-        expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;     
-
-        expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
-        expDes.stairs{jj}.direction = [];
-        expDes.stairs{jj}.reversals = []; 
-        expDes.correctness{jj} = nan(1,expDes.nb_repeat);
+    elseif const.staircasemode == 2
+        
+        incremBound = (upperBound-lowerBound) ./ 80; %(2*(upperBound-lowerBound)); % do we want this increment to be relative?
+        
+        searchLB = lowerBound/2;
+        searchUB = upperBound/2;
+        
+        stdFL = (upperBound-lowerBound)/8;
+        stdFU = (upperBound-lowerBound)/4;
+        stdI = (stdFU-stdFL) / 100;
+        
+        lapseR = 0; % do we want to set this to a different value?
+        
+        for jj = 1:expDes.numStaircases
+            expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{lowerBound:incremBound:upperBound}, 'psiParamsDomainList', ...
+                {searchLB:incremBound:searchUB, stdFL:stdI:stdFU, lapseR}, 'qpPF', @qpPFNormal); % should we make boundaries the same as the stimulus extremes?
+            expDes.correctness{jj} = nan(1,expDes.nb_repeat); % check that this account for c and cc
+        end
     end
 end
  

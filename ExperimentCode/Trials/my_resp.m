@@ -85,14 +85,14 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             end
             
 
-            % FAKE RESPONSES (TAKE OUT LATER)
-            const.responded=1; 
-            simResp = rand; 
-            if simResp > 0.5
-                responseDir = -1;
-            else
-                responseDir = 1;
-            end 
+%             % FAKE RESPONSES (TAKE OUT LATER)
+%             const.responded=1; 
+%             simResp = rand; 
+%             if simResp > 0.5
+%                 responseDir = -1;
+%             else
+%                 responseDir = 1;
+%             end 
 
         end
     end
@@ -135,27 +135,34 @@ if const.staircasemode > 0
         % corrNow flips correct/incorrect for the backwards staircase. This
         % variable is ONLY used here
         if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) && trialID<expDes.nb_trials-1 % if correct has valid value
-            % b/c staircase algorithm makes things "harder" by decreasing the
-            % thresh - consider correct/incorrect FLIPPED for counterclockwise
-            %if expDes.tiltangle(trialID, 1)<0
-            if expDes.trialMat(trialID, 5) == -1 % this (-1 == cc) is upated based on threshold from staircase (in my_stim)
-                corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
-                % flipping correct and incorrect for the counterclockwise
-                % (reverse) staircase. 
-                if corrNow == 1
-                    corrNow = 0;
-                elseif corrNow == 0
-                    corrNow = 1;
+            
+            if const.staircasemode == 1 % updown
+                % b/c staircase algorithm makes things "harder" by decreasing the
+                % thresh - consider correct/incorrect FLIPPED for counterclockwise
+                %if expDes.tiltangle(trialID, 1)<0
+                if expDes.trialMat(trialID, 5) == -1 % this (-1 == cc) is upated based on threshold from staircase (in my_stim)
+                    corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
+                    % flipping correct and incorrect for the counterclockwise
+                    % (reverse) staircase. 
+                    if corrNow == 1
+                        corrNow = 0;
+                    elseif corrNow == 0
+                        corrNow = 1;
+                    end
+                elseif expDes.trialMat(trialID, 5) == 1 % (1 = c)
+                    corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
                 end
-            elseif expDes.trialMat(trialID, 5) == 1 % (1 = c)
-                corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration);
-            end
-            expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = upDownStaircase(expDes.stairs{staircaseIndx}(currStaircaseIteration), corrNow);
+                expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = upDownStaircase(expDes.stairs{staircaseIndx}(currStaircaseIteration), corrNow);
 
-            %add if statement to prevent tilt value to equal 0
-            if expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold == 0
-               expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1%expDes.trialMat(currStaircaseIteration+1, 5);
-             end
+                %add if statement to prevent tilt value to equal 0
+                if expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold == 0
+                   expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1%expDes.trialMat(currStaircaseIteration+1, 5);
+                end
+            elseif const.staircasemode == 2 % bayesian
+                % if correct == 2 and incorrect = 1
+                corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration)+1; % add 1 for the 1,2 vs 0,1 discrepancey
+                expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = qpUpdate(expDes.stairs{staircaseIndx}(currStaircaseIteration), expDes.tiltangle(trialID), corrNow);
+            end
 
         end
         % iterate over that particular staircase
