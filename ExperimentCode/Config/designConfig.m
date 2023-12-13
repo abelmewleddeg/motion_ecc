@@ -45,7 +45,7 @@ expDes.rng = rng(const.block);
 if const.staircasemode == 0 % for practice
     expDes.nb_repeat = 6; 
 else
-    expDes.nb_repeat = 30; 
+    expDes.nb_repeat = 30; % 30 clockwise and 30 counteclockwise (ish); for either staircase method
 end
 
 expDes.contrasts = .5;
@@ -90,14 +90,21 @@ end
 trialsequenceMAT = repmat(expDes.mainStimTypes, 2, 1);
 clockwiseStim = [ones(numClock, 1); -1*ones(numClock, 1)];
 
-% add a column for unique staircase indices (e.g, 1 staircase = a motionDir,
-% at a paLoc at an eccen that is clockwise)
-expDes.numStaircases = 2*numClock;
-staircaseLabels = (1:expDes.numStaircases)';
-    
-if const.staircasemode == 0
+% add a column for unique staircase indices (e.g, for 1up1down: 1 staircase = a motionDir,
+% at a paLoc at an eccen that is clockwise; for bayesian: 1 staircase = a motionDir,
+% at a paLoc at an eccen that is either clockwise or counterclockwise)
+if const.staircasemode == 1
+    expDes.numStaircases = 2*numClock;
+    staircaseLabels = (1:expDes.numStaircases)';
+elseif const.staircasemode == 2
+    expDes.numStaircases = numClock;
+    staircaseLabels = (1:expDes.numStaircases)';
+    staircaseLabels = repmat(staircaseLabels, 2, 1, 1); % double this (to keep consistent)
+    clockwiseStim = clockwiseStim*nan; % non informative in this case, just change to nan
+elseif const.staircasemode == 0
     expDes.numStaircases = 0;
-    staircaseLabels = staircaseLabels*nan;
+    [trialtypes, ~] = size(trialsequenceMAT);
+    staircaseLabels = nan(trialtypes, 1);
 end
 
 trialsequenceMAT = [trialsequenceMAT, clockwiseStim, staircaseLabels];
@@ -119,7 +126,7 @@ expDes.trialMat = [trialIDs', trialsequenceMAT];
 expDes.trialMat
 
 % rows = trials, cols = [response (-1 cc, 1 c), correct (1 correct, 0
-% incorrect)
+% incorrect) 
 expDes.response = nan(expDes.nb_trials,2);
 
 %% Experiental timing settings

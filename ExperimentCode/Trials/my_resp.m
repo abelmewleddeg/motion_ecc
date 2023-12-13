@@ -1,9 +1,8 @@
 function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, trialID, vbl)
-
     waitframes = 1;
     responseDir = nan;
 
-    while ~(const.expStop) && ~(const.responded)
+    while ~(const.responded) % ~(const.expStop) &&
     
         if ~const.expStop
 
@@ -64,6 +63,8 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             if keyIsDown && keyCode(my_key.escape)
                 ShowCursor; 
                 const.forceQuit=1;
+                const.responded =1;
+                responseDir = nan;
                 const.expStop=1;
             elseif keyIsDown && ~keyCode(my_key.escape) && keyCode(my_key.rightArrow) % clockwise
                 const.responded=1; 
@@ -103,7 +104,6 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
 expDes.response(trialID,1) = responseDir;
     
 %% STAIRCASE
-
 if const.staircasemode > 0
     staircaseIndx = expDes.trialMat(trialID,6);
     currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
@@ -112,22 +112,19 @@ if const.staircasemode > 0
     %if expDes.trialMat(trialID, 5) == responseDir
     if ~isnan(responseDir)
 
-        disp('~~~~~~~')
-        staircaseIndx
-        currStaircaseIteration
-        size(expDes.correctness)
-        size(expDes.correctness{staircaseIndx})
-        disp('~~~~~~~')
-
-        if expDes.tiltangle(trialID, 1)*responseDir > 0 
+        % coded for bayesian case but can be generalized (this is b/c
+        % staircase starts at 0
+        if expDes.tiltangle(trialID, 1)*responseDir == 0 
+            coinflip = rand(1);
+        end
+        
+        if expDes.tiltangle(trialID, 1)*responseDir > 0 || (exist('coinflip', 'var') && coinflip>0.5)
             expDes.correctness{staircaseIndx}(currStaircaseIteration) = 1; % correct
             expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
-        elseif expDes.tiltangle(trialID, 1)*responseDir < 0
+        elseif expDes.tiltangle(trialID, 1)*responseDir < 0 || (exist('coinflip', 'var') && coinflip<=0.5)
             expDes.correctness{staircaseIndx}(currStaircaseIteration) = 0; % incorrect
             expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
         end
-        save(const.design_fileMat,'expDes');
-
 
         % if the correctness from previous trial is not NAN and is not the the
         % last trial-1 - run the staircase to obtain new threshold for this
@@ -135,7 +132,6 @@ if const.staircasemode > 0
         % corrNow flips correct/incorrect for the backwards staircase. This
         % variable is ONLY used here
         if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) && trialID<expDes.nb_trials-1 % if correct has valid value
-            
             if const.staircasemode == 1 % updown
                 % b/c staircase algorithm makes things "harder" by decreasing the
                 % thresh - consider correct/incorrect FLIPPED for counterclockwise
@@ -156,16 +152,23 @@ if const.staircasemode > 0
 
                 %add if statement to prevent tilt value to equal 0
                 if expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold == 0
-                   expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1%expDes.trialMat(currStaircaseIteration+1, 5);
+                   expDes.stairs{staircaseIndx}(currStaircaseIteration+1).threshold = 0.1; %expDes.trialMat(currStaircaseIteration+1, 5);
                 end
+                save(const.design_fileMat,'expDes'); % save responses/design
+                
             elseif const.staircasemode == 2 % bayesian
                 % if correct == 2 and incorrect = 1
                 corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration)+1; % add 1 for the 1,2 vs 0,1 discrepancey
-                expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = qpUpdate(expDes.stairs{staircaseIndx}(currStaircaseIteration), expDes.tiltangle(trialID), corrNow);
+                %expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = qpUpdate(expDes.stairs{staircaseIndx}(currStaircaseIteration), expDes.tiltangle(trialID), corrNow);
+                expDes.stairs{staircaseIndx} = qpUpdate(expDes.stairs{staircaseIndx}, expDes.tiltangle(trialID), corrNow);
+            
+                %save(const.design_fileMat,'expDes'); % note, not saving because it causes a delay
+            
             end
 
         end
-        % iterate over that particular staircase
+        % iterate over that particular staircase (not really used for
+        % bayesian, just printing the #)
         expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
 
     end

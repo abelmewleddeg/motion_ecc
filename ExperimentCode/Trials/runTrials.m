@@ -16,35 +16,7 @@ function [expDes, const] = runTrials(scr,const,expDes,my_key,textExp)
 % Output(s):
 % none
 % ----------------------------------------------------------------------
-
-%% General instructions:
-
-if ~const.DEBUG
-    HideCursor(scr.scr_num);
-end
-const.instrct = 0;
-keyCode = instructions(scr,const,my_key,textExp.instruction);
-tic
-
-% cols: contrast, RT
-expDes.task = nan(expDes.nb_trials, 2);
-
-if keyCode(my_key.escape), return, end
-
-FlushEvents('KeyDown');
-
-%% Main Loop
-frameCounter=1;
-const.expStop = 0;
-const.forceQuit = 0;
-
-vbl = Screen('Flip',const.window);
-t0=vbl;
-expDes.trial_onsets = nan(1,(expDes.nb_trials));
-expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
-blockTracker = 1;
     
-
 %% initialize staircases
 
 if const.staircasemode > 0
@@ -94,19 +66,47 @@ if const.staircasemode > 0
         
         lapseR = 0; % do we want to set this to a different value?
         
+        disp('initialize staircases...')
         for jj = 1:expDes.numStaircases
             expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{lowerBound:incremBound:upperBound}, 'psiParamsDomainList', ...
                 {searchLB:incremBound:searchUB, stdFL:stdI:stdFU, lapseR}, 'qpPF', @qpPFNormal); % should we make boundaries the same as the stimulus extremes?
             expDes.correctness{jj} = nan(1,expDes.nb_repeat); % check that this account for c and cc
+            disp('DONE initializing staircases.')
         end
     end
 end
- 
 
 
 % To record for overall respMatrix (check expDes.response)
 
 expDes.tiltangle = NaN(expDes.nb_trials,1);
+
+%% General instructions:
+
+if ~const.DEBUG
+    HideCursor(scr.scr_num);
+end
+const.instrct = 0;
+keyCode = instructions(scr,const,my_key,textExp.instruction);
+tic
+
+% can delete this but delete everywhere
+expDes.task = nan(expDes.nb_trials, 2);
+
+if keyCode(my_key.escape), return, end
+
+FlushEvents('KeyDown');
+
+%% Main Loop
+frameCounter=1;
+const.expStop = 0;
+const.forceQuit = 0;
+
+vbl = Screen('Flip',const.window);
+t0=vbl;
+expDes.trial_onsets = nan(1,(expDes.nb_trials));
+expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
+blockTracker = 1;
 
 %%
 

@@ -1,5 +1,4 @@
 function [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, color)
-
 if nargin < 6
     error('At least 6 arguments required')
 elseif nargin < 7
