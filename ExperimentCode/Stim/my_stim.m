@@ -17,7 +17,7 @@ if const.staircasemode > 0
         
         tiltAmount = qpQuery(expDes.stairs{staircaseIndx});
         
-        if ~(expDes.trialMat(trialID, 5)* tiltAmount > 0)
+        if ~(expDes.trialMat(trialID, 5)* tiltAmount > 0) || isnan(expDes.trialMat(trialID, 5))
             expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
         end
         
