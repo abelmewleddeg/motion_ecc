@@ -1,0 +1,3 @@
+for i=1:length(test.stairs)
+    test.stairs{i} = rmfield(test.stairs{i}, 'precomputedOutcomeProportions');
+end

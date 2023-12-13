@@ -97,6 +97,11 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
 
         end
     end
+    
+    % try fixing the blinking of fixation after response cue
+    Screen('DrawDots', const.window, scr.windCenter_px, ...
+    const.fixationRadius_px, [0 0 0], [], 2);
+    
     vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 
 
@@ -162,8 +167,12 @@ if const.staircasemode > 0
                 %expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = qpUpdate(expDes.stairs{staircaseIndx}(currStaircaseIteration), expDes.tiltangle(trialID), corrNow);
                 expDes.stairs{staircaseIndx} = qpUpdate(expDes.stairs{staircaseIndx}, expDes.tiltangle(trialID), corrNow);
             
-                %save(const.design_fileMat,'expDes'); % note, not saving because it causes a delay
-            
+                tempsaveExpDes = expDes;
+                for i=1:length(tempsaveExpDes.stairs)
+                    tempsaveExpDes.stairs{i} = rmfield(tempsaveExpDes.stairs{i}, 'precomputedOutcomeProportions');
+                end
+                save(const.design_fileMat,'tempsaveExpDes'); % note, not saving entire struct because it causes a delay
+                
             end
 
         end

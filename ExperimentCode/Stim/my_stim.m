@@ -13,18 +13,26 @@ if const.staircasemode > 0
         if ~(expDes.trialMat(trialID, 5)* expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold > 0)
             expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
         end
+        
     elseif const.staircasemode == 2
         
         tiltAmount = qpQuery(expDes.stairs{staircaseIndx});
         
-        if ~(expDes.trialMat(trialID, 5)* tiltAmount > 0) || isnan(expDes.trialMat(trialID, 5))
-            expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+        if tiltAmount==0
+            expDes.trialMat(trialID, 5) = 0;
+        else
+            clockSign = tiltAmount/abs(tiltAmount);
+            expDes.trialMat(trialID, 5) = clockSign;  
         end
         
     end
 end
     
+disp('End of my_stim loop1:')
+expDes.trialMat(trialID, 5)
+
 tiltSign = expDes.trialMat(trialID, 5); % -1 or 1 ()
+
 testDirection = expDes.trialMat(trialID,4); % e.g. 90, 180 drift direction
 
 % eccentricity
@@ -142,5 +150,8 @@ function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc, const)
     % const.distance = [xDist,yDist];
     % const.visiblesize = visiblesize/2
 end
+
+disp('End of my_stim:')
+expDes.trialMat(trialID, 5)
 
 end
