@@ -133,7 +133,7 @@ expDes.response = nan(expDes.nb_trials,2);
 if const.staircasemode > 0
     expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
     expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
-    expDes.NumBlocks = 5;
+    expDes.NumBlocks = 8;
 else
     expDes.stimDur_s  = 1; %.3;   % 0.5 sec stimulus duration
     expDes.itiDur_s  = .8; %.8;      % 2 inter-trial interval (fixation)
