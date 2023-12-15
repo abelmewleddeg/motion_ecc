@@ -68,7 +68,21 @@ if const.staircasemode > 0
         
         disp('initialize staircases...')
         for jj = 1:expDes.numStaircases
-            expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{lowerBound:incremBound:upperBound}, 'psiParamsDomainList', ...
+
+            % removing0 as a possible stimulus level results in always
+            % -0.5 w/o this fix:
+            if rand(1) > 0.5
+                disp('greater')
+                nearZeroVal = 0.0001;
+            else
+                disp('less')
+                nearZeroVal = -0.0001;
+            end
+
+            tmp = lowerBound:incremBound:upperBound;
+            tmp(tmp==0) = nearZeroVal;
+
+            expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{tmp}, 'psiParamsDomainList', ...
                 {searchLB:incremBound:searchUB, stdFL:stdI:stdFU, lapseR}, 'qpPF', @qpPFNormal); % should we make boundaries the same as the stimulus extremes?
             expDes.correctness{jj} = nan(1,expDes.nb_repeat); % check that this account for c and cc
             disp('DONE initializing staircases.')

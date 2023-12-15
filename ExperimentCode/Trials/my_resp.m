@@ -86,14 +86,14 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             end
             
 
-            % FAKE RESPONSES (TAKE OUT LATER)
-            const.responded=1; 
-            simResp = rand; 
-            if simResp > 0.5
-                responseDir = -1;
-            else
-                responseDir = 1;
-            end 
+            % % FAKE RESPONSES (TAKE OUT LATER)
+            % const.responded=1; 
+            % simResp = rand; 
+            % if simResp > 0.5
+            %     responseDir = -1;
+            % else
+            %     responseDir = 1;
+            % end 
 
         end
     end

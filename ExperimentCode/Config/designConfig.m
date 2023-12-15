@@ -54,14 +54,14 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.Eccens = [8]; %[4, 8, 12];
+expDes.Eccens = [4, 8, 12];
 
 % limit the practice to only 1 eccentricity
 if const.staircasemode == 0
     expDes.Eccens = expDes.Eccens(2); % take the middle eccentricity for practice
 end
 
-expDes.Dirs = [45];%[45, 135, 225, 315];
+expDes.Dirs = [45, 135, 225, 315];
 
 expDes.mainStimTypes = [];
 
@@ -131,8 +131,8 @@ expDes.response = nan(expDes.nb_trials,2);
 
 %% Experiental timing settings
 if const.staircasemode > 0
-    expDes.stimDur_s  = .01 %.3;   % 0.5 sec stimulus duration
-    expDes.itiDur_s  = 0; %.8;      % 2 inter-trial interval (fixation)
+    expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
+    expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
     expDes.NumBlocks = 8;
 else
     expDes.stimDur_s  = 1; %.3;   % 0.5 sec stimulus duration
