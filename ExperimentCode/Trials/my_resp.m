@@ -86,14 +86,14 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
             end
             
 
-%             % FAKE RESPONSES (TAKE OUT LATER)
-%             const.responded=1; 
-%             simResp = rand; 
-%             if simResp > 0.5
-%                 responseDir = -1;
-%             else
-%                 responseDir = 1;
-%             end 
+            % FAKE RESPONSES (TAKE OUT LATER)
+            const.responded=1; 
+            simResp = rand; 
+            if simResp > 0.5
+                responseDir = -1;
+            else
+                responseDir = 1;
+            end 
 
         end
     end
@@ -136,8 +136,8 @@ if const.staircasemode > 0
         % trial
         % corrNow flips correct/incorrect for the backwards staircase. This
         % variable is ONLY used here
-        if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) && trialID<expDes.nb_trials-1 % if correct has valid value
-            if const.staircasemode == 1 % updown
+        if ~isnan(expDes.correctness{staircaseIndx}(currStaircaseIteration)) %&& trialID<expDes.nb_trials-1 % if correct has valid value
+            if const.staircasemode == 1 && trialID<expDes.nb_trials-1% updown
                 % b/c staircase algorithm makes things "harder" by decreasing the
                 % thresh - consider correct/incorrect FLIPPED for counterclockwise
                 %if expDes.tiltangle(trialID, 1)<0
@@ -162,11 +162,20 @@ if const.staircasemode > 0
                 save(const.design_fileMat,'expDes'); % save responses/design
                 
             elseif const.staircasemode == 2 % bayesian
+
+                 % trying a fix for staircase 2
+                if responseDir == -1
+                    logAns = 1;
+                elseif responseDir == 1
+                    logAns = 2;
+                end
+
+
                 % if correct == 2 and incorrect = 1
                 corrNow = expDes.correctness{staircaseIndx}(currStaircaseIteration)+1; % add 1 for the 1,2 vs 0,1 discrepancey
                 %expDes.stairs{staircaseIndx}(currStaircaseIteration+1) = qpUpdate(expDes.stairs{staircaseIndx}(currStaircaseIteration), expDes.tiltangle(trialID), corrNow);
-                expDes.stairs{staircaseIndx} = qpUpdate(expDes.stairs{staircaseIndx}, expDes.tiltangle(trialID), corrNow);
-            
+                expDes.stairs{staircaseIndx} = qpUpdate(expDes.stairs{staircaseIndx}, expDes.tiltangle(trialID),logAns); %corrNow);
+
                 tempsaveExpDes = expDes;
                 for i=1:length(tempsaveExpDes.stairs)
                     tempsaveExpDes.stairs{i} = rmfield(tempsaveExpDes.stairs{i}, 'precomputedOutcomeProportions');
