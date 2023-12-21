@@ -3,7 +3,7 @@
 
 % Clean up:
 
-sca; Screen('CloseAll'); 
+sca; Screen('CloseAll');  
 clear functions; clear mex;
 close all; clear all; clc; 
 rng('default'); 
@@ -13,12 +13,12 @@ KbName('UnifyKeyNames')
 
 % Initialization
 warning('off');        % do not print warnings
-const.DEBUG = 0;       % skips subject details / data saving
+const.DEBUG = 0;       % skips subject det+ails / data saving
 const.miniWindow = 0;  % for debugging purposes only
 const.makemovie =0;   % capture movie of trial (slows down performance)
 
 % staircasemode = [0=no staircase/practice; 1=updown; 2=bayesian]
-const.staircasemode = 2;
+const.staircasemode = 0    ;
 
 Screen('Preference', 'SkipSyncTests', 1);
 

@@ -123,9 +123,17 @@ expDes.stimulus_onsets = nan(1,(expDes.nb_trials));
 blockTracker = 1;
 
 %%
-
+% simulatedPsiParams = [0, 3, 0];
+% 
+% % Function handle that will take stimulus parameters x and simulate
+% % a trial according to the parameters above.
+% const.simulatedObserverFun = @(x) qpSimulatedObserver(x,@qpPFNormal,simulatedPsiParams);
+% 
+% % Freeze random number generator so output is repeatable
+% rng('default'); rng(2004,'twister');
+% rng(6);
 for ni=1:expDes.nb_trials
-
+    
     const.instrct = 1;
     % add block structure
     % make sure approxtruial per block is defined in designconfig (line

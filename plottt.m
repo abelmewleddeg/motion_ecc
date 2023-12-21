@@ -14,286 +14,409 @@ pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
 addpath(genpath('~/psignifit'))
 options.sigmoidName  = 'norm';
-options.fixedPars      = [nan ; nan ; 0; 0.01; nan];
+options.fixedPars      = [nan; nan ; nan; 0.01;nan];
+% options.borders(3,:)=[0,.1];
+
 options.expType = 'equalAsymptote';
 plotOptions.xLabel         = 'Tilt Angle';     % xLabel
 plotOptions.yLabel         = '% of clockwise responses'; 
-  vvvv = nan(24,30);
-  ecc4R = [];  Becc4R = [];
-  ecc8R = [];  Becc8R = [];
-  ecc12R = []; Becc12R = [];
-  ecc4T = [];  Becc4T = [];
-  ecc8T = [];  Becc8T = [];
-  ecc12T = []; Becc12T = [];
-  locc = []; dirr = [];
+vvvv = nan(24,30);
+ecc4R = [];  Becc4R = [];
+ecc8R = [];  Becc8R = [];
+ecc12R = []; Becc12R = [];
+ecc4T = [];  Becc4T = [];
+ecc8T = [];  Becc8T = [];
+ecc12T = []; Becc12T = [];
+locc = []; dirr = [];
  
-  
-for i=1:(length(expDes.stairs)/2)
-   x = [];
-   xx = [];
+if const.staircasemode == 1  
+    for i=1:(length(expDes.stairs)/2)
+       x = [];
+       xx = [];
+        
+        for ii=1:(length(expDes.stairs{1,1})-1)
+            x = [x expDes.stairs{1,i}(ii).threshold];
+            xx = [xx expDes.stairs{1,i+24}(ii).threshold];
+        end
+        % vvvv(i,:) = x;
+        % vvvx(i,:) = xx;
+        currIDx = find(expDes.trialMat(:,6) == i);
+        currP = expDes.trialMat(min(currIDx),:);
+        PAName = currP(1,2);
+        eccName = currP(1,3);
+        DirName = currP(1,4);
+      
+            
+        %pMatrix(i,)
     
-    for ii=1:(length(expDes.stairs{1,1})-1)
-        x = [x expDes.stairs{1,i}(ii).threshold];
-        xx = [xx expDes.stairs{1,i+24}(ii).threshold];
-    end
-    % vvvv(i,:) = x;
-    % vvvx(i,:) = xx;
-    currIDx = find(expDes.trialMat(:,6) == i);
-    currP = expDes.trialMat(min(currIDx),:);
-    PAName = currP(1,2);
-    eccName = currP(1,3);
-    DirName = currP(1,4);
-  
-        
-    %pMatrix(i,)
-
-   
-    a = 1:length(x);
-    b = 1:length(xx);
-    oi = floor((i+4)/4);
-    if mod(i+4,4) ==1
-        figure(1);
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
-        %coefficients = polyfit(a,x,2);
-        % xRange = min(a):0.1:max(a);
-        % yFit = polyval(coefficients,xRange);
-        xlabel('Staircase Iterations')
-        ylabel('Tilt Angle')
-
-        hold on
-        plot(a,x,'-b')
-        %plot(xRange,yFit,'b','LineWidth',1)
-
-
-        hold on;
-        scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
-        % coefficients = polyfit(b,xx,2);
-        % xRange = min(b):0.1:max(b);
-        % yFit = polyval(coefficients,xRange);
-        hold on
-        plot(b,xx,'-r')   
-        legend(x,xx{'clockwise','counterclockwise'})
-
-        
-
-
-        %plot(xRange,yFit,'r','LineWidth',1)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 45.png');
-        
-        psyMat(:,1) = [x';xx']
-        psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
-        %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
-        Utilt = unique(psyMat(:,1));
-        for ix = 1:length(Utilt)
-            Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
-            Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
-             %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
-        end
-
-        figure(2);
-        %hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        fitOutput = psignifit(Utilt,options);
-        plotPsych(fitOutput,plotOptions)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
-        text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
-        text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 45.png');        
-
-    elseif mod(i+4,4) ==3
-        figure(5);
-        %hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
-        %coefficients = polyfit(a,x,2);
-        % xRange = min(a):0.1:max(a);
-        % yFit = polyval(coefficients,xRange);
-        xlabel('Staircase Iterations')
-        ylabel('Tilt Angle')
-        legend({'clockwise','counterclockwise'})
-
-
-        hold on
-        plot(a,x,'-b')
-        %plot(xRange,yFit,'b','LineWidth',1)
-
-
-        hold on;
-        scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
-        % coefficients = polyfit(b,xx,2);
-        % xRange = min(b):0.1:max(b);
-        % yFit = polyval(coefficients,xRange);
-        hold on
-        plot(b,xx,'-r')
-        
-
-        %plot(xRange,yFit,'r','LineWidth',1)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 225.png');
-        %hold off
-
-        psyMat(:,1) = [x';xx']
-        psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
-        %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
-        Utilt = unique(psyMat(:,1));
-        for ix = 1:length(Utilt)
-            Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
-            Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
-             %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
-        end
-
-        figure(6);
-        %hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        fitOutput = psignifit(Utilt,options);
-        plotPsych(fitOutput,plotOptions)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
-        text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
-        text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 225.png');        
-
-    elseif mod(i,4) ==0
-        figure(7);
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi-1)
-        scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
-        %coefficients = polyfit(a,x,2);
-        % xRange = min(a):0.1:max(a);
-        % yFit = polyval(coefficients,xRange);
-        xlabel('Staircase Iterations')
-        ylabel('Tilt Angle')
-        legend({'clockwise','counterclockwise'})
-
-        hold on
-        plot(a,x,'-b')
-        %plot(xRange,yFit,'b','LineWidth',1)
-
-
-        hold on;
-        scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
-        % coefficients = polyfit(b,xx,2);
-        % xRange = min(b):0.1:max(b);
-        % yFit = polyval(coefficients,xRange);
-        hold on
-        plot(b,xx,'-r')
-
-
-        %plot(xRange,yFit,'r','LineWidth',1)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 315.png');
-
-        psyMat(:,1) = [x';xx']
-        psyMat(:,2) = [expDes.trialMat((find(expDes.trialMat(:,6) == i)),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
-        %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
-        Utilt = unique(psyMat(:,1));
-        for ix = 1:length(Utilt)
-            Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
-            Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
-             %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
-        end
-
-        figure(8);
-        %hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi-1)
-        fitOutput = psignifit(Utilt,options);
-        plotPsych(fitOutput,plotOptions)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
-        text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
-        text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 315.png');        
-
-        
-    elseif mod(i+4,4) ==2
-        figure(3);
-        hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
-        %coefficients = polyfit(a,x,2);
-        % xRange = min(a):0.1:max(a);
-        % yFit = polyval(coefficients,xRange);
-        xlabel('Staircase Iterations')
-        ylabel('Tilt Angle')
-        legend({'clockwise','counterclockwise'})
-        hold on
-        plot(a,x,'-b')
-        %plot(xRange,yFit,'b','LineWidth',1)
-
-
-        hold on;
-        scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
-        % coefficients = polyfit(b,xx,2);
-        % xRange = min(b):0.1:max(b);
-        % yFit = polyval(coefficients,xRange);
-        hold on
-        plot(b,xx,'-r')
-
-
-        %plot(xRange,yFit,'r','LineWidth',1)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 135.png');
-        % hold off
-
-        psyMat(:,1) = [x';xx']
-        psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
-        %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
-        Utilt = unique(psyMat(:,1));
-        for ix = 1:length(Utilt)
-            Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
-            Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
-             %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
-        end
-
-        figure(4);
-        %hold on
-        set(gcf,'Position',get(0,'ScreenSize'));
-        subplot(2,3,oi)
-        fitOutput = psignifit(Utilt,options);
-        plotPsych(fitOutput,plotOptions)
-        title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-        % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
-        text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
-        text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-        saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 135.png');        
-
+       
+        a = 1:length(x);
+        b = 1:length(xx);
+        oi = floor((i+4)/4);
+        if mod(i+4,4) ==1
+            figure(1);
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
+            %coefficients = polyfit(a,x,2);
+            % xRange = min(a):0.1:max(a);
+            % yFit = polyval(coefficients,xRange);
+            xlabel('Staircase Iterations')
+            ylabel('Tilt Angle')
     
-
-    end 
-    if eccName == 4 && DirName == 45 || eccName == 4 && DirName == 225
-        ecc4R  = [ecc4R 1/sqrt(fitOutput.Fit(2))];
-        Becc4R = [Becc4R fitOutput.Fit(1)]
-    elseif eccName == 4 && DirName == 315 || eccName == 4 && DirName == 135
-        ecc4T  = [ecc4T 1/sqrt(fitOutput.Fit(2))];
-        Becc4T = [Becc4T fitOutput.Fit(1)]
-    elseif eccName == 8 && DirName == 45 || eccName == 8 && DirName == 225
-        ecc8R  = [ecc8R 1/sqrt(fitOutput.Fit(2))];
-         Becc8R = [Becc8R fitOutput.Fit(1)]
-         locc = [locc PAName]
-         dirr = [dirr DirName]
-    elseif eccName == 8 && DirName == 135 || eccName == 8 && DirName == 315
-        ecc8T  = [ecc8T 1/sqrt(fitOutput.Fit(2))];
-        Becc8T = [Becc8T fitOutput.Fit(1)]
-    elseif eccName == 12 && DirName == 45 || eccName == 12 && DirName == 225
-        ecc12R  = [ecc12R 1/sqrt(fitOutput.Fit(2))];
-        Becc12R = [Becc12R fitOutput.Fit(1)]
-
-    elseif eccName == 12 && DirName == 135 || eccName == 12 && DirName == 315
-        ecc12T  = [ecc12T 1/sqrt(fitOutput.Fit(2))];
-        Becc12T = [Becc12T fitOutput.Fit(1)]
-
+            hold on
+            plot(a,x,'-b')
+            %plot(xRange,yFit,'b','LineWidth',1)
+    
+    
+            hold on;
+            scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
+            % coefficients = polyfit(b,xx,2);
+            % xRange = min(b):0.1:max(b);
+            % yFit = polyval(coefficients,xRange);
+            hold on
+            plot(b,xx,'-r')   
+            legend(x,xx{'clockwise','counterclockwise'})
+    
+            
+    
+    
+            %plot(xRange,yFit,'r','LineWidth',1)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 45.png');
+            
+            psyMat(:,1) = [x';xx']
+            psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
+            %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
+            Utilt = unique(psyMat(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
+                Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+    
+            figure(2);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
+            text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 45.png');        
+    
+        elseif mod(i+4,4) ==3
+            figure(5);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
+            %coefficients = polyfit(a,x,2);
+            % xRange = min(a):0.1:max(a);
+            % yFit = polyval(coefficients,xRange);
+            xlabel('Staircase Iterations')
+            ylabel('Tilt Angle')
+            legend({'clockwise','counterclockwise'})
+    
+    
+            hold on
+            plot(a,x,'-b')
+            %plot(xRange,yFit,'b','LineWidth',1)
+    
+    
+            hold on;
+            scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
+            % coefficients = polyfit(b,xx,2);
+            % xRange = min(b):0.1:max(b);
+            % yFit = polyval(coefficients,xRange);
+            hold on
+            plot(b,xx,'-r')
+            
+    
+            %plot(xRange,yFit,'r','LineWidth',1)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 225.png');
+            %hold off
+    
+            psyMat(:,1) = [x';xx']
+            psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
+            %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
+            Utilt = unique(psyMat(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
+                Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+    
+            figure(6);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
+            text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 225.png');        
+    
+        elseif mod(i,4) ==0
+            figure(7);
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi-1)
+            scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
+            %coefficients = polyfit(a,x,2);
+            % xRange = min(a):0.1:max(a);
+            % yFit = polyval(coefficients,xRange);
+            xlabel('Staircase Iterations')
+            ylabel('Tilt Angle')
+            legend({'clockwise','counterclockwise'})
+    
+            hold on
+            plot(a,x,'-b')
+            %plot(xRange,yFit,'b','LineWidth',1)
+    
+    
+            hold on;
+            scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
+            % coefficients = polyfit(b,xx,2);
+            % xRange = min(b):0.1:max(b);
+            % yFit = polyval(coefficients,xRange);
+            hold on
+            plot(b,xx,'-r')
+    
+    
+            %plot(xRange,yFit,'r','LineWidth',1)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 315.png');
+    
+            psyMat(:,1) = [x';xx']
+            psyMat(:,2) = [expDes.trialMat((find(expDes.trialMat(:,6) == i)),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
+            %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
+            Utilt = unique(psyMat(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
+                Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+    
+            figure(8);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi-1)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
+            text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 315.png');        
+    
+            
+        elseif mod(i+4,4) ==2
+            figure(3);
+            hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            scatter(a,x,'filled','b');xlim([0 30]); ylim([-20 20]); yline(0);yticks(-20:4:20);
+            %coefficients = polyfit(a,x,2);
+            % xRange = min(a):0.1:max(a);
+            % yFit = polyval(coefficients,xRange);
+            xlabel('Staircase Iterations')
+            ylabel('Tilt Angle')
+            legend({'clockwise','counterclockwise'})
+            hold on
+            plot(a,x,'-b')
+            %plot(xRange,yFit,'b','LineWidth',1)
+    
+    
+            hold on;
+            scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
+            % coefficients = polyfit(b,xx,2);
+            % xRange = min(b):0.1:max(b);
+            % yFit = polyval(coefficients,xRange);
+            hold on
+            plot(b,xx,'-r')
+    
+    
+            %plot(xRange,yFit,'r','LineWidth',1)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 135.png');
+            % hold off
+    
+            psyMat(:,1) = [x';xx']
+            psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
+            %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
+            Utilt = unique(psyMat(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(psyMat(:,1) == Utilt(ix,1)))
+                Utilt(ix,2) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == 1)))
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+    
+            figure(4);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
+            text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 135.png');       
+        end 
+        if eccName == 4 && DirName == 45 || eccName == 4 && DirName == 225
+            ecc4R  = [ecc4R 1/sqrt(fitOutput.Fit(2))];
+            Becc4R = [Becc4R fitOutput.Fit(1)]
+        elseif eccName == 4 && DirName == 315 || eccName == 4 && DirName == 135
+            ecc4T  = [ecc4T 1/sqrt(fitOutput.Fit(2))];
+            Becc4T = [Becc4T fitOutput.Fit(1)]
+        elseif eccName == 8 && DirName == 45 || eccName == 8 && DirName == 225
+            ecc8R  = [ecc8R 1/sqrt(fitOutput.Fit(2))];
+             Becc8R = [Becc8R fitOutput.Fit(1)]
+             locc = [locc PAName]
+             dirr = [dirr DirName]
+        elseif eccName == 8 && DirName == 135 || eccName == 8 && DirName == 315
+            ecc8T  = [ecc8T 1/sqrt(fitOutput.Fit(2))];
+            Becc8T = [Becc8T fitOutput.Fit(1)]
+        elseif eccName == 12 && DirName == 45 || eccName == 12 && DirName == 225
+            ecc12R  = [ecc12R 1/sqrt(fitOutput.Fit(2))];
+            Becc12R = [Becc12R fitOutput.Fit(1)]
+    
+        elseif eccName == 12 && DirName == 135 || eccName == 12 && DirName == 315
+            ecc12T  = [ecc12T 1/sqrt(fitOutput.Fit(2))];
+            Becc12T = [Becc12T fitOutput.Fit(1)]
+    
+        end
     end
+elseif const.staircasemode ==2
+     for i=1:(length(expDes.stairs))
+        x = [];
+         for ii=1:(length(expDes.stairs{1,i}.trialData))
+            x = [x expDes.stairs{1,i}.trialData(ii).stim];
+         end
+         x = x'
+        currIDx = find(expDes.trialMat(:,6) == i);
+        currP = expDes.trialMat(min(currIDx),:);
+        PAName = currP(1,2);
+        eccName = currP(1,3);
+        DirName = currP(1,4);
+        if mod(i+4,4) ==1
+            NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
+            Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
+            x(:,2) = Allind(~NaNind);
+            Utilt = unique(x(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
+                Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+            oi = floor((i+4)/4);
+            figure(1);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
+            text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots1.png'); 
+        elseif mod(i+4,4) ==2
+            NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
+            Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
+            x(:,2) = Allind(~NaNind);            
+            Utilt = unique(x(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
+                Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+            oi = floor((i+4)/4);
+            figure(2);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
+            text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots2.png'); 
+        elseif mod(i+4,4) ==3
+            NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
+            Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
+            x(:,2) = Allind(~NaNind);            
+            Utilt = unique(x(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
+                Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+            oi = floor((i+4)/4);
+            figure(3);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
+            text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots3.png'); 
+        elseif mod(i,4) ==0
+            NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
+            Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
+            x(:,2) = Allind(~NaNind);            Utilt = unique(x(:,1));
+            for ix = 1:length(Utilt)
+                Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
+                Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
+                 %Utilt(ix,4) = length(find((psyMat(:,1) == Utilt(ix,1)) & (psyMat(:,2) == -1)))
+            end
+            oi = floor((i+4)/4);
+            figure(4);
+            %hold on
+            set(gcf,'Position',get(0,'ScreenSize'));
+            subplot(2,3,oi-1)
+            fitOutput = psignifit(Utilt,options);
+            plotPsych(fitOutput,plotOptions)
+            title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
+            % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
+            text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
+            text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
+            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots4.png'); 
+        end
+         if eccName == 4 && DirName == 45 || eccName == 4 && DirName == 225
+            ecc4R  = [ecc4R 1/sqrt(fitOutput.Fit(2))];
+            Becc4R = [Becc4R fitOutput.Fit(1)]
+        elseif eccName == 4 && DirName == 315 || eccName == 4 && DirName == 135
+            ecc4T  = [ecc4T 1/sqrt(fitOutput.Fit(2))];
+            Becc4T = [Becc4T fitOutput.Fit(1)]
+        elseif eccName == 8 && DirName == 45 || eccName == 8 && DirName == 225
+            ecc8R  = [ecc8R 1/sqrt(fitOutput.Fit(2))];
+             Becc8R = [Becc8R fitOutput.Fit(1)]
+             locc = [locc PAName]
+             dirr = [dirr DirName]
+        elseif eccName == 8 && DirName == 135 || eccName == 8 && DirName == 315
+            ecc8T  = [ecc8T 1/sqrt(fitOutput.Fit(2))];
+            Becc8T = [Becc8T fitOutput.Fit(1)]
+        elseif eccName == 12 && DirName == 45 || eccName == 12 && DirName == 225
+            ecc12R  = [ecc12R 1/sqrt(fitOutput.Fit(2))];
+            Becc12R = [Becc12R fitOutput.Fit(1)]
+    
+        elseif eccName == 12 && DirName == 135 || eccName == 12 && DirName == 315
+            ecc12T  = [ecc12T 1/sqrt(fitOutput.Fit(2))];
+            Becc12T = [Becc12T fitOutput.Fit(1)]
+    
+        end
+     end
 end
-%end
 %% let's do a histogram of the bias and maybe some psychometric fits
 % I will write all 12 conditions
 % radial1
@@ -840,6 +963,7 @@ end
 % tanE8 = mean([0.17137,0.17728,0.17853,0.15777]); t8 = [0.17137,0.17728,0.17853,0.15777]
 % radE12 = mean([0.178003,0.14862,0.19211,0.14648]); r12 = [0.178003,0.14862,0.19211,0.14648]
 % tanE12 = mean([0.15495,0.29315,0.15219,0.1861]);  t12 = [0.15495,0.29315,0.15219,0.1861] 
+pts = [0.85 0.85 0.85 0.85; 1.15 1.15 1.15 1.15;1.85 1.85 1.85 1.85; 2.15 2.15 2.15 2.15;2.85 2.85 2.85 2.85; 3.15 3.15 3.15 3.15]
 figure;
 w = [mean(ecc4R),mean(ecc4T);mean(ecc8R),mean(ecc8T);mean(ecc12R),mean(ecc12T)];
 wxx3 = [ecc4R;ecc4T;ecc8R;ecc8T;ecc12R;ecc12T]
@@ -851,7 +975,7 @@ ww = [mean(ecc4R),mean(ecc4T),mean(ecc8R),mean(ecc8T),mean(ecc12R),mean(ecc12T)]
 bar(w)
 hold on 
 stder = (std(wxx3')/sqrt(4))'
-plot([0.85 0.85 0.85 0.85; 1.15 1.15 1.15 1.15;1.85 1.85 1.85 1.85; 2.15 2.15 2.15 2.15;2.85 2.85 2.85 2.85; 3.15 3.15 3.15 3.15],wxx3,'.','MarkerSize',12)
+plot(pts,wxx3,'.','MarkerSize',12)
 hold on
 errorbar([0.85,1.15,1.85,2.15,2.85,3.15],ww,stder,'b.')
 % 
@@ -866,10 +990,10 @@ errorbar([0.85,1.15,1.85,2.15,2.85,3.15],ww,stder,'b.')
 % errorbar(x,w)
 % hold on
 
-
+Ymax = (max(wxx3,[],'all')+0.05);
 legend({'radial','tangential'})
-ylim([0 0.4]);xlabel('Eccentricities'); ylabel('Sensitivity');
-xticklabels({'4','8','12'});yticks(0:0.05:0.5);
+ylim([0 Ymax]);xlabel('Eccentricities'); ylabel('Sensitivity');
+xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
 title('Sensitivity bar plot')
 saveas(gcf,'C:\Users\rokers lab 2\Documents\Barrr.png');
 % 

@@ -26,14 +26,16 @@ function qpQuestNormCdfDemo
 % prior used by QUEST+.  QUEST+ assigns equal probability to each 
 % listed stimulus, so that the prior implied if you grid contrast in
 % dB is different from that if you grid contrast on a linear scale.
-questData = qpInitialize('stimParamsDomainList',{0:0.01:1}, ...
-    'psiParamsDomainList',{0:0.01:1, 0.1:2, 0},'qpPF',@qpPFNormal);
+tmp = -10:.5:20;
+tmp = tmp(tmp~=0);
+
+questData = qpInitialize('stimParamsDomainList',{tmp}, ...
+    'psiParamsDomainList',{-10:.5:10, 5:0.05:10, 0},'qpPF',@qpPFNormal);
 
 %% Set up simulated observer
 %
 % Parameters of the simulated Normal
-simulatedPsiParams = [0.2, 1.8, 0];
-% % simulatedPsiParams = [0.2, 0.1, 0];
+simulatedPsiParams = [-5, 10, 0];
 
 % Function handle that will take stimulus parameters x and simulate
 % a trial according to the parameters above.
@@ -41,9 +43,9 @@ simulatedObserverFun = @(x) qpSimulatedObserver(x,@qpPFNormal,simulatedPsiParams
 
 % Freeze random number generator so output is repeatable
 rng('default'); rng(2004,'twister');
-%stim = [];
+rng(6);
 %% Run simulated trials, using QUEST+ to tell us what contrast to
-nTrials = 64;
+nTrials = 60*5;
 for tt = 1:nTrials
     % Get stimulus for this trial
     stim = qpQuery(questData);
@@ -60,15 +62,15 @@ end
 psiParamsIndex = qpListMaxArg(questData.posterior);
 psiParamsQuest = questData.psiParamsDomain(psiParamsIndex,:);
 fprintf('Simulated parameters: %0.1f, %0.1f, %0.1f, \n', ...
-    simulatedPsiParams(1),simulatedPsiParams(2),simulatedPsiParams(3))
+    simulatedPsiParams(1),simulatedPsiParams(2),simulatedPsiParams(3));
 fprintf('Max posterior QUEST+ parameters: %0.1f, %0.1f, %0.1f\n', ...
-    psiParamsQuest(1),psiParamsQuest(2),psiParamsQuest(3))
+    psiParamsQuest(1),psiParamsQuest(2),psiParamsQuest(3));
 
 %% Find maximum likelihood fit.  Use psiParams from QUEST+ as the starting
 % parameter for the search, and impose as parameter bounds the range
 % provided to QUEST+.
 psiParamsFit = qpFit(questData.trialData,questData.qpPF,psiParamsQuest,questData.nOutcomes,...
-    'lowerBounds', [0 1.8 0],'upperBounds',[1 1.8 0]);
+    'lowerBounds', [-10 1 0],'upperBounds',[10 10 0]);
 fprintf('Maximum likelihood fit parameters: %0.1f, %0.1f, %0.1f\n', ...
     psiParamsFit(1),psiParamsFit(2),psiParamsFit(3));
 
@@ -76,7 +78,7 @@ fprintf('Maximum likelihood fit parameters: %0.1f, %0.1f, %0.1f\n', ...
 figure; clf; hold on
 stimCounts = qpCounts(qpData(questData.trialData),questData.nOutcomes);
 stim = [stimCounts.stim];
-stimFine = linspace(0,1,100)';
+stimFine = linspace(-20,20,100)';
 plotProportionsFit = qpPFNormal(stimFine,psiParamsFit);
 for cc = 1:length(stimCounts)
     nTrials(cc) = sum(stimCounts(cc).outcomeCounts);
@@ -89,7 +91,7 @@ end
 plot(stimFine,plotProportionsFit(:,2),'-','Color',[1.0 0.2 0.0],'LineWidth',3);
 xlabel('Stimulus Value');
 ylabel('Proportion Correct');
-xlim([0 1]); ylim([0 1]);
+xlim([-20, 20]); ylim([0 1]);
 title({'Estimate Normal threshold', ''});
 drawnow;
 
