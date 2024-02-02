@@ -37,7 +37,7 @@ timeDur=toc/60;
 fprintf(1,'\nTotal time : %2.0f min.\n\n',timeDur);
 
 if ~const.expStop && const.staircasemode > 0 % later add the no-staircase condition to plot
-    plottt(const,expDes)
+    PsychPlots(const,expDes)
 end
 
 if const.staircasemode == 0

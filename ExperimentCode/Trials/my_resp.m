@@ -105,7 +105,7 @@ end
 %end
 % responseDir = -1;
 
-% % FAKE RESPONSES (TAKE OUT LATER)
+% FAKE RESPONSES (TAKE OUT LATER)
 % const.responded=1;
 % simResp = rand;
 % if simResp > 0.5
@@ -223,12 +223,12 @@ if const.staircasemode > 0
 else
     if expDes.tiltangle(trialID, 1)*responseDir > 0
         expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
-        feedbackRGB = [0 1 0];
+        feedbackRGB = [0 0 1];
     elseif expDes.tiltangle(trialID, 1)*responseDir < 0
         expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
         feedbackRGB = [1 0 0];
     else % nan (to prevent error when quitting)
-        feedbackRGB = [0 0 1];
+        feedbackRGB = [0 1 0];
     end
     save(const.design_fileMat,'expDes');
 

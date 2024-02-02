@@ -5,7 +5,7 @@
 % load(sprintf('S%s_design_Block%i.mat',const.subjID,const.block))
 % load(sprintf('S%d_design_Block%d.mat',const.subjID,const.block))
 % 
-% load('Spracticeabel_design_Block1.mat')
+% load('SRania3_design_Block1.mat')
 %load('SAbelTest_design_Block1.mat')
 
 expDes.trialMat(:,7) = expDes.response(:,1);
@@ -76,14 +76,17 @@ if const.staircasemode == 1
             % yFit = polyval(coefficients,xRange);
             hold on
             plot(b,xx,'-r')   
-            legend(x,xx{'clockwise','counterclockwise'})
+            % legend(x,xx{'clockwise','counterclockwise'})
     
             
     
     
             %plot(xRange,yFit,'r','LineWidth',1)
             title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 45.png');
+            % path = ['Z:\UsersShare\Abel\motionEcc_project\Figures/StaircaseMode',int2str(const.staircasemode),'/staircase_plot/',sprintf(const.subjID),'/fig']
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\staircase_plot\Rania\pdf/sub_',sprintf(const.subjID),'Staircase plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)
+            %saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 45.png');
             
             psyMat(:,1) = [x';xx']
             psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
@@ -105,8 +108,8 @@ if const.staircasemode == 1
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
             text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 45.png');        
-    
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\psychometric_function\Rania\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)    
         elseif mod(i+4,4) ==3
             figure(5);
             %hold on
@@ -118,7 +121,7 @@ if const.staircasemode == 1
             % yFit = polyval(coefficients,xRange);
             xlabel('Staircase Iterations')
             ylabel('Tilt Angle')
-            legend({'clockwise','counterclockwise'})
+            % legend({'clockwise','counterclockwise'})
     
     
             hold on
@@ -137,8 +140,8 @@ if const.staircasemode == 1
     
             %plot(xRange,yFit,'r','LineWidth',1)
             title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 225.png');
-            %hold off
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\staircase_plot\Rania\pdf/sub_',sprintf(const.subjID),'Staircase plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)            %hold off
     
             psyMat(:,1) = [x';xx']
             psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
@@ -160,8 +163,8 @@ if const.staircasemode == 1
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
             text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 225.png');        
-    
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\psychometric_function\Rania\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)    
         elseif mod(i,4) ==0
             figure(7);
             set(gcf,'Position',get(0,'ScreenSize'));
@@ -172,7 +175,7 @@ if const.staircasemode == 1
             % yFit = polyval(coefficients,xRange);
             xlabel('Staircase Iterations')
             ylabel('Tilt Angle')
-            legend({'clockwise','counterclockwise'})
+            % legend({'clockwise','counterclockwise'})
     
             hold on
             plot(a,x,'-b')
@@ -190,8 +193,8 @@ if const.staircasemode == 1
     
             %plot(xRange,yFit,'r','LineWidth',1)
             title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 315.png');
-    
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\staircase_plot\Rania\pdf/sub_',sprintf(const.subjID),'Staircase plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)    
             psyMat(:,1) = [x';xx']
             psyMat(:,2) = [expDes.trialMat((find(expDes.trialMat(:,6) == i)),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
             %psyMat((31:60),2) = expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)
@@ -212,8 +215,8 @@ if const.staircasemode == 1
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
             text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 315.png');        
-    
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\psychometric_function\Rania\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)    
             
         elseif mod(i+4,4) ==2
             figure(3);
@@ -226,7 +229,7 @@ if const.staircasemode == 1
             % yFit = polyval(coefficients,xRange);
             xlabel('Staircase Iterations')
             ylabel('Tilt Angle')
-            legend({'clockwise','counterclockwise'})
+            % legend({'clockwise','counterclockwise'})
             hold on
             plot(a,x,'-b')
             %plot(xRange,yFit,'b','LineWidth',1)
@@ -236,15 +239,15 @@ if const.staircasemode == 1
             scatter(a,xx,'filled','r');xlim([0 30]); ylim([-20 20]);yticks(-20:4:20);
             % coefficients = polyfit(b,xx,2);
             % xRange = min(b):0.1:max(b);
-            % yFit = polyval(coefficients,xRange);
+            % yFit = polyval(coefficients,Range);
             hold on
             plot(b,xx,'-r')
     
     
             %plot(xRange,yFit,'r','LineWidth',1)
             title(sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName))
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 135.png');
-            % hold off
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\staircase_plot\Rania\pdf/sub_',sprintf(const.subjID),'Staircase Plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)            % hold off
     
             psyMat(:,1) = [x';xx']
             psyMat(:,2) = [expDes.trialMat(find(expDes.trialMat(:,6) == i),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
@@ -266,7 +269,8 @@ if const.staircasemode == 1
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(14,0.1 ,['Bias: ' num2str(fitOutput.Fit(1))],'FontSize',9)
             text(14,0.15 ,['Sensitivity: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 135.png');       
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\psychometric_function\Rania\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)        
         end 
         if eccName == 4 && DirName == 45 || eccName == 4 && DirName == 225
             ecc4R  = [ecc4R 1/sqrt(fitOutput.Fit(2))];
@@ -325,7 +329,8 @@ elseif const.staircasemode ==2
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
             text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots1.png'); 
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)        
         elseif mod(i+4,4) ==2
             NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
             Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
@@ -347,7 +352,8 @@ elseif const.staircasemode ==2
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
             text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots2.png'); 
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)
         elseif mod(i+4,4) ==3
             NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
             Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
@@ -369,7 +375,8 @@ elseif const.staircasemode ==2
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
             text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots3.png'); 
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)  
         elseif mod(i,4) ==0
             NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
             Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
@@ -390,7 +397,8 @@ elseif const.staircasemode ==2
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
             text(min(Utilt(:,1))-1,0.95 ,['1/\sigma:' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9,'fontweight', 'bold')
-            saveas(gcf,'C:\Users\rokers lab 2\Documents\Abel                           Plots4.png'); 
+            filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf/sub_',sprintf(const.subjID),'Psychometric plot', sprintf('   Dir%i.pdf', DirName)]
+            saveas(gcf,filename)       
         end
          if eccName == 4 && DirName == 45 || eccName == 4 && DirName == 225
             ecc4R  = [ecc4R 1/sqrt(fitOutput.Fit(2))];
@@ -551,7 +559,7 @@ end
 % bias = uEst; % the horizontal shift of the model
 % sensitivity = 1/sqrt(varEst); % steepness of the model
 %  minStim = min(Utilt(:,1)); 
-% maxStim = max(Utilt(:,1));
+% maxStim = max(Utilt(:,1));sprintvvv
 % stimPlotRange = linspace(minStim, maxStim, 100);
 % P = normcdf(stimPlotRange,uEst,varEst);
 % plot(stimPlotRange, P, 'linewidth', 2)
@@ -995,7 +1003,7 @@ legend({'radial','tangential'})
 ylim([0 Ymax]);xlabel('Eccentricities'); ylabel('Sensitivity');
 xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
 title('Sensitivity bar plot')
-saveas(gcf,'C:\Users\rokers lab 2\Documents\Barrr.png');
+saveas(gcf,'Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf//SummaryBar.pdf');
 % 
 % %z = bar([((1/sqrt(fitOutput2.Fit(2))) + (1/sqrt(fitOutput8.Fit(2))))/2 ((1/sqrt(fitOutput4.Fit(2))) + (1/sqrt(fitOutput10.Fit(2))))/2 ((1/sqrt(fitOutput6.Fit(2))) + (1/sqrt(fitOutput12.Fit(2))))/2])
 % 

@@ -23,7 +23,6 @@ disp('~~~~~ DESIGN ~~~~~~')
      const.PArandi = [2,1];
  end
  
- 
 if mod(const.block,2) || const.DEBUG % if odd block number
     expDes.polarAngles = (possiblePAs(:,const.PArandi(1,1)))';
 elseif ~mod(const.block,2) % if even block number
@@ -54,7 +53,7 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.Eccens = [4, 8, 12];
+expDes.Eccens =  [4, 8, 12];
 
 % limit the practice to only 1 eccentricity
 if const.staircasemode == 0

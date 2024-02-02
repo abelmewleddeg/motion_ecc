@@ -1,16 +1,16 @@
 % reliablbility plots
-%close all;
+close all;
 expDes.trialMat(:,7) = expDes.response(:,1);
 pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
 addpath(genpath('~/psignifit'))
 options.sigmoidName  = 'norm';
-options.fixedPars      = [nan; nan ; 0; 0.01;nan];
+options.fixedPars      = [nan; nan ; nan; 0.01;nan];
 % options.borders(3,:)=[0,.1];
 
 options.expType = 'equalAsymptote';
-plotOptions.xLabel         = 'Tilt Angle';     % xLabel
-plotOptions.yLabel         = '% of clockwise responses'; 
+% plotOptions.xLabel         = 'Tilt Angle';     % xLabel
+% plotOptions.yLabel         = '% of clockwise responses'; 
 vvvv = nan(24,30);
  for i=1:(length(expDes.stairs))
         figure(i);
@@ -101,74 +101,56 @@ vvvv = nan(24,30);
 
     % xticklabels('5','10','15','20','25','30','35','40','45','50','55','60')
     filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\reliability\S03\fig/sub_',sprintf(const.subjID),'_Reliability plot', sprintf('   PA%i ecc%i Dir%i.fig', PAName,eccName,DirName)]
-   % saveas(gcf,filename)
+    saveas(gcf,filename)
 
  end
  %% Let's also plot rt here
- rt = []
+% rt = []
 %  for i=1:length(expDes.stairs)
 %     currIDx = find(expDes.trialMat(:,6) == i);
 %     currP = expDes.trialMat(min(currIDx),:);
 %     PAName = currP(1,2);
 %     eccName = currP(1,3);
 %     DirName = currP(1,4);
-    stim_on = expDes.stimulus_onsets(isnan(expDes.stimulus_onsets) == 0)
-    rt_on = expDes.rt_onset(isnan(expDes.rt_onset) == 0);
-    % rtIDx = find(expDes.trialMat(:,6) == i);
-    % rt = [rt nanmean(expDes.rt_onset(rtIDx)-stim_on(rtIDx))]
-%  e
-NaNInd = find(isnan(expDes.trialMat(:,5))==0)
-stairN = expDes.trialMat(:,6)
- st = (stairN(NaNInd) == [2 4 14 16]);
+%      stim_on = expDes.stimulus_onsets(isnan(expDes.stimulus_onsets) == 0)
+%     rtIDx = find(expDes.trialMat(:,6) == i);
+%     rt = [rt mean(expDes.rt_onset(rtIDx)-stim_on(rtIDx))]
+%  end
+ st = (expDes.trialMat(:,6) == [2 4 14 16]);
  rtIDx4R = find(sum(st,2) == 1);
-  rt4R = rt_on(rtIDx4R)-stim_on(rtIDx4R);
-  rt4R((rt4R >=10)) = nan;
+ rt4R = expDes.rt_onset(rtIDx4R)-stim_on(rtIDx4R);
 
-  st = (stairN(NaNInd) == ([1 3 13 15]));
+  st = (expDes.trialMat(:,6) == ([1 3 13 15]));
   rtIDx4T = find(sum(st,2) == 1);
-  rt4T = rt_on(rtIDx4T)-stim_on(rtIDx4T);
-  rt4T((rt4T >=10)) = nan;
+  rt4T = expDes.rt_onset(rtIDx4T)-stim_on(rtIDx4T);
 
-  st = (stairN(NaNInd) == ([6 8 18 20]));
+  st = (expDes.trialMat(:,6) == ([6 8 18 20]));
   rtIDx8R = find(sum(st,2) == 1);
-  rt8R = rt_on(rtIDx8R)-stim_on(rtIDx8R);
-  rt8R((rt8R >=10)) = nan;
+  rt8R = expDes.rt_onset(rtIDx8R)-stim_on(rtIDx8R);
 
-  st = (stairN(NaNInd) == ([5 7 17 19]));
+  st = (expDes.trialMat(:,6) == ([5 7 17 19]));
   rtIDx8T = find(sum(st,2) == 1);
-  rt8T = rt_on(rtIDx8T)-stim_on(rtIDx8T);
-  rt8T((rt8T >=10)) = nan;
+  rt8T = expDes.rt_onset(rtIDx8T)-stim_on(rtIDx8T);
 
-  st = (stairN(NaNInd) == ([10 12 22 24]));
+  st = (expDes.trialMat(:,6) == ([10 12 22 24]));
   rtIDx12R = find(sum(st,2) == 1);
-  rt12R = rt_on(rtIDx12R)-stim_on(rtIDx12R);
-  rt12R((rt12R >=10)) = nan;
+  rt12R = expDes.rt_onset(rtIDx12R)-stim_on(rtIDx12R);
 
-  st = (stairN(NaNInd) == ([9 11 21 23]));
+  st = (expDes.trialMat(:,6) == ([9 11 21 23]));
   rtIDx12T = find(sum(st,2) == 1);
-  rt12T = rt_on(rtIDx12T)-stim_on(rtIDx12T);
-  rt12T((rt12T >=10)) = nan;
+  rt12T = expDes.rt_onset(rtIDx12T)-stim_on(rtIDx12T);
+
  pts = [0.85 0.85 0.85 0.85; 1.15 1.15 1.15 1.15;1.85 1.85 1.85 1.85; 2.15 2.15 2.15 2.15;2.85 2.85 2.85 2.85; 3.15 3.15 3.15 3.15];
 figure;
-w = [nanmean(rt4R),nanmean(rt4T);nanmean(rt8R),nanmean(rt8T);nanmean(rt12R),nanmean(rt12T)];
- %wxx3 = [rt4R;rt4T;rt8R;rt8T;rt12R;rt12T];
+w = [mean(rt4R),mean(rt4T);mean(rt8R),mean(rt8T);mean(rt12R),mean(rt12T)];
+wxx3 = [rt4R;rt4T;rt8R;rt8T;rt12R;rt12T];
 %Bias3 = [Becc4R;Becc4T;Becc8R;Becc8T;Becc12R;Becc12T]
-ww = [nanmean(rt4R),nanmean(rt4T),nanmean(rt8R),nanmean(rt8T),nanmean(rt12R),nanmean(rt12T)];
+ww = [mean(rt4R),mean(rt4T),mean(rt8R),mean(rt8T),mean(rt12R),mean(rt12T)];
 % w = [radE4,tanE4;radE8,tanE8;radE12,tanE12]
 % wxx = [r4;t4;r8;t8;r12;t12]
 % ww = [radE4,tanE4,radE8,tanE8,radE12,tanE12]
 bar(w)
 hold on 
-stder = [(nanstd(rt4R)/sqrt(4))';(nanstd(rt4T)/sqrt(4))';(nanstd(rt8R)/sqrt(4))';(nanstd(rt8T)/sqrt(4))';(nanstd(rt12R)/sqrt(4))';(nanstd(rt12T)/sqrt(4))']
-% plot(pts,wxx3,'.','MarkerSize',12)
-% hold on
-errorbar([0.85,1.15,1.85,2.15,2.85,3.15],ww,stder,'b.')
-Ymax = (max(wxx3,[],'all')-2);
-legend({'radial','tangential'})
-ylim([0 Ymax]);xlabel('Eccentricities'); ylabel('Reaction Time');
-xticklabels({'4','8','12'});yticks(0:0.2:Ymax);
-title('Reaction Time bar plot')
-% hold on 
 % stder = (std(wxx3')/sqrt(4))'
 % plot(pts,wxx3,'.','MarkerSize',12)
 % hold on
