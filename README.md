@@ -39,10 +39,14 @@ To run experiment:
 Run expLauncher.m
 
 ~~~~~~~~~~~~~~~~~~
-
 Data will be saved in:
 
 Folder named Data in the main directory.
+
+~~~~~~~~~~~~~~~~~~
+
+PlotPsy.m will automatically run at the end of every session. 
+PlotPsy produces psychometric plots with sensitivity and bias measures for each staircase. If the up-down staircase is being sued (of const.staircasemode ==1). it will also produce staircase convergence plots.
 
 ~~~~~~~~~~~~~~~~~~
 
