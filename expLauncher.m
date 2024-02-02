@@ -19,8 +19,16 @@ const.makemovie =0;   % capture movie of trial (slows down performance)
 
 % staircasemode = [0=no staircase/practice; 1=updown; 2=bayesian]
 const.staircasemode = 2;
+const.VRdisplay = 1; % display binocular stimulus either on screen or headset
+%const.VRconnect =1; % here headset is working and connected
 
 Screen('Preference', 'SkipSyncTests', 1);
+
+% to initialize open GL if needed:
+if const.VRdisplay
+    global GL; % GL data structure needed for all OpenGL programs
+    InitializeMatlabOpenGL(1);
+end
 
 % Verify that path is correct
 if isempty(which('instructions'))
