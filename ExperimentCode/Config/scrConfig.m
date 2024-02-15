@@ -248,14 +248,21 @@ end
 
 if const.VRdisplay==1 
     if ~isempty(scr.hmd)
-        scr.oc.windowRect = const.windowRect; % RE: just to get it to work now
+        scr.oc.windowRect = const.windowRect % RE: just to get it to work now
+        disp('wind rect values:')
+        scr.oc.windowRect
+        scr.oc.yc = RectHeight(scr.oc.windowRect)/2; % the horizontal center of the display in pixels
+        scr.oc.xc = RectWidth(scr.oc.windowRect)/2; % the vertical center of the display in pixels
+        % 1080 x 1200 - not workinhg
+        %scr.oc.xycenter =  [1344/2, 1600,2]
+        scr.oc.xycenter = [scr.oc.xc, scr.oc.yc];
+        scr.oc.x_offset = 100;
+
         scr.oc.Height = 1.7614; % virtual height of the surround texture in meters, based on viewing distance - we want this to relate to the shorter dimension of the display
         scr.oc.halfHeight = scr.oc.Height/2;
         scr.oc.Width = 1.7614; % virtual width of the surround texture in meters, based on viewing distance - we want this to relate to the longer dimension of the display
         scr.oc.halfWidth = scr.oc.Width/2;
-        scr.oc.yc = RectHeight(scr.oc.windowRect)/2; % the horizontal center of the display in pixels
-        scr.oc.xc = RectWidth(scr.oc.windowRect)/2; % the vertical center of the display in pixels
-        scr.oc.textCoords = [scr.oc.yc scr.oc.xc];
+
         
         if strcmp(scr.oc.hmdinfo.modelName, 'Oculus Rift CV1')
             scr.oc.hmdinfo = PsychVRHMD('GetInfo', scr.hmd); % query CV1 for params
@@ -346,21 +353,52 @@ if const.VRdisplay==1
     glMatrixMode(GL.PROJECTION);
     
     
-    % % Retrieve and set camera projection matrix for optimal rendering on the HMD:
-    if ~isempty(scr.hmd)
-        [scr.oc.projMatrix{1}, scr.oc.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', scr.hmd);
-    else
-        temp = load('dsHmdInfoCV1.mat');
-        
-        scr.oc.projMatrix = temp.scr.oc.projMatrix;
-        clear temp
-    end
-    
+    % model view matrix
     
     % Initialize oculus modelview for head motion tracking
-    scr.oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
-    scr.oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
+    %scr.oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
+    %scr.oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
     
+    % added this from the main code
+    % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
+    globalPos = [0, 0, 0]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
+    heading = 0; % yaw
+    scr.oc.globalHeadPose = PsychGetPositionYawMatrix(globalPos, heading); % initialize observer's start position to the default camera position specified above
+    
+
+    % % Switched this block with the bit about camera position above
+    % % Retrieve and set camera projection matrix for optimal rendering on the HMD:
+    if ~isempty(scr.hmd)
+        % RE: I put this in from the main script: if you want head tracking
+        [scr.oc.projMatrix{1}, scr.oc.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', scr.hmd);
+        scr.oc.initialState = PsychVRHMD('PrepareRender', scr.hmd, scr.oc.globalHeadPose);  % get the state of the hmd now
+
+        % just for debugging (remove later
+        % disp('HMD connected')
+        % scr.oc.initialState = scr.oc.defaultState;
+        % scr.oc.initialState.modelView{1} = scr.oc.defaultState.modelViewDataLeft;
+        % scr.oc.initialState.modelView{2} = scr.oc.defaultState.modelViewDataRight;
+
+    else
+        % RE: commented these lines out b/c .mat file does not exist.
+        %temp = load('dsHmdInfoCV1.mat');
+        %scr.oc.projMatrix = temp.scr.oc.projMatrix;
+        %clear temp
+
+        % RE: I put this in from the main script. For now, default state is
+        % used b/c we are displaying relative to head position.
+        % This is already done in SetupDisplay
+        % load DefaultHMDParameters.mat;
+        % oc.defaultState = defaultState;
+        % Some stuff needs to be done here to get a proper initialState
+        % There is something messed up with using both initial and default
+        % state
+        % can we simplify using only one or the other?  
+        scr.oc.initialState = scr.oc.defaultState;
+        scr.oc.initialState.modelView{1} = scr.oc.defaultState.modelViewDataLeft;
+        scr.oc.initialState.modelView{2} = scr.oc.defaultState.modelViewDataRight;
+    end
+
     % glLoadMatrixd(projMatrix);
     
     % Setup modelview matrix: This defines the position, orientation and
@@ -387,6 +425,7 @@ if const.VRdisplay==1
     
     Screen('EndOpenGL', const.window);
 end
+
 
 
 %% load in gamma table for appropriate contrast

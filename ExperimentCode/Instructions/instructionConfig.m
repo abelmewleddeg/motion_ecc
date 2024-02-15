@@ -16,7 +16,8 @@ disp('~~~~~ INSTRUCTION ~~~~~~')
 
 %% Main instruction :
 
- instruction = '-----------------  Ready to start? [space]  -----------------';
+ instruction = 'X';
+ %'-----------------  Ready to start? [space]  -----------------';
 % imagefile = fullfile("C:\Users\rokers lab 2\Downloads\exapleInstructions_Abel.jpeg")
 % image = imread(imagefile);
 % instruction = imshow(image);

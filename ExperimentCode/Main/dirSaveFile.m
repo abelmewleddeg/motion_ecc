@@ -23,14 +23,14 @@ else
 end
 
 % Subject Directory
-MainDirectory = sursuppRootPath;
-datadir = fullfile(MainDirectory, 'Data');
-const.subjDir = fullfile(datadir,const.subjID);
-const.subjStaircaseDir = fullfile(datadir,const.subjID, sprintf('StaircaseMode%i', const.staircasemode));
+const.MainDirectory = sursuppRootPath;
+datadir = fullfile(const.MainDirectory, 'Data');
+const.subjDir = fullfile(datadir,sprintf('StaircaseMode%i', const.staircasemode),const.subjID);
+const.subjStaircaseDir = fullfile(datadir, sprintf('StaircaseMode%i', const.staircasemode),const.subjID);
 const.blockLog = fullfile(const.subjStaircaseDir, 'blocklog.txt');
 
 % this saves path, the values are loaded in later (in scrConfig)
-const.gammaTablePath = fullfile(MainDirectory, 'ExperimentCode', 'Config', 'gamma.mat');
+const.gammaTablePath = fullfile(const.MainDirectory, 'ExperimentCode', 'Config', 'gamma.mat');
 
 if ~isfile(const.blockLog)
     mkdir(const.subjStaircaseDir);
