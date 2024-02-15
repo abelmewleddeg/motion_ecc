@@ -1,4 +1,4 @@
-%function [expDes, const] = plottt(const,expDes)
+function [expDes, const] = plottt(const,expDes)
 
 % clear all; close all; clc;
 %addpath(genpath('~/Documents/GitHub/motion_ecc/Data/%s',const.subjID))
@@ -514,44 +514,7 @@ elseif const.staircasemode ==2
          end
      end
 end
-%% outward/inward
-pts = [0.85 0.85; 1.15 1.15; 1.85 1.85; 2.15 2.15;2.85 2.85;3.15 3.15]
-figure;
-w = [mean(ecc4rO),mean(ecc4rI);mean(ecc8rO),mean(ecc8rI);mean(ecc12rO),mean(ecc12rI)];
-wxx3 = [ecc4rO;ecc4rI;ecc8rO;ecc8rI;ecc12rO;ecc12rI]
-% Bias3 = [Becc4R;Becc4T;Becc8R;Becc8T;Becc12R;Becc12T]
-ww = [mean(ecc4rO),mean(ecc4rI),mean(ecc8rO),mean(ecc8rI),mean(ecc12rO),mean(ecc12rI)]
-% w = [radE4,tanE4;radE8,tanE8;radE12,tanE12]
-% wxx = [r4;t4;r8;t8;r12;t12]
-% ww = [radE4,tanE4,radE8,tanE8,radE12,tanE12]
-bar(w)
-hold on 
-stder = (std(wxx3')/sqrt(4))'
-plot(pts,wxx3,'.','MarkerSize',12)
-hold on
-errorbar([0.85,1.15,1.85,2.15,2.85,3.15],ww,stder,'b.')
 
-
-%plot(([0.5 2.5]), ([0.1429    0.1278]),'.')
-%plot(wx,'.')
-% errorbar(x,w)
-% hold on
-
-Ymax = (max(wxx3,[],'all')+0.05);
-legend({'Outward','inward'})
-ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); ylabel('Sensitivity');
-xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
-title(['S',sprintf(const.subjID),'__Sensitivity bar plot I/O'])
-filename3 = fullfile(pf_path, ['S',sprintf(const.subjID),'__summary_bar_plot_IO'])
-
-% saveas(gcf,filename3,'pdf')
-% saveas(gcf,filename3,'fig')
-saveas(gcf,filename3,'png');
-
-
-%saveas(gcf,'Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function\S03\pdf//SummaryBar.pdf');
-% 
-% %z = bar([((1/sqrt(fitOutput2.Fit(2))) + (1/sqrt(fitOutput8.Fit(2))))/2 ((1/sqrt(fitOutput4.Fit(2))) + (1/sqrt(fitOutput10.Fit(2))))/2 ((1/sqrt(fitOutput6.Fit(2))) + (1/sqrt(fitOutput12.Fit(2))))/2])
 %% 
 
 pts = [0.85 0.85 0.85 0.85; 1.15 1.15 1.15 1.15;1.85 1.85 1.85 1.85; 2.15 2.15 2.15 2.15;2.85 2.85 2.85 2.85; 3.15 3.15 3.15 3.15]
@@ -583,45 +546,44 @@ xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
 title(['S',sprintf(const.subjID),'__Sensitivity bar plot'])
 filename3 = fullfile(pf_path, ['S',sprintf(const.subjID),'__summary_bar_plot'])
 
-%% THe other plotter innit?
-
-
-
-
-% parameter for the search, and impose as parameter bounds the range
-% provided to QUEST+.
-for str = 1:length(expDes.stairs)
-    psiParamsIndex = qpListMaxArg(expDes.stairs{1,str}.posterior);
-    psiParamsQuest = expDes.stairs{1,str}.psiParamsDomain(psiParamsIndex,:);
-    % fprintf('Simulated parameters: %0.1f, %0.1f, %0.1f, \n', ...
-    % simulatedPsiParams(1),simulatedPsiParams(2),simulatedPsiParams(3));
-    % fprintf('Max posterior QUEST+ parameters: %0.1f, %0.1f, %0.1f\n', ...
-    % psiParamsQuest(1),psiParamsQuest(2),psiParamsQuest(3));
-    
-    
-    psiParamsFit = qpFit(expDes.stairs{1,str}.trialData,expDes.stairs{1,str}.qpPF,psiParamsQuest,expDes.stairs{1,str}.nOutcomes,...
-        'lowerBounds', [-10 1 0],'upperBounds',[10 10 0]);
-    fprintf('Maximum likelihood fit parameters: %0.1f, %0.1f, %0.1f\n', ...
-        psiParamsFit(1),psiParamsFit(2),psiParamsFit(3));
-    
-    % Plot of trial locations with maximum likelihood fit
-    figure; clf; hold on
-    stimCounts = qpCounts(qpData(expDes.stairs{1,str}.trialData),expDes.stairs{1,str}.nOutcomes);
-    stim = [stimCounts.stim];
-    stimFine = linspace(-20,20,100)';
-    plotProportionsFit = qpPFNormal(stimFine,psiParamsFit);
-    for cc = 1:length(stimCounts)
-        nTrials(cc) = sum(stimCounts(cc).outcomeCounts);
-        pCorrect(cc) = stimCounts(cc).outcomeCounts(2)/nTrials(cc);
-    end
-    for cc = 1:length(stimCounts)
-        h = scatter(stim(cc),pCorrect(cc),100,'o','MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1],...
-            'MarkerFaceAlpha',nTrials(cc)/max(nTrials),'MarkerEdgeAlpha',nTrials(cc)/max(nTrials));
-    end
-    plot(stimFine,plotProportionsFit(:,2),'-','Color',[1.0 0.2 0.0],'LineWidth',3);
-    xlabel('Stimulus Value');
-    ylabel('Proportion Correct');
-    xlim([-20, 20]); ylim([0 1]);
-    title({'Estimate Normal threshold', ''});
-    drawnow;    
 end
+
+%% quest+ psychometric plots
+
+% % parameter for the search, and impose as parameter bounds the range
+% % provided to QUEST+.
+% for str = 1:length(expDes.stairs)
+%     psiParamsIndex = qpListMaxArg(expDes.stairs{1,str}.posterior);
+%     psiParamsQuest = expDes.stairs{1,str}.psiParamsDomain(psiParamsIndex,:);
+%     % fprintf('Simulated parameters: %0.1f, %0.1f, %0.1f, \n', ...
+%     % simulatedPsiParams(1),simulatedPsiParams(2),simulatedPsiParams(3));
+%     % fprintf('Max posterior QUEST+ parameters: %0.1f, %0.1f, %0.1f\n', ...
+%     % psiParamsQuest(1),psiParamsQuest(2),psiParamsQuest(3));
+% 
+% 
+%     psiParamsFit = qpFit(expDes.stairs{1,str}.trialData,expDes.stairs{1,str}.qpPF,psiParamsQuest,expDes.stairs{1,str}.nOutcomes,...
+%         'lowerBounds', [-10 1 0],'upperBounds',[10 10 0]);
+%     fprintf('Maximum likelihood fit parameters: %0.1f, %0.1f, %0.1f\n', ...
+%         psiParamsFit(1),psiParamsFit(2),psiParamsFit(3));
+% 
+%     % Plot of trial locations with maximum likelihood fit
+%     figure; clf; hold on
+%     stimCounts = qpCounts(qpData(expDes.stairs{1,str}.trialData),expDes.stairs{1,str}.nOutcomes);
+%     stim = [stimCounts.stim];
+%     stimFine = linspace(-20,20,100)';
+%     plotProportionsFit = qpPFNormal(stimFine,psiParamsFit);
+%     for cc = 1:length(stimCounts)
+%         nTrials(cc) = sum(stimCounts(cc).outcomeCounts);
+%         pCorrect(cc) = stimCounts(cc).outcomeCounts(2)/nTrials(cc);
+%     end
+%     for cc = 1:length(stimCounts)
+%         h = scatter(stim(cc),pCorrect(cc),100,'o','MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1],...
+%             'MarkerFaceAlpha',nTrials(cc)/max(nTrials),'MarkerEdgeAlpha',nTrials(cc)/max(nTrials));
+%     end
+%     plot(stimFine,plotProportionsFit(:,2),'-','Color',[1.0 0.2 0.0],'LineWidth',3);
+%     xlabel('Stimulus Value');
+%     ylabel('Proportion Correct');
+%     xlim([-20, 20]); ylim([0 1]);
+%     title({'Estimate Normal threshold', ''});
+%     drawnow;    
+% end
