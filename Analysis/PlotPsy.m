@@ -1,4 +1,4 @@
-function [expDes, const] = plottt(const,expDes)
+%function [expDes, const] = plottt(const,expDes)
 
 % clear all; close all; clc;
 %addpath(genpath('~/Documents/GitHub/motion_ecc/Data/%s',const.subjID))
@@ -9,6 +9,7 @@ function [expDes, const] = plottt(const,expDes)
 %load('SAbelTest_design_Block1.mat')
 close all;
 expDes.trialMat(:,7) = expDes.response(:,1);
+rootpath =  ("Y:\UsersShare\Abel\motionEcc_project\Figures\");
 
 pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
@@ -53,8 +54,15 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
         PAName = currP(1,2);
         eccName = currP(1,3);
         DirName = currP(1,4);
-        sp_path = fullfile("Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\staircase_plot",sprintf(const.subjID))
-        pf_path = fullfile("Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\psychometric_function",sprintf(const.subjID))
+        sp_path = fullfile(rootpath,"\StaircaseMode1\staircase_plot",sprintf(const.subjID))
+        pf_path = fullfile(rootpath,"\StaircaseMode1\psychometric_function",sprintf(const.subjID))
+        if ~isfolder(sp_path)
+            mkdir(sp_path);
+        end
+        if ~isfolder(pf_path)
+            mkdir(pf_path);
+        end
+
         %sp_path = fullfile("C:\Users\rokers lab 2\Documents\motionEcc_Project\Figures\StaircaseMode1\staircase_plots",sprintf(const.subjID))%,['S',sprintf(const.subjID),'_SP_',sprintf('pa%i_ecc%i_m%i', PAName,eccName,DirName)])
         % pf_path = fullfile("C:\Users\rokers lab 2\Documents\motionEcc_Project\Figures\StaircaseMode1\psychometric_function",sprintf(const.subjID))%,"S",sprintf(const.subjID),'PF',(sprintf('pa%i_ecc%i_m%i', PAName,eccName,DirName))]
         sp_filename = ['S',sprintf(const.subjID),'_SP_',sprintf('m%i',DirName)];
@@ -546,7 +554,7 @@ xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
 title(['S',sprintf(const.subjID),'__Sensitivity bar plot'])
 filename3 = fullfile(pf_path, ['S',sprintf(const.subjID),'__summary_bar_plot'])
 
-end
+% end
 
 %% quest+ psychometric plots
 

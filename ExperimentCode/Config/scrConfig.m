@@ -335,8 +335,9 @@ if const.VRdisplay==1
     % for proper gamma correction as per Mario Kleiner's advice
     glEnable(GL.FRAMEBUFFER_SRGB);
     
-    % Set viewport properly:
-    glViewport(0, 0, RectWidth(const.windowRect), RectHeight(const.windowRect));  % this is how the viewport is specified in all of the demos, but what it does it makes the horizontal dimension the shorter one and the vertical dimension the longer one
+    % Set viewport properly: 
+    % this is how the viewport is specified in all of the demos, but what it does it makes the horizontal dimension the shorter one and the vertical dimension the longer one
+    glViewport(0, 0, RectWidth(const.windowRect), RectHeight(const.windowRect));  
     
     % Enable alpha-blending for smooth dot drawing:
     glEnable(GL.BLEND);
@@ -355,11 +356,12 @@ if const.VRdisplay==1
     
     % model view matrix
     
-    % Initialize oculus modelview for head motion tracking
-    %scr.oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
-    %scr.oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
+    % Initialize oculus modelview for head motion tracking (PUTTING THIS
+    % BACK - RE)
+    scr.oc.modelViewDataLeft = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
+    scr.oc.modelViewDataRight = []; % may as well save the model view matrix data as well - the hope is that this covers all of the critical information to later go back and analyze/reconstruct the head motion
     
-    % added this from the main code
+    % RE: added this from the main code
     % Camera position when using head tracking + HMD: (according to SuperShapeDemo.m)
     globalPos = [0, 0, 0]; % x,y,z  % in meters - just put something in here for now, will likely be much larger later for viewing the tv/'real' world - the demos use large values too
     heading = 0; % yaw
@@ -369,8 +371,9 @@ if const.VRdisplay==1
     % % Switched this block with the bit about camera position above
     % % Retrieve and set camera projection matrix for optimal rendering on the HMD:
     if ~isempty(scr.hmd)
+        disp('HMD IS NOT EMPTY!! OCULUS CONNECTED')
         % RE: I put this in from the main script: if you want head tracking
-        [scr.oc.projMatrix{1}, scr.oc.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', scr.hmd);
+        [scr.oc.projMatrix{1}, scr.oc.projMatrix{2}] = PsychVRHMD('GetStaticRenderParameters', scr.hmd, 0.01, 10);
         scr.oc.initialState = PsychVRHMD('PrepareRender', scr.hmd, scr.oc.globalHeadPose);  % get the state of the hmd now
 
         % just for debugging (remove later

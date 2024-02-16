@@ -52,42 +52,94 @@ while ~push_button
     end
 
     if const.VRdisplay==1 
+        global GL;
         InitializeMatlabOpenGL(1);
+
+        % just doing for 1 eye b/c that's how Hope did it
+        scr.oc.renderPass = 1;
+        eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+        pa.floorHeight = -1; % m
+        pa.fixationdist = 3;
+        pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
+        R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+        eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
+        eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+        originaleye = eye;
+        theta = pa.gazeangle;
 
         for renderPass = 0:1 % loop over eyes
             scr.oc.renderPass = renderPass;
+
+            eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+
+            if scr.oc.renderPass % drawing right eye
+                scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+            else % drawing left eye
+                scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+            end 
+
+            eye.eyeIndex = scr.oc.renderPass;
+
             Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass);
+            modelView = eye.modelView;
+
             Screen('BeginOpenGL',const.window);
-                                
+
             % Setup camera position and orientation for this eyes view:
             glMatrixMode(GL.PROJECTION)
             glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
-            
-            modelView = scr.oc.initialState.modelView{scr.oc.renderPass + 1}; % Use per-eye modelView matrices
-            glLoadMatrixd(modelView);
-    
-            glClearColor(.5,.5,.5,1); % gray background
-            
+
+            glMatrixMode(GL.MODELVIEW);
+            glLoadMatrixd(modelView);  
+           
+            glClearColor(1, 0, 0, 3); % gray background
+
             glClear(); % clear the buffers - must be done for every frame
             glColor3f(1,1,1);
+            
+            % fixation target (just trying this here)
+            glPushMatrix;
+            %glTranslatef(-.5,0, 2); % 2 meters
+            pa.floorHeight = -0.25;
+            pa.fixationSize = 0.025; % m
+            pa.fixationdist = 0.25;
+            glTranslatef(0,-pa.fixationSize/2,-pa.fixationdist) % - is away from camera
+
+            %tmp = glGenLists(1);
+            %glCallList(tmp);
+
+            glColor3f(0.0, 0.0, 1.0)
+            glutSolidSphere(0.025, 32, 32);
+            glPopMatrix;
+
+            
 
             % % create horizontal offset
-            if renderPass==0 % left
-                imageRect(1) = imageRect(1)+scr.oc.x_offset;
-                imageRect(3) = imageRect(3)+scr.oc.x_offset;
-                offset = scr.oc.x_offset;
-                colornow = const.black;
-            elseif renderPass==1 % right
-                imageRect(1) = imageRect(1)-scr.oc.x_offset;
-                imageRect(3) = imageRect(3)-scr.oc.x_offset;
-                offset = -scr.oc.x_offset;
-                colornow = const.white;
-            end
+            % if renderPass==0 % left
+            %     imageRect(1) = imageRect(1)+scr.oc.x_offset;
+            %     imageRect(3) = imageRect(3)+scr.oc.x_offset;
+            %     offset = scr.oc.x_offset;
+            %     colornow = const.black;
+            % elseif renderPass==1 % right
+            %     imageRect(1) = imageRect(1)-scr.oc.x_offset;
+            %     imageRect(3) = imageRect(3)-scr.oc.x_offset;
+            %     offset = -scr.oc.x_offset;
+            %     colornow = const.white;
+            % end
 
             %my_fixation(scr,const,const.black)
-    
+
+            % trying this out
+            %position = [0,0,0];
+            %rotation = [0,0,0];
+            %scaling = [1,1];
+            %transMatrix = makehgtform('translate', 0,0,0); %Screen('MakeTexture',const.window, );
+
+            %Screen('DrawTexture',const.window,imageTexture,[],[],[],[],[],[],[],kPsychUseTextureMatrixForRotation, modelview); %transMatrix);
+
             Screen('EndOpenGL', const.window);
-            Screen('DrawTexture',const.window,imageTexture,[],imageRect);
+
+            %Screen('DrawTexture',const.window,imageTexture,[],imageRect);
             %sprintf('Coordinates for %i', renderPass)
             %scr.oc.xycenter
             %input1 = (scr.oc.xycenter(1)-200*scr.oc.renderPass)-100
