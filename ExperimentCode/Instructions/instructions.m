@@ -20,8 +20,7 @@ y_mid = scr.windCenter_px(2);
 %while KbCheck(-1); end
 while KbCheck(my_key.keyboardID); end
 KbName('UnifyKeyNames');
-MainDirectory = sursuppRootPath;
-imagefile = fullfile(MainDirectory,'ExperimentCode','Instructions','InstructionsFigure.jpeg');
+
 push_button = 0;
 while ~push_button
     
@@ -42,14 +41,6 @@ while ~push_button
     %     addi = addi+1;
     % end
     % addi = addi+2;
-
-    % if the instructions image needs to be loaded
-    if const.instrct == 0
-        image = imread(imagefile);
-        imageTexture = Screen('MakeTexture',const.window,image);
-        imageSize = size(image);
-        imageRect = CenterRectOnPoint([0, 0, imageSize(2), imageSize(1)], const.windowRect(3)/2, const.windowRect(4)/2);
-    end
 
     if const.VRdisplay==1 
         global GL;
@@ -81,65 +72,37 @@ while ~push_button
             eye.eyeIndex = scr.oc.renderPass;
 
             Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass);
-            modelView = eye.modelView;
+            modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
 
             Screen('BeginOpenGL',const.window);
+            
+            glClearColor(1, 0, 0, 3); % red background
+
+            glClear(); % clear the buffers - must be done for every frame
+            % 
+            % % Clear the screen
+            % glClear(GL.COLOR_BUFFER_BIT);
 
             % Setup camera position and orientation for this eyes view:
             glMatrixMode(GL.PROJECTION)
             glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
+            %glLoadIdentity()
+            gluPerspective(90.0, 2, 0.1, 100.0) % fov
 
             glMatrixMode(GL.MODELVIEW);
             glLoadMatrixd(modelView);  
-           
-            glClearColor(1, 0, 0, 3); % gray background
 
-            glClear(); % clear the buffers - must be done for every frame
-            glColor3f(1,1,1);
-            
-            % fixation target (just trying this here)
-            glPushMatrix;
-            %glTranslatef(-.5,0, 2); % 2 meters
-            pa.floorHeight = -0.25;
-            pa.fixationSize = 0.025; % m
-            pa.fixationdist = 0.25;
-            glTranslatef(0,-pa.fixationSize/2,-pa.fixationdist) % - is away from camera
+            % call the texture
+            glRotatef(270.0, 0.0, 0.0, 1.0)
+            %glRotatef(270.0, 1.0, 0.0, 0.0)
+            glCallList(const.imagePlaneID)
 
-            %tmp = glGenLists(1);
-            %glCallList(tmp);
-
-            glColor3f(0.0, 0.0, 1.0)
-            glutSolidSphere(0.025, 32, 32);
-            glPopMatrix;
-
-            
-
-            % % create horizontal offset
-            % if renderPass==0 % left
-            %     imageRect(1) = imageRect(1)+scr.oc.x_offset;
-            %     imageRect(3) = imageRect(3)+scr.oc.x_offset;
-            %     offset = scr.oc.x_offset;
-            %     colornow = const.black;
-            % elseif renderPass==1 % right
-            %     imageRect(1) = imageRect(1)-scr.oc.x_offset;
-            %     imageRect(3) = imageRect(3)-scr.oc.x_offset;
-            %     offset = -scr.oc.x_offset;
-            %     colornow = const.white;
-            % end
-
-            %my_fixation(scr,const,const.black)
-
-            % trying this out
-            %position = [0,0,0];
-            %rotation = [0,0,0];
-            %scaling = [1,1];
-            %transMatrix = makehgtform('translate', 0,0,0); %Screen('MakeTexture',const.window, );
-
-            %Screen('DrawTexture',const.window,imageTexture,[],[],[],[],[],[],[],kPsychUseTextureMatrixForRotation, modelview); %transMatrix);
+            %Screen('DrawTexture',const.window,const.imageTexture,[],[],[],[],[],[],[],kPsychUseTextureMatrixForRotation, modelView); %transMatrix);
 
             Screen('EndOpenGL', const.window);
 
-            %Screen('DrawTexture',const.window,imageTexture,[],imageRect);
+            
+            %Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect);
             %sprintf('Coordinates for %i', renderPass)
             %scr.oc.xycenter
             %input1 = (scr.oc.xycenter(1)-200*scr.oc.renderPass)-100
@@ -153,8 +116,8 @@ while ~push_button
 
     else
 
-        my_fixation(scr,const,const.black)
-        Screen('DrawTexture',const.window,imageTexture,[],imageRect);
+        %my_fixation(scr,const,const.black)
+        Screen('DrawTexture',const.window,const.imageTexture,[],const.const.imageRect);
 
     end
 

@@ -27,6 +27,9 @@ function main(const)
 % Experimental constant :
 [const] = constConfig(scr,const, expDes);
 
+% Texture configuration (for virtual and non-virtual setups)
+%[const] = texConfig();
+
 % Instruction file :
 [textExp] = instructionConfig;
 
