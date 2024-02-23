@@ -1,6 +1,8 @@
 function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 waitframes = 1;
 responseDir = nan;
+
+disp('my_resp')
 % simulatedPsiParams = [0, 10, 0];
 %
 % % Function handle that will take stimulus parameters x and simulate

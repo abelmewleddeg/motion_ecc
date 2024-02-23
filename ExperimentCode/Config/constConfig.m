@@ -27,6 +27,7 @@ if const.VRdisplay==1
     global GL;
     InitializeMatlabOpenGL(1);
     Screen('BeginOpenGL',const.window);
+
     
     %image = flipud(image);
 
@@ -40,7 +41,7 @@ if const.VRdisplay==1
     const.imagePlaneID = glGenLists(1);
 
     % Enable texture mapping
-    %glEnable(GL.TEXTURE_2D); % this makes the image appear all white
+    glEnable(GL.TEXTURE_2D); % this makes the image appear all white
 
     glNewList(const.imagePlaneID, GL.COMPILE);
     
@@ -95,6 +96,33 @@ if const.VRdisplay==1
 
 
     glEndList(); 
+
+    %% create the fixation
+
+
+    %glColor4f(1,1,1,1);
+    %quadratic=gluNewQuadric();
+    %gluSphere(quadratic,fixationRadius,fixationSlices,fixationStacks); 
+    %glTranslatef(0, 0, -10);
+
+    % const.fixation = glGenLists(1);
+    % glNewList(const.fixation, GL.COMPILE);
+    % fixationRadius = 50;
+    % fixationSlices = 50;
+    % fixationStacks = 50;
+    % glColor3f(0.0, 1.0, 0.0);
+    % %glColor4f(1,1,1,1);
+    % %quadratic=gluNewQuadric();
+    % %gluSphere(quadratic,fixationRadius,fixationSlices,fixationStacks);  
+    % glutSolidSphere(fixationRadius,fixationSlices,fixationStacks)
+    % glEndList();
+
+    const.fixation = glGenLists(1);
+    glNewList(const.fixation, GL.COMPILE);
+    glColor4f(1,1,1,1);
+    quadratic=gluNewQuadric();
+    gluSphere(quadratic,0.025,64,32);  % hope's values
+    glEndList();
 
     Screen('EndOpenGL',const.window);
 

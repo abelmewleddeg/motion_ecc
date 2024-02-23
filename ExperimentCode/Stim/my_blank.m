@@ -1,14 +1,17 @@
 function [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, color)
+
+disp('my_blank')
+
 if nargin < 6
     error('At least 6 arguments required')
 elseif nargin < 7
     color = const.black;
 end
-    
-try
+
+%try
     waitframes = 1;
     %vbl = Screen('Flip',const.window);
-    vblendtime = vbl + expDes.itiDur_s;
+    vblendtime = vbl + expDes.itiDur_s*100;
 
     % Blank period
     while vbl <= vblendtime  
@@ -17,7 +20,7 @@ try
 
             % draw stimuli here, better at the start of the drawing loop
             my_fixation(scr,const,color)
-            Screen('DrawingFinished',const.window); % small ptb optimisation
+            %Screen('DrawingFinished',const.window); % small ptb optimisation
             vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 
             % check for keyboard input
@@ -38,8 +41,8 @@ try
         end
     end
     
-catch
-    return
-end
+% catch
+%     return
+% end
 
 end

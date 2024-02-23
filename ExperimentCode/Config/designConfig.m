@@ -53,7 +53,7 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.Eccens =  [4, 8, 12];
+expDes.Eccens = [4, 8, 12];
 
 % limit the practice to only 1 eccentricity
 if const.staircasemode == 0
@@ -122,7 +122,7 @@ expDes.mainStimTypes = array2table(expDes.mainStimTypes,'VariableNames',{'polarA
 % Experimental matrix
 trialIDs = 1:expDes.nb_trials;
 expDes.trialMat = [trialIDs', trialsequenceMAT];
-expDes.trialMat
+
 
 % rows = trials, cols = [response (-1 cc, 1 c), correct (1 correct, 0
 % incorrect) 

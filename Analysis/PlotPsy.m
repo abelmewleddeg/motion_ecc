@@ -9,7 +9,8 @@
 %load('SAbelTest_design_Block1.mat')
 close all;
 expDes.trialMat(:,7) = expDes.response(:,1);
-rootpath =  ("Y:\UsersShare\Abel\motionEcc_project\Figures\");
+rootpath =  ("C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\");
+%rootpath =  ("Y:\UsersShare\Abel\motionEcc_project\Figures\");
 
 pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
@@ -108,7 +109,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
             % path = ['Z:\UsersShare\Abel\motionEcc_project\Figures/StaircaseMode',int2str(const.staircasemode),'/staircase_plot/',sprintf(const.subjID),'/fig']
             % saveas(figure(1),filename,'pdf');
             % saveas(figure(1),filename,'fig');
-            saveas(figure(1),filename,'png');
+            %saveas(figure(1),filename,'png');
 
             %saveas(gcf,filename,'fig');
             %saveas(gcf,'C:\Users\rokers lab 2\Documents\Dir 45.png');
@@ -199,7 +200,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
            
             % saveas(figure(6),filename2,'fig');
             % saveas(figure(6),filename2,'pdf');
-            saveas(figure(6),filename2,'png');
+            %saveas(figure(6),filename2,'png');
 
         elseif mod(i,4) ==0
             figure(7);
@@ -232,7 +233,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
            % saveas(gcf,filename)    
            % saveas(figure(7),filename,'fig');
            % saveas(figure(7),filename,'pdf');
-           saveas(figure(7),filename,'png');
+           %saveas(figure(7),filename,'png');
 
            psyMat(:,1) = [x';xx']
             psyMat(:,2) = [expDes.trialMat((find(expDes.trialMat(:,6) == i)),7);expDes.trialMat(find(expDes.trialMat(:,6) == i+24),7)]
@@ -258,7 +259,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
           %  saveas(gcf,filename)    
           % saveas(figure(8),filename2,'fig');
           % saveas(figure(8),filename2,'pdf');
-          saveas(figure(8),filename2,'png');
+          %saveas(figure(8),filename2,'png');
 
             
         elseif mod(i+4,4) ==2
@@ -363,8 +364,13 @@ elseif const.staircasemode ==2
         PAName = currP(1,2);
         eccName = currP(1,3);
         DirName = currP(1,4);
-        pf_path = fullfile("Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function",sprintf(const.subjID))
+         pf_path = fullfile(rootpath,"\StaircaseMode2\psychometric_function",sprintf(const.subjID))
+        %pf_path = fullfile("Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode2\psychometric_function",sprintf(const.subjID))
         pf_filename = ['S',sprintf(const.subjID),'_PF_',sprintf('m%i',DirName)];
+        if ~isfolder(pf_path)
+            mkdir(pf_path);
+        end
+
         filename2 = fullfile(pf_path, pf_filename)
 
 
@@ -494,32 +500,32 @@ elseif const.staircasemode ==2
             Becc12T = [Becc12T fitOutput.Fit(1)]
     
          end
-         %%inwardoutward
-         if eccName == 4 && DirName == 135 && DirName == PAName
-             ecc4rO = [ecc4rO 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 4 && DirName == 315 && DirName == PAName
-             ecc4rO = [ecc4rO 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 4 && DirName == 135 && DirName ~= PAName
-              ecc4rI = [ecc4rI 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 4 && DirName == 315 && DirName ~= PAName
-              ecc4rI = [ecc4rI 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 8 && DirName == 135 && DirName == PAName
-             ecc8rO = [ecc8rO 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 8 && DirName == 315 && DirName == PAName
-             ecc8rO = [ecc8rO 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 8 && DirName == 135 && DirName ~= PAName
-              ecc8rI = [ecc8rI 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 8 && DirName == 315 && DirName ~= PAName
-              ecc8rI = [ecc8rI 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 12 && DirName == 135 && DirName == PAName
-             ecc12rO = [ecc12rO 1/sqrt(fitOutput.Fit(2))];
-          elseif eccName == 12 && DirName == 315 && DirName == PAName
-             ecc12rO = [ecc12rO 1/sqrt(fitOutput.Fit(2))];
-         elseif eccName == 12 && DirName == 135 && DirName ~= PAName
-              ecc12rI = [ecc12rI 1/sqrt(fitOutput.Fit(2))];
-          elseif eccName == 12 && DirName == 315 && DirName ~= PAName
-              ecc12rI = [ecc12rI 1/sqrt(fitOutput.Fit(2))];
-         end
+         % %%inwardoutward
+         % if eccName == 4 && DirName == 135 && DirName == PAName
+         %     ecc4rO = [ecc4rO 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 4 && DirName == 315 && DirName == PAName
+         %     ecc4rO = [ecc4rO 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 4 && DirName == 135 && DirName ~= PAName
+         %      ecc4rI = [ecc4rI 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 4 && DirName == 315 && DirName ~= PAName
+         %      ecc4rI = [ecc4rI 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 8 && DirName == 135 && DirName == PAName
+         %     ecc8rO = [ecc8rO 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 8 && DirName == 315 && DirName == PAName
+         %     ecc8rO = [ecc8rO 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 8 && DirName == 135 && DirName ~= PAName
+         %      ecc8rI = [ecc8rI 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 8 && DirName == 315 && DirName ~= PAName
+         %      ecc8rI = [ecc8rI 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 12 && DirName == 135 && DirName == PAName
+         %     ecc12rO = [ecc12rO 1/sqrt(fitOutput.Fit(2))];
+         %  elseif eccName == 12 && DirName == 315 && DirName == PAName
+         %     ecc12rO = [ecc12rO 1/sqrt(fitOutput.Fit(2))];
+         % elseif eccName == 12 && DirName == 135 && DirName ~= PAName
+         %      ecc12rI = [ecc12rI 1/sqrt(fitOutput.Fit(2))];
+         %  elseif eccName == 12 && DirName == 315 && DirName ~= PAName
+         %      ecc12rI = [ecc12rI 1/sqrt(fitOutput.Fit(2))];
+         % end
      end
 end
 
@@ -530,6 +536,7 @@ figure;
 w = [mean(ecc4R),mean(ecc4T);mean(ecc8R),mean(ecc8T);mean(ecc12R),mean(ecc12T)];
 wxx3 = [ecc4R;ecc4T;ecc8R;ecc8T;ecc12R;ecc12T]
 Bias3 = [Becc4R;Becc4T;Becc8R;Becc8T;Becc12R;Becc12T]
+Bias3 = abs(Bias3)
 ww = [mean(ecc4R),mean(ecc4T),mean(ecc8R),mean(ecc8T),mean(ecc12R),mean(ecc12T)]
 % w = [radE4,tanE4;radE8,tanE8;radE12,tanE12]
 % wxx = [r4;t4;r8;t8;r12;t12]
@@ -548,12 +555,12 @@ errorbar([0.85,1.15,1.85,2.15,2.85,3.15],ww,stder,'b.')
 % hold on
 
 Ymax = (max(wxx3,[],'all')+0.05);
-legend({'radial','tangential'})
-ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); ylabel('Sensitivity');
-xticklabels({'4','8','12'});yticks(0:0.05:Ymax);
+%legend({'radial','tangential'})
+ylim([0 0.25]);xlabel('Eccentricities (degrees)'); ylabel('Sensitivity');
+xticklabels({'4','8','12'});yticks(0:0.05:0.25);
 title(['S',sprintf(const.subjID),'__Sensitivity bar plot'])
 filename3 = fullfile(pf_path, ['S',sprintf(const.subjID),'__summary_bar_plot'])
-
+ saveas(gcf,filename3,'png');
 % end
 
 %% quest+ psychometric plots

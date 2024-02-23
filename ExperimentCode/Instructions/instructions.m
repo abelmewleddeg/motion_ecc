@@ -1,4 +1,4 @@
-function keyCode = instructions(scr,const,my_key,text,textExp)
+function keyCode = instructions(scr,const,my_key,text)
 % ----------------------------------------------------------------------
 % instructions(scr,const,my_key,text,button)
 % ----------------------------------------------------------------------
@@ -23,26 +23,8 @@ KbName('UnifyKeyNames');
 
 push_button = 0;
 while ~push_button
-    
-    Screen('Preference', 'TextAntiAliasing',1);
-    Screen('TextSize',const.window, const.text_size);
-    Screen ('TextFont', const.window, const.text_font);
-    Screen('FillRect', const.window, const.gray);
 
-    sizeT = size(text);
-    lines = sizeT(1)+2;
-    bound = Screen('TextBounds',const.window,text{1,:});
-    espace = ((const.text_size)*1.50);
-    first_line = y_mid - ((round(lines/2))*espace);
-
-    % addi = 0;
-    % for t_lines = 1:sizeT(1)
-    %     Screen('DrawText',const.window,text{t_lines,:},x_mid-bound(3)/2,first_line+addi*espace, const.white);
-    %     addi = addi+1;
-    % end
-    % addi = addi+2;
-
-    if const.VRdisplay==1 
+    if const.VRdisplay==1 % if in VR
         global GL;
         InitializeMatlabOpenGL(1);
 
@@ -81,45 +63,75 @@ while ~push_button
             glClear(); % clear the buffers - must be done for every frame
             % 
             % % Clear the screen
-            % glClear(GL.COLOR_BUFFER_BIT);
+            glClear(GL.COLOR_BUFFER_BIT);
 
             % Setup camera position and orientation for this eyes view:
             glMatrixMode(GL.PROJECTION)
             glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
-            %glLoadIdentity()
-            gluPerspective(90.0, 2, 0.1, 100.0) % fov
 
             glMatrixMode(GL.MODELVIEW);
             glLoadMatrixd(modelView);  
-
-            % call the texture
-            glRotatef(270.0, 0.0, 0.0, 1.0)
-            %glRotatef(270.0, 1.0, 0.0, 0.0)
-            glCallList(const.imagePlaneID)
-
-            %Screen('DrawTexture',const.window,const.imageTexture,[],[],[],[],[],[],[],kPsychUseTextureMatrixForRotation, modelView); %transMatrix);
-
             Screen('EndOpenGL', const.window);
+            
+            if const.instrct == 0
+                 Screen('BeginOpenGL',const.window);
+                % call the texture
+                glRotatef(270.0, 0.0, 0.0, 1.0)
+                %glRotatef(270.0, 1.0, 0.0, 0.0)
+                glPushMatrix;
+                glCallList(const.imagePlaneID)
+                glPopMatrix;
+                %Screen('DrawTexture',const.window,const.imageTexture,[],[],[],[],[],[],[],kPsychUseTextureMatrixForRotation, modelView); %transMatrix);
+                Screen('EndOpenGL', const.window);
 
-            
-            %Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect);
-            %sprintf('Coordinates for %i', renderPass)
-            %scr.oc.xycenter
-            %input1 = (scr.oc.xycenter(1)-200*scr.oc.renderPass)-100
-            %input2 = scr.oc.xycenter(2)
-            %Screen('DrawText',const.window,text{1,:},input1,input2, const.white);
-            
-            % works
-            %Screen('DrawText',const.window,text{1,:},scr.oc.xycenter(1)+offset, scr.oc.xycenter(2), colornow);
+            else
+                %Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect);
+                %sprintf('Coordinates for %i', renderPass)
+                %scr.oc.xycenter
+                %input1 = (scr.oc.xycenter(1)-200*scr.oc.renderPass)-100
+                %input2 = scr.oc.xycenter(2)
+                %Screen('DrawText',const.window,text{1,:},input1,input2, const.white);
+                
+                % create text offset per eye
+                if renderPass == 0
+                    offset = scr.oc.x_offset;
+                elseif renderPass == 1
+                    offset = -scr.oc.x_offset;
+                end
+
+                Screen('DrawText',const.window,text{1,:},scr.oc.xycenter(1)+offset, scr.oc.xycenter(2), const.black);
     
+            end
+            
         end
 
-    else
+    else % if not in VR
+         if const.instrct == 0
+            %my_fixation(scr,const,const.black)
+            Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect);
+         else
+            Screen('Preference', 'TextAntiAliasing',1);
+            Screen('TextSize',const.window, const.text_size);
+            Screen ('TextFont', const.window, const.text_font);
+            Screen('FillRect', const.window, const.gray);
+        
+            sizeT = size(text);
+            lines = sizeT(1)+2;
+            bound = Screen('TextBounds',const.window,text{1,:});
+            espace = ((const.text_size)*1.50);
+            first_line = y_mid - ((round(lines/2))*espace);
+        
+            addi = 0;
+            for t_lines = 1:sizeT(1)
+                Screen('DrawText',const.window,text{t_lines,:},x_mid-bound(3)/2,first_line+addi*espace, const.white);
+                addi = addi+1;
+            end
+            addi = addi+2;
 
-        %my_fixation(scr,const,const.black)
-        Screen('DrawTexture',const.window,const.imageTexture,[],const.const.imageRect);
+         end 
 
     end
+
 
     Screen('Flip',const.window);
     
