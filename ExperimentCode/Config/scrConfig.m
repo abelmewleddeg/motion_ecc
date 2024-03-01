@@ -168,7 +168,7 @@ end
 
 %% Fixation Properties
 
-const.fixationRadius_px = 0.01*scr.windY_px;
+const.fixationRadius_px = 0.02*scr.windY_px;
 const.fixationRadius_deg = pix2vaDeg(const.fixationRadius_px, scr);
 
 %%
@@ -177,6 +177,7 @@ const.fixationRadius_deg = pix2vaDeg(const.fixationRadius_px, scr);
 PsychDefaultSetup(2); % assert OpenGL, setup unifiedkeys and unit color range
 PsychImaging('PrepareConfiguration'); % First step in starting pipeline
 PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
+
 ListenChar(1);                        % Listen for keyboard input
 
 %% Prepare the VR if it is connected

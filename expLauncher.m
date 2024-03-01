@@ -11,6 +11,8 @@ rng('default');
 Screen('Preference', 'TextRenderer', 0);
 KbName('UnifyKeyNames')
 
+PsychDebugWindowConfiguration;
+
 % Initialization
 warning('off');        % do not print warnings
 const.DEBUG = 0;       % skips subject det+ails / data saving
@@ -21,7 +23,7 @@ const.makemovie =0;   % capture movie of trial (slows down performance)
 const.staircasemode = 2;
 const.VRdisplay = 1; % display binocular stimulus either on screen or headset
 %const.VRconnect =1; % here headset is working and connected
-
+ 
 Screen('Preference', 'SkipSyncTests', 1);
 
 % to initialize open GL if needed:

@@ -4,6 +4,11 @@ disp('my_stim')
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
 
+% if const.VRdisplay==1
+%     global GL;
+%     InitializeMatlabOpenGL(1);
+% end
+
 if const.staircasemode > 0
     % which staircase + what iteration
     staircaseIndx = expDes.trialMat(trialID,6);
@@ -74,6 +79,11 @@ else
     tiltAmount = 20*tiltSign; % constant value for now
 end
 
+textureSize = 100;
+whiteSquare = ones(textureSize,textureSize,4)*255;
+tex4testing = Screen('MakeTexture', const.window, whiteSquare);
+tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
+
 %%
 
 % Animationloop:
@@ -89,35 +99,108 @@ while ~(const.expStop) && (vbl < vblendtime)
             auxParams = [currPhase+(phasenow), const.stimSF_cpp, const.stimContrast, 0];
         end
         
-        % Set the right blend function for drawing the gabors
-        Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
+        
         
         %if phasenow - should i just present counterphase this way?
         % Draw grating texture, rotated by "angle":
-        Screen('DrawTexture', const.window,  const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
-            [], [], [], [],[], auxParams);
+        if const.VRdisplay==1
+            % % textCoords = [0, 0; 1, 0; 1, 1; 0, 1];
+            % % vertices = [-0.5, -0.5; 0.5, -0.5; 0.5, 0.5; -0.5, 0.5];
+            % 
+            % % just doing for 1 eye b/c that's how Hope did it
+            % scr.oc.renderPass = 1;
+            % eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+            % pa.floorHeight = -1; % m
+            % pa.fixationdist = 3;
+            % pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
+            % R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+            % eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
+            % eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+            % originaleye = eye;
+            % theta = pa.gazeangle;
+            % 
+            % for renderPass = 0:1 %:1 % loop over eyes
+            %     scr.oc.renderPass = renderPass;
+            % 
+            %     eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+            % 
+            %     if scr.oc.renderPass % drawing right eye
+            %         scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+            %     else % drawing left eye
+            %         scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+            %     end 
+            % 
+            %     eye.eyeIndex = scr.oc.renderPass;
+            % 
+            %     Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
+            %     modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
+            % 
+            %     Screen('BeginOpenGL',const.window);
+            %     glClear(); % clear the buffers - must be done for every frame
+            % 
+            %     glCallList(const.sphereStim)
+            % 
+            %     glClearColor(0, 1, 0, 3); % red background
+            % 
+            % 
+            %     % 
+            % 
+            %     % Setup camera position and orientation for this eyes view:
+            %     glMatrixMode(GL.PROJECTION)
+            %     glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
+            % 
+            %     glMatrixMode(GL.MODELVIEW);
+            %     glLoadMatrixd(modelView);  
+            %     glRotatef(270.0, 0.0, 0.0, 1.0)
+            %     %glRotatef(270.0, 1.0, 0.0, 0.0)
+            %     glPushMatrix;
+            %     glCallList(const.imagePlaneID)
+            %     glPopMatrix;
+            %     Screen('EndOpenGL', const.window);
+            % 
+            % 
+            %     %Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
+            %         %const.squarewavetex) %, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+            %        % [], [], [], [],[], auxParams); %[textCoords';vertices']); %
+            % 
+            %     % Draw stimuli here, better at the start of the drawing loop
+            % 
+            % 
+            % 
+            %     % FlushEvents('KeyDown');
+                my_targetsphere(scr,const,const.black)
+                %my_fixation(scr,const,const.black)
+                frameCounter=frameCounter+1;
+        else
+            % Set the right blend function for drawing the gabors
+             Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
+
+             Screen('DrawTexture', const.window,  const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+                [], [], [], [],[], auxParams);
+            
+             % add grey gradient masks
+            Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
         
-        % add grey gradient masks
-        Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
-        
-        Screen('DrawTexture', const.window, const.centermask, [], dstRect, [], [], [], [], [], []);
+            Screen('DrawTexture', const.window, const.centermask, [], dstRect, [], [], [], [], [], []);        
 
+            % Draw stimuli here, better at the start of the drawing loop
+            my_fixation(scr,const,const.black)
+    
+            Screen('DrawingFinished',const.window); % small ptb optimisation
+    
+            vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
+    
+            if const.makemovie && mod(frameCounter,15) == 0
+                M = Screen('GetImage', const.window,[],[],0,3);
+                imwrite(M,fullfile(const.moviefolder, [num2str(movieframe_n),'.png']));
+                movieframe_n = movieframe_n + 1;
+            end
+            
+            % FlushEvents('KeyDown');
+            frameCounter=frameCounter+1;
 
-        % Draw stimuli here, better at the start of the drawing loop
-        my_fixation(scr,const,const.black)
-
-        Screen('DrawingFinished',const.window); % small ptb optimisation
-
-        vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
-
-        if const.makemovie && mod(frameCounter,15) == 0
-            M = Screen('GetImage', const.window,[],[],0,3);
-            imwrite(M,fullfile(const.moviefolder, [num2str(movieframe_n),'.png']));
-            movieframe_n = movieframe_n + 1;
         end
-        
-        % FlushEvents('KeyDown');
-        frameCounter=frameCounter+1;
+        vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
     else
         break
     end

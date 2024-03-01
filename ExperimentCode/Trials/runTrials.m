@@ -100,7 +100,7 @@ expDes.tiltangle = NaN(expDes.nb_trials,1);
 if ~const.DEBUG
     HideCursor(scr.scr_num);
 end
-const.instrct = 1; %change it back after
+const.instrct = 0; %change it back after
 keyCode = instructions(scr,const,my_key,textExp.instruction);
 tic
 

@@ -103,8 +103,8 @@ vvvv = nan(24,30);
     plotPsych(fitOutput,plotOptions)
     title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
     xlabel('Tilt Angle(degrees)'); ylabel('% of clockwise responses');xlim([-20 20]);
-    text(max(Utilt(:,1))/2,0.1 ,['B: ' num2str(fitOutput.Fit(1))],'FontSize',9)
-    text(max(Utilt(:,1))/2,0.15 ,['S: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
+    text(max(Utilt(:,1))/2,0.1 ,['\mu ' num2str(fitOutput.Fit(1))],'FontSize',9)
+    text(max(Utilt(:,1))/2,0.15 ,['1/\sigma: ' num2str(1/sqrt(fitOutput.Fit(2)))],'FontSize',9)
     % %saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 45.png'); 
     set(gcf,'Position',[488 242 1.0186e+03 420]);
 

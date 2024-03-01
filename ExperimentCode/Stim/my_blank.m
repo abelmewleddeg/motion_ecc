@@ -11,7 +11,7 @@ end
 %try
     waitframes = 1;
     %vbl = Screen('Flip',const.window);
-    vblendtime = vbl + expDes.itiDur_s*100;
+    vblendtime = vbl + expDes.itiDur_s;
 
     % Blank period
     while vbl <= vblendtime  

@@ -99,7 +99,12 @@ if const.VRdisplay==1
 
     %% create the fixation
 
-
+    % glBegin(GL.QUADS);
+    % glVertex2f(-0.1,-0.1); % Bottom-left
+    % glVertex2f(0.1,-0.1); % Bottom-right
+    % glVertex2f(0.1,0.1); % top-left
+    % glVertex2f(-0.1,0.1); % top-right
+    % glEnd();
     %glColor4f(1,1,1,1);
     %quadratic=gluNewQuadric();
     %gluSphere(quadratic,fixationRadius,fixationSlices,fixationStacks); 
@@ -197,6 +202,38 @@ if strcmp(expDes.stimulus, 'perlinNoise')
     const.squarewavetex = CreateProceduralScaledNoise(const.window, const.visiblesize, const.visiblesize, 'ClassicPerlin', backgroundColor, const.visiblesize/2);
 elseif strcmp(expDes.stimulus, 'grating')
     const.squarewavetex = CreateProceduralSineGrating(const.window, const.visiblesize, const.visiblesize, backgroundColor, const.visiblesize/2, 1);
+end
+
+if const.VRdisplay==1 
+    Screen('BeginOpenGL', const.window)
+    %glBindTexture(GL.TEXTURE_2D, const.squarewavetex);
+    % glBegin(GL.QUADS)
+    % glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0, -3.0);
+    % glTexCoord2f(.25, 0.0); glVertex3f(1.0, -1.0, -3.0);
+    % glTexCoord2f(.25, .33); glVertex3f(1.0, 1.0, -3.0);
+    % glTexCoord2f(0.0, .33); glVertex3f(-1.0, 1.0, -3.0);
+    % glEnd();
+
+    const.squarewavetex = repmat([0 1 0 1 0 1 0 1], 800, 100); %rand(500,500)*255;
+    const.sphereStim = glGenLists(1);
+    glNewList(const.sphereStim, GL.COMPILE);
+
+    %glTexImage2D(GL.TEXTURE_2D, 0, GL.RGB, size(const.squarewavetex, 2), size(const.squarewavetex, 1), 0, GL.RGB, GL.UNSIGNED_BYTE, uint8(const.squarewavetex));
+    % Specify texture parameters
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR); %_MIPMAP_LINEAR);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR); %_MIPMAP_LINEAR);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+
+    %glBindTexture(GL.TEXTURE_2D, const.sphereStim);
+
+    glColor4f(1,1,1,1);
+    quadratic=gluNewQuadric();
+    gluSphere(quadratic,0.025,64,32);  % hope's values
+    glEndList();
+    
+    %glBindTexture(GL.TEXTURE_2D, 0);
+    Screen('EndOpenGL', const.window)
 end
 
 % center ramp
