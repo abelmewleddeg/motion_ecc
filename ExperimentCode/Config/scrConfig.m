@@ -79,7 +79,7 @@ else    % PC (field names are different)
              scr.experimenter = 'Predator Helios 300';
             scr.scrViewingDist_cm = 57;
             const.keyboard = '';
-            if ~scr.scr_num  
+            if ~scr.scr_num   % if using PC screen
                 fixIFI = 1;
             end
         otherwise
@@ -242,14 +242,19 @@ scr.vbl = Screen('Flip', const.window);
 % Query the frame duration
 scr.ifi = Screen('GetFlipInterval', const.window);
 
-% fix the Helios incorrect reading here
+% fix the Helios incorrect reading here (VR ifi is set below if connected)
 if fixIFI
     scr.ifi = 1/144; % RE: check whether this still applies inside headset
 end
 
+
 if const.VRdisplay==1 
+
+    % % override anything with VR ifi as long as running in that mode
+    scr.ifi = 1/90;
+
     if ~isempty(scr.hmd)
-        scr.oc.windowRect = const.windowRect % RE: just to get it to work now
+        scr.oc.windowRect = const.windowRect; % RE: just to get it to work now
         disp('wind rect values:')
         scr.oc.windowRect
         scr.oc.yc = RectHeight(scr.oc.windowRect)/2; % the horizontal center of the display in pixels
@@ -461,6 +466,8 @@ end
 % Set drawing to maximum priority level
 topPriorityLevel = MaxPriority(const.window);
 Priority(topPriorityLevel);
+
+scr.ifi
 
 % save .mat file with screen parameters used
 save(const.scr_fileMat,'scr');

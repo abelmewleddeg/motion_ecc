@@ -1,10 +1,14 @@
-function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
+function [expDes, const, frameCounter, vbl] = my_VRstim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
-disp('my_stim')
+disp('my_VRstim')
+
+if const.VRdisplay==1
+    global GL;
+    InitializeMatlabOpenGL(1);
+end
+
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
-
-global GL;
 
 if const.staircasemode > 0
     % which staircase + what iteration
@@ -76,10 +80,12 @@ else
     tiltAmount = 20*tiltSign; % constant value for now
 end
 
-% textureSize = 100;
-% whiteSquare = ones(textureSize,textureSize,4)*255;
-% tex4testing = Screen('MakeTexture', const.window, whiteSquare);
-% tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
+textureSize = 100;
+whiteSquare = ones(textureSize,textureSize,4)*255;
+tex4testing = Screen('MakeTexture', const.window, whiteSquare);
+tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
+
+%%
 
 %%
 
@@ -134,36 +140,42 @@ while ~(const.expStop) && (vbl < vblendtime)
                 modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
 
                 Screen('BeginOpenGL',const.window);
-                % 
-                % glClearColor(0, 1, 0, 3); % green background
-                % 
-                % glClear(); % clear the buffers - must be done for every frame
-                % 
-                % 
-                % %glColor3f(0,0,1);
-                % 
-                % 
-                % % % Clear the screen
-                % %glClear(GL.COLOR_BUFFER_BIT);
-                % 
-                % % Setup camera position and orientation for this eyes view:
-                % % glMatrixMode(GL.PROJECTION)
-                % % glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
-                % % 
-                % % glMatrixMode(GL.MODELVIEW);
-                % % glLoadMatrixd(modelView);  
-                % % 
-                % % glPushMatrix;
-                % % glTranslatef(1,1,-2);
-                % % 
-                % % glCallList(const.fixation)
-                % % glPopMatrix;
+
+                glClearColor(0, 0, 1, 3); % green background
+
+                glClear(); % clear the buffers - must be done for every frame
+
+
+                glColor3f(0,0,1);
+
+
+                % Clear the screen
+                glClear(GL.COLOR_BUFFER_BIT);
+
+                %Setup camera position and orientation for this eyes view:
+                glMatrixMode(GL.PROJECTION)
+                glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
+
+                glMatrixMode(GL.MODELVIEW);
+                glLoadMatrixd(modelView);  
+
+                glPushMatrix;
+                glTranslatef(0,0,-1);
+
+                glCallList(const.fixation)
+                glPopMatrix;
                 Screen('EndOpenGL', const.window);
 
+                Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
+                Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
 
-                %Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
-                    %const.squarewavetex) %, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
-                   % [], [], [], [],[], auxParams); %[textCoords';vertices']); %
+                %Screen('DrawTexture', const.window, const.squarewavetex, [], tempDstRect);
+                
+                % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+                %    [], [], [], [],[], auxParams); %[textCoords';vertices']); %
+
+                %Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect); %, const.mapdirection(testDirection)+tiltAmount, ...
+                  % [], [], [], [],[], []); %auxParams); %[textCoords';vertices']); %
 
                 % Draw stimuli here, better at the start of the drawing loop
 
@@ -211,36 +223,13 @@ while ~(const.expStop) && (vbl < vblendtime)
      
 end
 
+%%
 
 expDes.tiltangle(trialID) = tiltAmount;
 %expDes.tiltmagnitude(trialID) = tiltMagnitude;
 
-%%
-
-function dstRect = create_dstRect(visiblesize, xDist, yDist, scr, paLoc, const)
-
-    if paLoc == 45
-        yDist = -yDist;
-    elseif paLoc == 135
-        xDist = -xDist;
-        yDist = -yDist;
-    elseif paLoc == 225
-        xDist = -xDist;
-    elseif paLoc == 315
-        xDist = xDist;
-    else
-        const.expStop =1;
-        error('PA location not set up in my_stim and my_resp. Please configure.') 
-    end
-
-    xDist = scr.windCenter_px(1)+xDist-(visiblesize/2); % center + (+- distance added in pixels)
-    yDist = scr.windCenter_px(2)+yDist-(visiblesize/2);  % check with -(vis part.. 
-    dstRect=[xDist yDist visiblesize+xDist visiblesize+yDist];
-    % const.distance = [xDist,yDist];
-    % const.visiblesize = visiblesize/2
-end
-
 disp('End of my_stim:')
 expDes.trialMat(trialID, 5)
+
 
 end
