@@ -4,7 +4,10 @@ disp('my_stim')
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
 
-global GL;
+% if const.VRdisplay==1
+%     global GL;
+%     InitializeMatlabOpenGL(1);
+% end
 
 if const.staircasemode > 0
     % which staircase + what iteration
@@ -76,10 +79,10 @@ else
     tiltAmount = 20*tiltSign; % constant value for now
 end
 
-% textureSize = 100;
-% whiteSquare = ones(textureSize,textureSize,4)*255;
-% tex4testing = Screen('MakeTexture', const.window, whiteSquare);
-% tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
+textureSize = 100;
+whiteSquare = ones(textureSize,textureSize,4)*255;
+tex4testing = Screen('MakeTexture', const.window, whiteSquare);
+tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
 
 %%
 
@@ -101,77 +104,73 @@ while ~(const.expStop) && (vbl < vblendtime)
         %if phasenow - should i just present counterphase this way?
         % Draw grating texture, rotated by "angle":
         if const.VRdisplay==1
-            % textCoords = [0, 0; 1, 0; 1, 1; 0, 1];
-            % vertices = [-0.5, -0.5; 0.5, -0.5; 0.5, 0.5; -0.5, 0.5];
-
-            % just doing for 1 eye b/c that's how Hope did it
-            scr.oc.renderPass = 1;
-            eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
-            pa.floorHeight = -1; % m
-            pa.fixationdist = 3;
-            pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
-            R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
-            eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
-            eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
-            originaleye = eye;
-            theta = pa.gazeangle;
-
-            for renderPass = 0:1 %:10 % loop over eyes
-                disp(sprintf('eye %i', renderPass))
-                scr.oc.renderPass = renderPass;
-
-                eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
-
-                if scr.oc.renderPass % drawing right eye
-                    scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
-                else % drawing left eye
-                    scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
-                end 
-
-                eye.eyeIndex = scr.oc.renderPass;
-
-                Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
-                modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
-
-                Screen('BeginOpenGL',const.window);
-                % 
-                % glClearColor(0, 1, 0, 3); % green background
-                % 
-                % glClear(); % clear the buffers - must be done for every frame
-                % 
-                % 
-                % %glColor3f(0,0,1);
-                % 
-                % 
-                % % % Clear the screen
-                % %glClear(GL.COLOR_BUFFER_BIT);
-                % 
-                % % Setup camera position and orientation for this eyes view:
-                % % glMatrixMode(GL.PROJECTION)
-                % % glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
-                % % 
-                % % glMatrixMode(GL.MODELVIEW);
-                % % glLoadMatrixd(modelView);  
-                % % 
-                % % glPushMatrix;
-                % % glTranslatef(1,1,-2);
-                % % 
-                % % glCallList(const.fixation)
-                % % glPopMatrix;
-                Screen('EndOpenGL', const.window);
-
-
-                %Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
-                    %const.squarewavetex) %, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
-                   % [], [], [], [],[], auxParams); %[textCoords';vertices']); %
-
-                % Draw stimuli here, better at the start of the drawing loop
-
-
-
-                % FlushEvents('KeyDown');
-                %my_targetsphere(scr,const,const.black)
-            end
+            % % textCoords = [0, 0; 1, 0; 1, 1; 0, 1];
+            % % vertices = [-0.5, -0.5; 0.5, -0.5; 0.5, 0.5; -0.5, 0.5];
+            % 
+            % % just doing for 1 eye b/c that's how Hope did it
+            % scr.oc.renderPass = 1;
+            % eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+            % pa.floorHeight = -1; % m
+            % pa.fixationdist = 3;
+            % pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
+            % R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+            % eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
+            % eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+            % originaleye = eye;
+            % theta = pa.gazeangle;
+            % 
+            % for renderPass = 0:1 %:1 % loop over eyes
+            %     scr.oc.renderPass = renderPass;
+            % 
+            %     eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+            % 
+            %     if scr.oc.renderPass % drawing right eye
+            %         scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+            %     else % drawing left eye
+            %         scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+            %     end 
+            % 
+            %     eye.eyeIndex = scr.oc.renderPass;
+            % 
+            %     Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
+            %     modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
+            % 
+            %     Screen('BeginOpenGL',const.window);
+            %     glClear(); % clear the buffers - must be done for every frame
+            % 
+            %     glCallList(const.sphereStim)
+            % 
+            %     glClearColor(0, 1, 0, 3); % red background
+            % 
+            % 
+            %     % 
+            % 
+            %     % Setup camera position and orientation for this eyes view:
+            %     glMatrixMode(GL.PROJECTION)
+            %     glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
+            % 
+            %     glMatrixMode(GL.MODELVIEW);
+            %     glLoadMatrixd(modelView);  
+            %     glRotatef(270.0, 0.0, 0.0, 1.0)
+            %     %glRotatef(270.0, 1.0, 0.0, 0.0)
+            %     glPushMatrix;
+            %     glCallList(const.imagePlaneID)
+            %     glPopMatrix;
+            %     Screen('EndOpenGL', const.window);
+            % 
+            % 
+            %     %Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
+            %         %const.squarewavetex) %, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+            %        % [], [], [], [],[], auxParams); %[textCoords';vertices']); %
+            % 
+            %     % Draw stimuli here, better at the start of the drawing loop
+            % 
+            % 
+            % 
+            %     % FlushEvents('KeyDown');
+                my_targetsphere(scr,const,const.black)
+                %my_fixation(scr,const,const.black)
+                frameCounter=frameCounter+1;
         else
             % Set the right blend function for drawing the gabors
              Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
@@ -198,13 +197,10 @@ while ~(const.expStop) && (vbl < vblendtime)
             end
             
             % FlushEvents('KeyDown');
+            frameCounter=frameCounter+1;
 
         end
-        
-        disp('ABOUT TO FLIP')
         vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
-        disp('DONE WITH FLIP')
-        frameCounter=frameCounter+1; % count one frame for both eyes
     else
         break
     end

@@ -22,7 +22,6 @@ image = imread(imagefile);
 const.imageTexture = Screen('MakeTexture',const.window,image);
 imageSize = size(image);
 const.imageRect = CenterRectOnPoint([0, 0, imageSize(2), imageSize(1)], const.windowRect(3)/2, const.windowRect(4)/2);
-const.imageRect_nonVR = CenterRectOnPoint([0, 0, imageSize(2)./4, imageSize(1)./4], const.windowRect(3)/2, const.windowRect(4)/2);
 
 if const.VRdisplay==1 
     global GL;
@@ -130,45 +129,8 @@ if const.VRdisplay==1
     gluSphere(quadratic,0.025,64,32);  % hope's values
     glEndList();
 
-    
-%% Draw lines here (can delete later - RE for debugging)
-    const.linesR = glGenLists(1);
-    glNewList(const.linesR, GL.COMPILE);
-    glLineWidth(15.0);
-    glBegin(GL.LINES);
-
-    % Right eye line
-    glColor3f(0.0, 0.0, 0.0); % black color
-    glVertex3f(3.86, 0.5, -2); % Start from origin
-    glVertex3f(-2.86, 0.5, -2); % End at (1, 0, -5)
-    glEnd();
-    glEndList();
-    
-    const.linesL = glGenLists(1);
-    glNewList(const.linesL, GL.COMPILE);
-    glLineWidth(15.0)
-    glBegin(GL.LINES);
-    
-     % Left eye line
-    glColor3f(0.0, 0.0, 0.0); % Blue color
-    glVertex3f(-3.86, 0.7, -2); % Start from origin
-    glVertex3f(2.86, 0.7, -2); % End at (-1, 0, -5)
-    glEnd();
-    glEndList();
-
-    %% Let's also draw a blue square (can also delete this - RE)
-    const.bsquare = glGenLists(1);
-    glNewList(const.bsquare, GL.COMPILE);
-    glColor3f(0.0, 0.0, 1.0); % Blue color
-    glBegin(GL.QUADS);
-    glVertex3f(-3.86, -3.86, -2); % Bottom-left corner
-    glVertex3f(3.86, -3.86, -2); % Bottom-right corner
-    glVertex3f(3.86, 3.86, -2); % Top-right corner
-    glVertex3f(-3.86, 3.86, -2); % Top-left corner
-    glEnd();
-    glEndList();
-
     Screen('EndOpenGL',const.window);
+
 end
 
 
