@@ -29,7 +29,10 @@ if const.VRdisplay==1
     InitializeMatlabOpenGL(1);
     Screen('BeginOpenGL',const.window);
 
-    
+    %glTexEnvi(GL.TEXTURE_ENV, GL.TEXTURE_ENV_MODE, GL.DECAL);
+    %glTexEnvi(GL.TEXTURE_ENV, GL.TEXTURE_ENV_MODE, GL.BLEND);
+    %glTexEnvi(GL.TEXTURE_ENV, GL.TEXTURE_ENV_MODE, GL.REPLACE);
+
     %image = flipud(image);
 
     glColor3f(1,1,1);
@@ -233,7 +236,7 @@ end
 const.grating_halfw= const.stimRadiuspix;
 const.visiblesize=2*floor(const.grating_halfw)+1;
 
-backgroundColor = [.5 .5 .5 0];
+backgroundColor = [.5 .5 .5 1]; %0]; % was 0 for non-VR
 
 % center stimulus 
 if strcmp(expDes.stimulus, 'perlinNoise')
@@ -252,7 +255,7 @@ if const.VRdisplay==1
     % glTexCoord2f(0.0, .33); glVertex3f(-1.0, 1.0, -3.0);
     % glEnd();
 
-    const.squarewavetex = repmat([0 1 0 1 0 1 0 1], 800, 100); %rand(500,500)*255;
+    %const.squarewavetex = repmat([0 1 0 1 0 1 0 1], 800, 100); %rand(500,500)*255;
     const.sphereStim = glGenLists(1);
     glNewList(const.sphereStim, GL.COMPILE);
 

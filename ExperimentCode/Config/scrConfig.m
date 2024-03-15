@@ -173,8 +173,12 @@ const.fixationRadius_deg = pix2vaDeg(const.fixationRadius_px, scr);
 
 %%
 
+if const.VRdisplay==1
+    PsychDefaultSetup(1); % assert OpenGL, setup unifiedkeys
+else
+    PsychDefaultSetup(2); % assert OpenGL, setup unifiedkeys and unit color range
+end
 
-PsychDefaultSetup(2); % assert OpenGL, setup unifiedkeys and unit color range
 PsychImaging('PrepareConfiguration'); % First step in starting pipeline
 PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
 

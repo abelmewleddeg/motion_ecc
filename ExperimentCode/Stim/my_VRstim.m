@@ -80,10 +80,12 @@ else
     tiltAmount = 20*tiltSign; % constant value for now
 end
 
-textureSize = 100;
-whiteSquare = ones(textureSize,textureSize,4)*255;
-tex4testing = Screen('MakeTexture', const.window, whiteSquare);
-tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
+% textureSize = 100;
+% whiteSquare = ones(textureSize,textureSize,4)*255;
+% tex4testing = Screen('MakeTexture', const.window, whiteSquare);
+% %tex4testing = CreateProceduralSineGrating(const.window, textureSize, textureSize, [.5 .5 .5 1], textureSize/2, 1);
+% tex4testing = CreateProceduralScaledNoise(const.window, textureSize, textureSize, 'ClassicPerlin', [.5 .5 .5 1], textureSize/2);
+% tempDstRect = CenterRect([0 0 textureSize textureSize], Screen('Rect',const.window));
 
 %%
 
@@ -107,8 +109,8 @@ while ~(const.expStop) && (vbl < vblendtime)
         %if phasenow - should i just present counterphase this way?
         % Draw grating texture, rotated by "angle":
         if const.VRdisplay==1
-            % textCoords = [0, 0; 1, 0; 1, 1; 0, 1];
-            % vertices = [-0.5, -0.5; 0.5, -0.5; 0.5, 0.5; -0.5, 0.5];
+            textCoords = [0, 0; 1, 0; 1, 1; 0, 1];
+            vertices = [-0.5, -0.5; 0.5, -0.5; 0.5, 0.5; -0.5, 0.5];
 
             % just doing for 1 eye b/c that's how Hope did it
             scr.oc.renderPass = 1;
@@ -167,9 +169,13 @@ while ~(const.expStop) && (vbl < vblendtime)
                 Screen('EndOpenGL', const.window);
 
                 Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
-                Screen('DrawTexture', const.window, tex4testing, [], tempDstRect);
+                %Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+                
+                Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+                    [], [], [], [],[], auxParams); % tex4testing
 
-                %Screen('DrawTexture', const.window, const.squarewavetex, [], tempDstRect);
+                % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+                %    [], [], [], [],[], []);
                 
                 % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
                 %    [], [], [], [],[], auxParams); %[textCoords';vertices']); %
