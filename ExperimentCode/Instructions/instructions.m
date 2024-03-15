@@ -57,6 +57,7 @@ while ~push_button
             modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
 
             Screen('BeginOpenGL',const.window);
+            %Screen('SwapInterval', const.window, 1); % added this to prevent error
             
             glClearColor(1, 0, 0, 3); % red background
 
@@ -108,7 +109,7 @@ while ~push_button
     else % if not in VR
          if const.instrct == 0
             %my_fixation(scr,const,const.black)
-            Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect);
+            Screen('DrawTexture',const.window,const.imageTexture,[],const.imageRect_nonVR);
          else
             Screen('Preference', 'TextAntiAliasing',1);
             Screen('TextSize',const.window, const.text_size);

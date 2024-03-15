@@ -44,7 +44,7 @@ elseif const.VRdisplay==1
         glClearColor(1, 0, 0, 3); % red background
 
         glClear(); % clear the buffers - must be done for every frame
-        glColor3f(1,1,1);
+        glColor3f(0,0,1);
         % 
         % % Clear the screen
         %glClear(GL.COLOR_BUFFER_BIT);
@@ -57,8 +57,9 @@ elseif const.VRdisplay==1
         glLoadMatrixd(modelView);  
 
         glPushMatrix;
-        glTranslatef(0.3,0.3,-2);
-        glCallList(const.sphereStim)
+        glTranslatef(0.0,0.0,-1);
+        %glCallList(const.sphereStim)
+        glCallList(const.fixation)
         glPopMatrix;
         Screen('EndOpenGL', const.window);
         %disp('OPENGL STATUS')
