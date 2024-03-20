@@ -3,6 +3,15 @@ waitframes = 1;
 responseDir = nan;
 
 disp('my_resp')
+if const.VRdisplay==1
+    global GL;
+    InitializeMatlabOpenGL(1);
+    lined = 1.5
+    arrowd = 4
+else
+    lined = 4
+    arrowd = 10
+end
 % simulatedPsiParams = [0, 10, 0];
 %
 % % Function handle that will take stimulus parameters x and simulate
@@ -14,59 +23,165 @@ disp('my_resp')
 % rng(6);
 
 if expDes.trialMat(trialID,4) == 45
-    x2 = scr.windCenter_px(1) - const.visiblesize/4;
-    y2 = scr.windCenter_px(2) + const.visiblesize/4;
-    x3 = scr.windCenter_px(1) + const.visiblesize/4;
-    y3 = scr.windCenter_px(2) - const.visiblesize/4;
-    x4 = x3 - const.visiblesize/10;
-    y4 = y3 + const.visiblesize/10;
+    x2 = scr.windCenter_px(1) - const.visiblesizeResp/lined;
+    y2 = scr.windCenter_px(2) + const.visiblesizeResp/lined;
+    x3 = scr.windCenter_px(1) + const.visiblesizeResp/lined;
+    y3 = scr.windCenter_px(2) - const.visiblesizeResp/lined;
+    x4 = x3 - const.visiblesizeResp/arrowd;
+    y4 = y3 + const.visiblesizeResp/arrowd;
 elseif expDes.trialMat(trialID,4) == 225
-    x2 = scr.windCenter_px(1) + const.visiblesize/4;
-    y2 = scr.windCenter_px(2) - const.visiblesize/4;
-    x3 = scr.windCenter_px(1) - const.visiblesize/4;
-    y3 = scr.windCenter_px(2) + const.visiblesize/4;
-    x4 = x3 + const.visiblesize/10;
-    y4 = y3 - const.visiblesize/10;
+    x2 = scr.windCenter_px(1) + const.visiblesizeResp/lined;
+    y2 = scr.windCenter_px(2) - const.visiblesizeResp/lined;
+    x3 = scr.windCenter_px(1) - const.visiblesizeResp/lined;
+    y3 = scr.windCenter_px(2) + const.visiblesizeResp/lined;
+    x4 = x3 + const.visiblesizeResp/arrowd;
+    y4 = y3 - const.visiblesizeResp/arrowd;
 elseif expDes.trialMat(trialID,4) == 135
-    x2 = scr.windCenter_px(1) + const.visiblesize/4;
-    y2 = scr.windCenter_px(2) + const.visiblesize/4;
-    x3 = scr.windCenter_px(1) - const.visiblesize/4;
-    y3 = scr.windCenter_px(2) - const.visiblesize/4;
-    x4 = x3 + const.visiblesize/10;
-    y4 = y3 + const.visiblesize/10;
+    x2 = scr.windCenter_px(1) + const.visiblesizeResp/lined;
+    y2 = scr.windCenter_px(2) + const.visiblesizeResp/lined;
+    x3 = scr.windCenter_px(1) - const.visiblesizeResp/lined;
+    y3 = scr.windCenter_px(2) - const.visiblesizeResp/lined;
+    x4 = x3 + const.visiblesizeResp/arrowd;
+    y4 = y3 + const.visiblesizeResp/arrowd;
 elseif expDes.trialMat(trialID,4) == 315
-    x2 = scr.windCenter_px(1) - const.visiblesize/4;
-    y2 = scr.windCenter_px(2) - const.visiblesize/4;
-    x3 = scr.windCenter_px(1) + const.visiblesize/4;
-    y3 = scr.windCenter_px(2) + const.visiblesize/4;
-    x4 = x3 - const.visiblesize/10;
-    y4 = y3 - const.visiblesize/10;
+    x2 = scr.windCenter_px(1) - const.visiblesizeResp/lined;
+    y2 = scr.windCenter_px(2) - const.visiblesizeResp/lined;
+    x3 = scr.windCenter_px(1) + const.visiblesizeResp/lined;
+    y3 = scr.windCenter_px(2) + const.visiblesizeResp/lined;
+    x4 = x3 - const.visiblesizeResp/arrowd;
+    y4 = y3 - const.visiblesizeResp/arrowd;
 end
-
+newy2 = y2 - const.vrVershift;
+newy3 = y3 - const.vrVershift
+newy4 = y4 - const.vrVershift
 % draw arrow head
-if expDes.fillArrow
-    head = [x3 y3];
-    width = 10;
-    points = [x3,y3;x4,y3;x3,y4];
-    Screen('FillPoly', const.window, [255 255 255], points);
-else
-    Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
-    Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
-end
-
-% main response line orientation
-Screen('DrawLine',const.window, [255 255 255],x2,y2,x3,y3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
-
-my_fixation(scr,const,[0 0 0]) %const.black
-Screen('DrawingFinished',const.window); % small ptb optimisation
-
-%vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
-vbl = Screen('Flip',const.window);
-
+% if expDes.fillArrow
+%     head = [x3 y3];
+%     width = 10;
+%     points = [x3,y3;x4,y3;x3,y4];
+%     Screen('FillPoly', const.window, [255 255 255], points);
+% else
+%     Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
+%     Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
+% end
+%% loop through boith eyes fior arrow presentation
 keyIsDown = 0;
 while ~keyIsDown
     % check for keyboard input
     [keyIsDown, ~, keyCode] = KbCheck(-1); %KbCheck(my_key.keyboardID);
+    if const.VRdisplay==1
+                % just doing for 1 eye b/c that's how Hope did it
+                scr.oc.renderPass = 1;
+                eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+                pa.floorHeight = -1; % m
+                pa.fixationdist = 3;
+                pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
+                R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
+                eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
+                eye.modelView(1:3,1:3) = eye.modelView(1:3,1:3)*R;
+                originaleye = eye;
+                theta = pa.gazeangle;
+    
+                for renderPass = 0:1 %:10 % 
+                    % loop over eyes\
+                    
+                    disp(sprintf('eye %i', renderPass))
+                    scr.oc.renderPass = renderPass;
+    
+                    eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
+    
+                    if scr.oc.renderPass % drawing right eye
+                        scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];  
+                        const.newcenter = [-const.vrshift/2 -const.vrVershift];
+                        newx2 = x2 - const.vrshift/2;
+                        newx3 = x3 - const.vrshift/2;
+                        newx4 = x4 - const.vrshift/2;
+                    else % drawing left eye
+                        scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+                        const.newcenter = [const.vrshift/2 -const.vrVershift];
+                        newx2 = x2 + const.vrshift/2;
+                        newx3 = x3 + const.vrshift/2;
+                        newx4 = x4 + const.vrshift/2;
+                    end 
+    
+                    eye.eyeIndex = scr.oc.renderPass;
+    
+                    Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
+                    modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
+    
+                    Screen('BeginOpenGL',const.window);
+    
+                    glClearColor(1, 0, 1, 3); % yellow background
+    
+                    glClear(); % clear the buffers - must be done for every frame
+    
+    
+                    % glColor3f(0,0,1);
+                    glClear(GL.COLOR_BUFFER_BIT);
+                    %Setup camera position and orientation for this eyes view:
+                    glMatrixMode(GL.PROJECTION)
+                    glLoadMatrixd(scr.oc.projMatrix{renderPass + 1});
+    
+                    glMatrixMode(GL.MODELVIEW);
+                    glLoadMatrixd(modelView); 
+                    glPushMatrix;
+                    glTranslatef(0,0,-1);
+
+                    glCallList(const.fixation)
+                    glPopMatrix;
+    
+                    Screen('EndOpenGL', const.window);
+                    % main response line orientation
+                    Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
+                    % my_fixation(scr,const,const.black)
+                    if expDes.fillArrow
+                        % head = [x3 y3];
+                        % width = 10;
+                        points = [newx3,newy3;newx4,newy3;newx3,newy4];
+                        Screen('FillPoly', const.window, [255 255 255], points);
+                    else  
+                        Screen('DrawLine',const.window, [255 255 255],newx3+15,y3-15,newx4-15,y3-15,3);
+                        Screen('DrawLine',const.window, [255 255 255],newx3+15,y3-15,newx3+15,y4+15,3);
+                    end
+                    Screen('DrawLine',const.window, [],newx2,newy2,newx3,newy3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
+                    % % % [255 255 255]
+                    % Screen('DrawingFinished',const.window); % small ptb optimisation
+                    % % 
+                    %vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
+                    %vbl = Screen('Flip',const.window);
+    
+                    %Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+                   
+    
+                     % Screen('DrawTexture', const.window, const.squarewavetex, [], newdstRect, const.mapdirection(testDirection)+tiltAmount, ...
+                     %    [], [], [], [],[], auxParams); % tex4testing
+    
+                   
+                end
+    else
+        % draw arrow head
+        if expDes.fillArrow
+            % head = [x3 y3];
+            % width = 10;
+            points = [x3,y3;x4,y3;x3,y4];
+            Screen('FillPoly', const.window, [255 255 255], points);
+        else
+            Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
+            Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
+        end
+        Screen('DrawLine',const.window, [255 255 255],x2,y2,x3,y3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
+        my_fixation(scr,const,[0 0 0]) %const.black
+        Screen('DrawingFinished',const.window); % small ptb optimisation
+        % vbl = Screen('Flip',const.window);
+    end
+% end
+%vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi)
+    vbl = Screen('Flip',const.window);
+
+% keyIsDown = 0;
+% while ~keyIsDown
+%     % check for keyboard input
+%     [keyIsDown, ~, keyCode] = KbCheck(-1); %KbCheck(my_key.keyboardID);
 end
 
 %while ~(const.responded) % ~(const.expStop) &&
@@ -104,7 +219,7 @@ elseif find(keyCode) == 174
 else % to check for button press
     find(keyCode)
 end
-%end
+
 % responseDir = -1;
 
 % FAKE RESPONSES (TAKE OUT LATER)
@@ -131,10 +246,10 @@ end
 
 
 % try fixing the blinking of fixation after response cue
-Screen('DrawDots', const.window, scr.windCenter_px, ...
-    const.fixationRadius_px, [0 0 0], [], 2);
-
-vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
+% Screen('DrawDots', const.window, scr.windCenter_px, ...
+%     const.fixationRadius_px, [0 0 0], [], 2);
+% 
+% vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
 
 
 % save submitted contrast:

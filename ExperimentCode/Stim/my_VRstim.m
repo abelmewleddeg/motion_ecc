@@ -9,7 +9,126 @@ end
 
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
+%% Stimulus Properties             
 
+disp('~~~~~ CONST ~~~~~~')
+
+const.stimContrast = 0.5;
+
+const.speedDeg = 8; %in degrees per second
+const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
+% grating and noise can be rotated, but this is only very meaningful for
+% grating
+%const.stimOri = 90;                                     % 90 deg (vertical orientation)
+
+if strcmp(expDes.stimulus, 'grating')
+    % stimulus spatial frequency
+    const.stimSF_cpd = 2;  % cycle per degree
+    const.stimSF_cpdCM = ( const.stimSF_cpd*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.Eccens(1)+0.75));
+    const.stimSF_cpp = const.stimSF_cpdCM/vaDeg2pix(1, scr);  % cycle per pixel
+    const.stimSF_radians = const.stimSF_cpp*(2*pi);         % in radians
+    const.stimSF_ppc = ceil(1/const.stimSF_cpp);            % pixel per cycle
+elseif strcmp(expDes.stimulus, 'perlinNoise')
+    % stimulus scalar for noise
+    const.scalar4noiseTarget = 0.05; % unitless
+    const.scalar4noiseTarget = ( const.scalar4noiseTarget*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.Eccens(1)+0.75));
+
+end
+
+%% Define width of the cosine ramp (and check that smaller than stimulus/surround)
+
+% starting value (set this and the code below will decrease if too large)
+const.stimCosEdge_deg = 0.3;
+const.stimCosEdge_pix = vaDeg2pix(const.stimCosEdge_deg, scr);
+const.stimRadius_deg = 1.5;
+const.stimRadius_degCM = (const.stimRadius_deg*(17.3/expDes.Eccens(1)+0.75))/((17.3/expDes.trialMat(trialID,3)+0.75));
+const.stimRadiuspix = vaDeg2pix(const.stimRadius_degCM, scr);
+
+
+% calculate the amount of area of surround exclusing target
+% const.nonTargetRadiuspix = const.surroundRadiuspix - const.stimRadiuspix;
+% const.surround2GapRadiusPix = const.nonTargetRadiuspix*(const.gapRatio); % outer boundary of the gap
+% const.gap_pxfromBoundary = const.surroundRadiuspix*(const.gapRatio);
+% const.gapWidth = (const.surroundRadiuspix-const.stimRadiuspix)*const.gapRatio;
+% const.surroundWidth = const.surroundRadiuspix - const.gapWidth - const.stimRadiuspix;
+
+% cosine ramp is applied at the edge of the center stimulus
+% and is applied at the two edges of the surround stimulus
+% so need to make sure that rampSize > center, and 2*rampSize > surroundwith
+
+if const.stimCosEdge_pix > const.stimRadiuspix
+    disp('The soft edges (cosine ramp) exceeds the stimulus radius..')
+    disp('Decreasing the width of the ramp to 1/4 stimRadius..')
+    const.stimCosEdge_pix = const.stimRadiuspix/4; % just make ramp 1/4 of the target radius
+    const.stimCosEdge_deg = pix2vaDeg(const.stimCosEdge_pix, scr);
+end
+% if 2*const.stimCosEdge_pix > const.surroundWidth
+%     disp('The soft edges (cosine ramp*2) exceeds the surround radius..')
+%     disp('Decreasing the width of the ramp to 1/(4*2) surround radius..')
+%     const.stimCosEdge_pix = const.surroundWidth/(4*2); % just make ramp 1/4 of the target radius
+%     const.stimCosEdge_deg = pix2vaDeg(const.stimCosEdge_pix, scr);
+% end
+
+%% CENTER GRATING W/ RAMP
+
+% Initialize displaying of grating (to save time for initial build):
+
+% STIMULUS
+% for drawing arrow
+const.RespSize  = vaDeg2pix(const.stimRadius_deg, scr);
+const.visiblesizeResp=2*floor(const.RespSize)+1;
+
+const.grating_halfw= const.stimRadiuspix;
+const.visiblesize=2*floor(const.grating_halfw)+1;
+
+backgroundColor = [.5 .5 .5 1]; %0]; % was 0 for non-VR
+
+% center stimulus 
+if strcmp(expDes.stimulus, 'perlinNoise')
+    const.squarewavetex = CreateProceduralScaledNoise(const.window, const.visiblesize, const.visiblesize, 'ClassicPerlin', backgroundColor, const.visiblesize/2);
+elseif strcmp(expDes.stimulus, 'grating')
+    const.squarewavetex = CreateProceduralSineGrating(const.window, const.visiblesize, const.visiblesize, backgroundColor, const.visiblesize/2, 1);
+end
+
+if const.VRdisplay==1 
+    Screen('BeginOpenGL', const.window)
+    %glBindTexture(GL.TEXTURE_2D, const.squarewavetex);
+    % glBegin(GL.QUADS)
+    % glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0, -3.0);
+    % glTexCoord2f(.25, 0.0); glVertex3f(1.0, -1.0, -3.0);
+    % glTexCoord2f(.25, .33); glVertex3f(1.0, 1.0, -3.0);
+    % glTexCoord2f(0.0, .33); glVertex3f(-1.0, 1.0, -3.0);
+    % glEnd();
+
+    %const.squarewavetex = repmat([0 1 0 1 0 1 0 1], 800, 100); %rand(500,500)*255;
+    const.sphereStim = glGenLists(1);
+    glNewList(const.sphereStim, GL.COMPILE);
+
+    %glTexImage2D(GL.TEXTURE_2D, 0, GL.RGB, size(const.squarewavetex, 2), size(const.squarewavetex, 1), 0, GL.RGB, GL.UNSIGNED_BYTE, uint8(const.squarewavetex));
+    % Specify texture parameters
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR); %_MIPMAP_LINEAR);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR); %_MIPMAP_LINEAR);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+    %glTexParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+
+    %glBindTexture(GL.TEXTURE_2D, const.sphereStim);
+
+    glColor4f(1,1,1,1);
+    quadratic=gluNewQuadric();
+    gluSphere(quadratic,0.025,64,32);  % hope's values
+    glEndList();
+    
+    %glBindTexture(GL.TEXTURE_2D, 0);
+    Screen('EndOpenGL', const.window)
+end
+
+% center ramp
+distance_fromRadius = 0;
+x = meshgrid(-const.grating_halfw:const.grating_halfw, 1); % + const.stimSF_ppc, 1);
+mask = ones(length(x),length(x)).*0.5;
+[mask(:,:,2), filterparam] = create_cosRamp(mask, distance_fromRadius, const.stimCosEdge_pix, 1, [], []); % 1 for initialize mask
+const.centermask=Screen('MakeTexture', const.window, mask);
+%%
 if const.staircasemode > 0
     % which staircase + what iteration
     staircaseIndx = expDes.trialMat(trialID,6);
@@ -48,7 +167,8 @@ const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr);
 xDist = sqrt((const.stimEccpix^2)/2); yDist = sqrt((const.stimEccpix^2)/2);
 
 % visible size
-dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2), const); 
+dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2), const)
+expDes.trialMat(trialID,2)
 
 waitframes = 1;
 vblendtime = vbl + movieDurationSecs;
@@ -124,7 +244,9 @@ while ~(const.expStop) && (vbl < vblendtime)
             originaleye = eye;
             theta = pa.gazeangle;
 
-            for renderPass = 0:1 %:10 % loop over eyes
+            for renderPass = 0:1 %:10 % 
+                % loop over eyes\
+                
                 disp(sprintf('eye %i', renderPass))
                 scr.oc.renderPass = renderPass;
 
@@ -132,8 +254,13 @@ while ~(const.expStop) && (vbl < vblendtime)
 
                 if scr.oc.renderPass % drawing right eye
                     scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+                    newdstRect = dstRect - [const.vrshift/2 const.vrVershift const.vrshift/2 const.vrVershift]; % + [-1*const.vrshift 0 -1*const.vrshift 0]; %cm2pix(286,scr)
+                    const.newcenter = [-const.vrshift/2 -const.vrVershift];
+
                 else % drawing left eye
                     scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+                    newdstRect = dstRect + [const.vrshift/2 -const.vrVershift const.vrshift/2 -const.vrVershift]; %cm2pix(286,scr)
+                    const.newcenter = [const.vrshift/2 -const.vrVershift];
                 end 
 
                 eye.eyeIndex = scr.oc.renderPass;
@@ -170,9 +297,11 @@ while ~(const.expStop) && (vbl < vblendtime)
 
                 Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
                 %Screen('BlendFunction', const.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
-                
-                Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
+               
+
+                Screen('DrawTexture', const.window, const.squarewavetex, [], newdstRect, const.mapdirection(testDirection)+tiltAmount, ...
                     [], [], [], [],[], auxParams); % tex4testing
+                % my_fixation(scr,const,const.black)
 
                 % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
                 %    [], [], [], [],[], []);
@@ -181,7 +310,8 @@ while ~(const.expStop) && (vbl < vblendtime)
                 %    [], [], [], [],[], auxParams); %[textCoords';vertices']); %
 
                 %Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect); %, const.mapdirection(testDirection)+tiltAmount, ...
-                  % [], [], [], [],[], []); %auxParams); %[textCoords';vertices']); %
+                  % [], [], [], [],[], []); %auxParams);
+                  % %[textCoords';vertices']); %
 
                 % Draw stimuli here, better at the start of the drawing loop
 
@@ -191,6 +321,8 @@ while ~(const.expStop) && (vbl < vblendtime)
                 %my_targetsphere(scr,const,const.black)
             end
         else
+            const.newcenter = [0 0];
+             my_fixation(scr,const,const.black)
             % Set the right blend function for drawing the gabors
              Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
 
@@ -203,8 +335,7 @@ while ~(const.expStop) && (vbl < vblendtime)
             Screen('DrawTexture', const.window, const.centermask, [], dstRect, [], [], [], [], [], []);        
 
             % Draw stimuli here, better at the start of the drawing loop
-            my_fixation(scr,const,const.black)
-    
+                
             Screen('DrawingFinished',const.window); % small ptb optimisation
     
             vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);

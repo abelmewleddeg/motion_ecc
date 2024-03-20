@@ -25,6 +25,7 @@ end
 
             if const.VRdisplay==0
                 disp('my_blank_nonVR')
+                 const.newcenter = [0 0];
                 % draw stimuli here, better at the start of the drawing loop
                 my_fixation(scr,const,color)
 
@@ -51,9 +52,11 @@ end
             
                     if scr.oc.renderPass % drawing right eye
                         scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+                        const.newcenter = [-const.vrshift/2 0];
             
                     else % drawing left eye
                         scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+                        const.newcenter = [const.vrshift/2 0];
                     end 
             
                     eye.eyeIndex = scr.oc.renderPass;
@@ -82,7 +85,7 @@ end
                     glLoadMatrixd(modelView);  
             
                     glPushMatrix;
-                    glTranslatef(0,0,-2);
+                    glTranslatef(0,0,-1);
 
                     glEnable(GL.COLOR_MATERIAL); % Enable color tracking
                     glShadeModel(GL.SMOOTH); % Use smooth shading for color interpolation
@@ -99,7 +102,7 @@ end
                     Screen('EndOpenGL', const.window);
                     %disp('OPENGL STATUS')
                     %errorCode = glGetError()
-                    
+                    % my_fixation(scr,const,const.black)
                 end
             end
 

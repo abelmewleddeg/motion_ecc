@@ -1,4 +1,4 @@
-function [scr, const]=scrConfig(const)
+function [scr, const]=scrConfig(const,expDes,trialID)
 % ----------------------------------------------------------------------
 % [scr]=scrConfig(const)
 % ----------------------------------------------------------------------
@@ -53,41 +53,50 @@ filepath = fullfile(sursuppRootPath, 'parameters.tsv');
 const.stimType = 'noise'; % or 'grating' %params.stimType;
 
 % find screen details
-if ~computerDetails.windows
-    switch computerDetails.localHostName
-        case 'Ranias-MacBook-Pro-2'
-            scr.experimenter = 'RE';
-            const.keyboard = 'Apple Internal Keyboard / Trackpad';
-            if scr.scr_num == 1
-                scr.scrX_cm = 62; scr.scrY_cm = 34;
-            end
-            scr.scrViewingDist_cm = 57;
-            Screen('Preference', 'SkipSyncTests', 1);
-        otherwise
-            scr.experimenter = 'Unknown';
-            scr.scrViewingDist_cm = 57;
-    end
-else    % PC (field names are different)
-    switch computerDetails.system
-        case 'NT-10.0.9200 - '
-            scr.experimenter = 'NYUAD Mock Scanner';
-            scr.scrViewingDist_cm = 89;
-            scr.scr_num = 1;
-            scr.scrX_cm = 69.5; scr.scrY_cm = 39.25;
-            const.keyboard = '';
-        case 'NT-11.0.9200 - '
-             scr.experimenter = 'Predator Helios 300';
-            scr.scrViewingDist_cm = 57;
-            const.keyboard = '';
-            if ~scr.scr_num   % if using PC screen
-                fixIFI = 1;
-            end
-        otherwise
-            scr.experimenter = 'Unknown';
-            scr.scrViewingDist_cm = 57;
+if const.VRdisplay == 1
+    scr.scrX_cm = 8.05; 
+    scr.scrY_cm = 14.36;
+    scr.scrViewingDist_cm = 10; %130;
+    scr.experimenter = 'Unknown';
+    const.vrshift = 197.5; %230-460;
+    const.vrVershift = 88.5;
+
+else
+    if ~computerDetails.windows
+        switch computerDetails.localHostName
+            case 'Ranias-MacBook-Pro-2'
+                scr.experimenter = 'RE';
+                const.keyboard = 'Apple Internal Keyboard / Trackpad';
+                if scr.scr_num == 1
+                    scr.scrX_cm = 62; scr.scrY_cm = 34;
+                end
+                scr.scrViewingDist_cm = 57;
+                Screen('Preference', 'SkipSyncTests', 1);
+            otherwise
+                scr.experimenter = 'Unknown';
+                scr.scrViewingDist_cm = 57;
+        end
+    else    % PC (field names are different)
+        switch computerDetails.system
+            case 'NT-10.0.9200 - '
+                scr.experimenter = 'NYUAD Mock Scanner';
+                scr.scrViewingDist_cm = 89;
+                scr.scr_num = 1;
+                scr.scrX_cm = 69.5; scr.scrY_cm = 39.25;
+                const.keyboard = '';
+            case 'NT-11.0.9200 - '
+                 scr.experimenter = 'Predator Helios 300';
+                 scr.scrViewingDist_cm = 57;
+                const.keyboard = '';
+                if ~scr.scr_num   % if using PC screen
+                    fixIFI = 1;
+                end
+            otherwise
+                scr.experimenter = 'Unknown';
+                scr.scrViewingDist_cm = 57;
+        end
     end
 end
-
 if strcmp(scr.experimenter, 'Unknown') % default
     disp('Defaulting to first keyboard detected. This might work :)') 
     disp('If not, you can specify it by opening scrConfig.m and setting const.keyboard')
@@ -97,21 +106,30 @@ if strcmp(scr.experimenter, 'Unknown') % default
 end
 
 % Resolution of the display (pixels):
-resolution = Screen('Resolution',scr.scr_num);
-scr.scrX_px = resolution.width;
-scr.scrY_px = resolution.height;
-scr.scrPixelDepth_bpp = resolution.pixelSize; % bits per pixel
+if const.VRdisplay
+    scr.scrX_px = 1080;
+    scr.scrY_px = 1200;
+    scr.windX_px = 1080;
+    scr.windY_px = 1200;
 
-[scr.windX_px, scr.windY_px]=Screen('WindowSize', scr.scr_num);
+else
+    resolution = Screen('Resolution',scr.scr_num);
+    scr.scrX_px = resolution.width;
+    scr.scrY_px = resolution.height;
+    scr.scrPixelDepth_bpp = resolution.pixelSize; % bits per pixel
+    
+    [scr.windX_px, scr.windY_px]=Screen('WindowSize', scr.scr_num);
+end
 
-const.stimRadius_deg = 1.5;
+% const.stimRadius_deg = 1.5;
+% const.stimRadius_degCM = ((17.3/expDes.Eccens(1)*0.75)*const.stimRadius_deg)/((17.3/expDes.trialMat(trialID,3)*0.75)*const.stimRadius_deg)
 
 % load in eccentricity values and convert to pixels
 % const.stimEcc_deg = params.stimEcc; const.stimEccpix = vaDeg2pix(const.stimEcc_deg, scr); 
 % const.stimRadius_deg = params.stimRadius; 
-const.stimRadiuspix = vaDeg2pix(const.stimRadius_deg, scr); 
+% const.stimRadiuspix = vaDeg2pix(const.stimRadius_degCM, scr) 
 % const.surroundRadius_deg = params.surroundRadius; const.surroundRadiuspix = vaDeg2pix(const.surroundRadius_deg, scr);
-%const.gapRatio = params.gapRatio;
+%c onst.gapRatio = params.gapRatio;
 
 if const.miniWindow == 1 || const.DEBUG == 1
     %PsychDebugWindowConfiguration(0, 0.5)
@@ -168,7 +186,7 @@ end
 
 %% Fixation Properties
 
-const.fixationRadius_px = 0.02*scr.windY_px;
+const.fixationRadius_px = 0.01*scr.windY_px;
 const.fixationRadius_deg = pix2vaDeg(const.fixationRadius_px, scr);
 
 %%

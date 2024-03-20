@@ -1,4 +1,4 @@
-function my_fixation(scr,const,color)
+ function my_fixation(scr,const,color)
 % ----------------------------------------------------------------------
 % my_fixationCross(scr,const,color)
 % ----------------------------------------------------------------------
@@ -16,7 +16,7 @@ function my_fixation(scr,const,color)
 
 %if const.VRdisplay==0 % not in VR
     Screen('DrawDots', const.window, scr.windCenter_px, ...
-    const.fixationRadius_px, color, [], 2);
+    const.fixationRadius_px, color, const.newcenter, 2);
 %end
 
 

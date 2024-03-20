@@ -47,8 +47,10 @@ while ~push_button
 
             if scr.oc.renderPass % drawing right eye
                 scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
+                 textshift = -const.vrshift/2;
             else % drawing left eye
                 scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
+                textshift = const.vrshift/2;
             end 
 
             eye.eyeIndex = scr.oc.renderPass;
@@ -92,17 +94,33 @@ while ~push_button
                 %input1 = (scr.oc.xycenter(1)-200*scr.oc.renderPass)-100
                 %input2 = scr.oc.xycenter(2)
                 %Screen('DrawText',const.window,text{1,:},input1,input2, const.white);
-                
-                % create text offset per eye
-                if renderPass == 0
-                    offset = scr.oc.x_offset;
-                elseif renderPass == 1
-                    offset = -scr.oc.x_offset;
+                 Screen('Preference', 'TextAntiAliasing',1);
+                Screen('TextSize',const.window, const.text_size);
+                Screen ('TextFont', const.window, const.text_font);
+                % Screen('FillRect', const.window, const.gray);
+            
+                sizeT = size(text);
+                lines = sizeT(1)+2;
+                bound = Screen('TextBounds',const.window,text{1,:});
+                espace = ((const.text_size)*1.50);
+                first_line = y_mid - ((round(lines/2))*espace);
+            
+                addi = 0;
+                for t_lines = 1:sizeT(1)
+                    Screen('DrawText',const.window,text{t_lines,:},(x_mid-bound(3)/2)+textshift,first_line+addi*espace, const.white);
+                    addi = addi+1;
                 end
-
-                Screen('DrawText',const.window,text{1,:},scr.oc.xycenter(1)+offset, scr.oc.xycenter(2), const.black);
+                addi = addi+2;
+                    % % create text offset per eye
+                    % if renderPass == 0
+                    %     offset = scr.oc.x_offset;
+                    % elseif renderPass == 1
+                    %     offset = -scr.oc.x_offset;
+                    % end
     
-            end
+                    % Screen('DrawText',const.window,text{1,:},instCenter(1), instCenter(2), const.black);
+        
+                end
             
         end
 

@@ -1,6 +1,6 @@
 %% General experimenter launcher %%
 %  =============================  %
-
+ 
 % Clean up:
 
 sca; Screen('CloseAll');  
@@ -12,7 +12,7 @@ Screen('Preference', 'TextRenderer', 0);
 KbName('UnifyKeyNames')
 
 PsychDebugWindowConfiguration;
-
+ 
 % Initialization
 warning('off');        % do not print warnings
 const.DEBUG = 0;       % skips subject det+ails / data saving
