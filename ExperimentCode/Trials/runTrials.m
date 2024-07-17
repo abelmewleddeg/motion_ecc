@@ -21,8 +21,8 @@ function [expDes, const] = runTrials(scr,const,expDes,my_key,textExp)
 
 if const.staircasemode > 0
     
-    lowerBound = -20;
-    upperBound = 20;
+    lowerBound = -20; % -20
+    upperBound = 20; % 20
     expDes.stair_counter = ones(1,expDes.numStaircases);
     
     if const.staircasemode == 1 % updown
@@ -54,8 +54,10 @@ if const.staircasemode > 0
             expDes.correctness{jj} = nan(1,expDes.nb_repeat);
         end
     elseif const.staircasemode == 2
+         lowerBound = -30; % -20 (4/11/24)
+         upperBound = 30; % 20 (4/11/24)
+        incremBound = (upperBound-lowerBound) ./ 40; %(2*(upperBound-lowerBound)); % do we want this increment to be relative?  ## incremBound = (upperBound-lowerBound) ./ 80 (4/11/24)
         
-        incremBound = (upperBound-lowerBound) ./ 80; %(2*(upperBound-lowerBound)); % do we want this increment to be relative?
         
         searchLB = lowerBound/2;
         searchUB = upperBound/2;
@@ -80,6 +82,7 @@ if const.staircasemode > 0
             end
 
             tmp = lowerBound:incremBound:upperBound;
+            
             tmp(tmp==0) = nearZeroVal;
 
             expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{tmp}, 'psiParamsDomainList', ...
@@ -150,7 +153,7 @@ for ni=1:expDes.nb_trials
         blockTracker = blockTracker+1;
     end
     
-    fprintf('TRIAL %i ... ', ni)
+    %fprintf('TRIAL %i ... ', ni)
 
     if ~const.expStop
         expDes.trial_onsets(ni) = vbl-t0; % log the onset of each trial

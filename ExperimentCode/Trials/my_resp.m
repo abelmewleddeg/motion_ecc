@@ -2,15 +2,15 @@ function [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes
 waitframes = 1;
 responseDir = nan;
 
-disp('my_resp')
+%disp('my_resp')
 if const.VRdisplay==1
     global GL;
     InitializeMatlabOpenGL(1);
-    lined = 1.5
-    arrowd = 4
+    lined = 1.5;
+    arrowd = 4;
 else
-    lined = 4
-    arrowd = 10
+    lined = 4;
+    arrowd = 10;
 end
 % simulatedPsiParams = [0, 10, 0];
 %
@@ -52,8 +52,8 @@ elseif expDes.trialMat(trialID,4) == 315
     y4 = y3 - const.visiblesizeResp/arrowd;
 end
 newy2 = y2 - const.vrVershift;
-newy3 = y3 - const.vrVershift
-newy4 = y4 - const.vrVershift
+newy3 = y3 - const.vrVershift;
+newy4 = y4 - const.vrVershift;
 % draw arrow head
 % if expDes.fillArrow
 %     head = [x3 y3];
@@ -74,7 +74,7 @@ while ~keyIsDown
                 scr.oc.renderPass = 1;
                 eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
                 pa.floorHeight = -1; % m
-                pa.fixationdist = 3;
+                pa.fixationdist = 0.01; %40; %3;
                 pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
                 R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
                 eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];
@@ -85,23 +85,25 @@ while ~keyIsDown
                 for renderPass = 0:1 %:10 % 
                     % loop over eyes\
                     
-                    disp(sprintf('eye %i', renderPass))
+                    %disp(sprintf('eye %i', renderPass))
                     scr.oc.renderPass = renderPass;
     
                     eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
     
                     if scr.oc.renderPass % drawing right eye
                         scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];  
-                        const.newcenter = [-const.vrshift/2 -const.vrVershift];
-                        newx2 = x2 - const.vrshift/2;
-                        newx3 = x3 - const.vrshift/2;
-                        newx4 = x4 - const.vrshift/2;
+                        const.newcenter = [-const.vrshift -const.vrVershift];
+                        const.VRcenter = scr.windCenter_px + const.newcenter;
+                        newx2 = x2 - const.vrshift;
+                        newx3 = x3 - const.vrshift;
+                        newx4 = x4 - const.vrshift;
                     else % drawing left eye
                         scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
-                        const.newcenter = [const.vrshift/2 -const.vrVershift];
-                        newx2 = x2 + const.vrshift/2;
-                        newx3 = x3 + const.vrshift/2;
-                        newx4 = x4 + const.vrshift/2;
+                        const.newcenter = [const.vrshift -const.vrVershift];
+                        const.VRcenter = scr.windCenter_px + const.newcenter;
+                        newx2 = x2 + const.vrshift;
+                        newx3 = x3 + const.vrshift;
+                        newx4 = x4 + const.vrshift;
                     end 
     
                     eye.eyeIndex = scr.oc.renderPass;
@@ -111,7 +113,7 @@ while ~keyIsDown
     
                     Screen('BeginOpenGL',const.window);
     
-                    glClearColor(1, 0, 1, 3); % yellow background
+                    glClearColor(0.5, 0.5, 0.5, 3); % yellow background
     
                     glClear(); % clear the buffers - must be done for every frame
     
@@ -125,15 +127,20 @@ while ~keyIsDown
                     glMatrixMode(GL.MODELVIEW);
                     glLoadMatrixd(modelView); 
                     glPushMatrix;
-                    glTranslatef(0,0,-1);
+                    % glTranslatef(0,0.35,-2);
+                    %glCallList(const.fixation);
+                    % glCallList(const.bsquare);
+                    % glTranslatef(0,-0.35,-6);
+                    % glCallList(const.csquare);
 
-                    glCallList(const.fixation)
+                   
+
                     glPopMatrix;
     
                     Screen('EndOpenGL', const.window);
                     % main response line orientation
                     Screen('BlendFunction', const.window, 'GL_ONE', 'GL_ZERO');
-                    % my_fixation(scr,const,const.black)
+                    my_fixation(scr,const,const.black)
                     if expDes.fillArrow
                         % head = [x3 y3];
                         % width = 10;
@@ -145,7 +152,7 @@ while ~keyIsDown
                     end
                     Screen('DrawLine',const.window, [],newx2,newy2,newx3,newy3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
                     % % % [255 255 255]
-                    % Screen('DrawingFinished',const.window); % small ptb optimisation
+                    %Screen('DrawingFinished',const.window); % small ptb optimisation
                     % % 
                     %vbl = Screen('Flip',const.window, vbl + (waitframes - 0.5) * scr.ifi);
                     %vbl = Screen('Flip',const.window);
@@ -169,6 +176,8 @@ while ~keyIsDown
             Screen('DrawLine',const.window, [255 255 255],x3,y3,x4,y3,3);
             Screen('DrawLine',const.window, [255 255 255],x3,y3,x3,y4,3);
         end
+        const.newcenter = [0 0];
+        const.VRcenter = scr.windCenter_px + const.newcenter;
         Screen('DrawLine',const.window, [255 255 255],x2,y2,x3,y3,3); % scr.windCenter_px(1),scr.windCenter_px(2),x1,y1) %scr.windCenter_px(1) +  xDist, scr.windCenter_px(2) +  yDist,1)
         my_fixation(scr,const,[0 0 0]) %const.black
         Screen('DrawingFinished',const.window); % small ptb optimisation
@@ -273,10 +282,15 @@ if const.staircasemode > 0
         if expDes.tiltangle(trialID, 1)*responseDir > 0 || (exist('coinflip', 'var') && coinflip>0.5)
             expDes.correctness{staircaseIndx}(currStaircaseIteration) = 1; % correct
             expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
+            % feedbackRGB = [0 0 255]; %[0 0 1]; % remove later
         elseif expDes.tiltangle(trialID, 1)*responseDir < 0 || (exist('coinflip', 'var') && coinflip<=0.5)
             expDes.correctness{staircaseIndx}(currStaircaseIteration) = 0; % incorrect
             expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
+            % feedbackRGB = [255 0 0]; %[1 0 0];
+        else
+            feedbackRGB = [0 255 0]; % [0 255 0]
         end
+        % [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, feedbackRGB);
 
         % if the correctness from previous trial is not NAN and is not the the
         % last trial-1 - run the staircase to obtain new threshold for this
@@ -337,19 +351,20 @@ if const.staircasemode > 0
         expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
 
     end
+
 else
     if expDes.tiltangle(trialID, 1)*responseDir > 0
         expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
-        feedbackRGB = [0 0 1];
+        feedbackRGB = [0 0 255]; %[0 0 1];
     elseif expDes.tiltangle(trialID, 1)*responseDir < 0
         expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
-        feedbackRGB = [1 0 0];
+        feedbackRGB = [255 0 0]; %[1 0 0];
     else % nan (to prevent error when quitting)
-        feedbackRGB = [0 1 0];
+        feedbackRGB = [0 255 0]; % [0 255 0]
     end
+    
+    % feedbackRGB = [0 0 0];
     save(const.design_fileMat,'expDes');
-
-
     [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, feedbackRGB);
 
 end

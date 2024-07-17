@@ -9,17 +9,17 @@ function [scr, const]=scrConfig(const,expDes,trialID)
 % const : struct containing initial constant params.
 % ----------------------------------------------------------------------
 % Output(s):
-% scr : struct containing all screen configuration.
+% scr : struct containmocking all screen configuration.
 % const strcut containing some additional params
 % ----------------------------------------------------------------------
 
 %% General
 
-disp('~~~~~ Load HID Devices.. ~~~~~~')
+%disp('~~~~~ Load HID Devices.. ~~~~~~')
 
 LoadPsychHID
 
-disp('~~~~~ SCR ~~~~~~')
+%disp('~~~~~ SCR ~~~~~~')
 
 % Instructions
 const.text_size = 20;
@@ -56,12 +56,14 @@ const.stimType = 'noise'; % or 'grating' %params.stimType;
 if const.VRdisplay == 1
     scr.scrX_cm = 8.05; 
     scr.scrY_cm = 14.36;
-    scr.scrViewingDist_cm = 10; %130;
+    scr.scrViewingDist_cm = 7; %130;
     scr.experimenter = 'Unknown';
-    const.vrshift = 197.5; %230-460;
-    const.vrVershift = 88.5;
+    const.vrshift =  99.5; %199;%%197.5; %190-460;199
+    const.vrVershift = 88.5; %88.5;
 
 else
+    const.vrshift =  0; %199;%%197.5; %190-460;199
+    const.vrVershift = 0; %88.5;
     if ~computerDetails.windows
         switch computerDetails.localHostName
             case 'Ranias-MacBook-Pro-2'
@@ -232,7 +234,8 @@ if const.VRdisplay==1
         scr.oc.defaultState.modelView{2}(15) = -scr.oc.viewingDistance;
 
         % keeps automatically setting the stereo mode to 6 for the oculus - this is because, as indicated in MorphDemo.m: "% Fake some stereomode if HMD is used, to trigger stereo rendering"
-        [const.window, const.windowRect] = PsychImaging('OpenWindow', scr.scr_num, 0, [], [], [], [], scr.oc.multiSample);  
+        stereoMode = 6;
+        [const.window, const.windowRect] = PsychImaging('OpenWindow', scr.scr_num, 0, [], [], [], stereoMode, scr.oc.multiSample);  
         scr.oc.hmdinfo = PsychVRHMD('GetInfo', scr.hmd); % verifies that all of the basic requirements have been set up.
 
     catch
@@ -277,8 +280,8 @@ if const.VRdisplay==1
 
     if ~isempty(scr.hmd)
         scr.oc.windowRect = const.windowRect; % RE: just to get it to work now
-        disp('wind rect values:')
-        scr.oc.windowRect
+        % disp('wind rect values:')
+        %scr.oc.windowRect
         scr.oc.yc = RectHeight(scr.oc.windowRect)/2; % the horizontal center of the display in pixels
         scr.oc.xc = RectWidth(scr.oc.windowRect)/2; % the vertical center of the display in pixels
         % 1080 x 1200 - not workinhg
@@ -489,7 +492,7 @@ end
 topPriorityLevel = MaxPriority(const.window);
 Priority(topPriorityLevel);
 
-scr.ifi
+%scr.ifi
 
 % save .mat file with screen parameters used
 save(const.scr_fileMat,'scr');

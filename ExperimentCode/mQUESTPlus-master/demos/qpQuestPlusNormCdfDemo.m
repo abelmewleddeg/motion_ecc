@@ -26,11 +26,11 @@ function qpQuestNormCdfDemo
 % prior used by QUEST+.  QUEST+ assigns equal probability to each 
 % listed stimulus, so that the prior implied if you grid contrast in
 % dB is different from that if you grid contrast on a linear scale.
-tmp = -10:.5:20;
+tmp = -20:.5:20;
 tmp = tmp(tmp~=0);
 
 questData = qpInitialize('stimParamsDomainList',{tmp}, ...
-    'psiParamsDomainList',{-10:.5:10, 5:0.05:10, 0},'qpPF',@qpPFNormal);
+    'psiParamsDomainList',{-10:.5:10, 0:0.05:10, 0},'qpPF',@qpPFNormal); % 
 
 %% Set up simulated observer
 %

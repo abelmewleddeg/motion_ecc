@@ -1,6 +1,6 @@
 function [expDes, const, frameCounter, vbl] = my_stim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
-disp('my_stim')
+%disp('my_stim')
 movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
 
@@ -108,7 +108,7 @@ while ~(const.expStop) && (vbl < vblendtime)
             scr.oc.renderPass = 1;
             eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
             pa.floorHeight = -1; % m
-            pa.fixationdist = 3;
+            pa.fixationdist = 0.01; %3;
             pa.gazeangle = atan(-pa.floorHeight/pa.fixationdist);
             R = [1 0 0; 0 cos(pa.gazeangle) -sin(pa.gazeangle); 0 sin(pa.gazeangle) cos(pa.gazeangle)];
             eye.modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1];

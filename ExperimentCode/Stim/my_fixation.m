@@ -15,8 +15,11 @@
 % Draw the fixation point
 
 %if const.VRdisplay==0 % not in VR
-    Screen('DrawDots', const.window, scr.windCenter_px, ...
-    const.fixationRadius_px, color, const.newcenter, 2);
+    % Screen('DrawDots', const.window, scr.windCenter_px, ...
+    % 3.214*6, color, const.newcenter, 2); % const.fixationRadius_px
+
+     Screen('DrawDots', const.window, const.VRcenter, ...
+    const.fixationRadius_px, color, [], 2); % const.fixationRadius_px
 %end
 
 

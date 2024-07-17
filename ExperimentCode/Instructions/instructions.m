@@ -47,10 +47,10 @@ while ~push_button
 
             if scr.oc.renderPass % drawing right eye
                 scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
-                 textshift = -const.vrshift/2;
+                 textshift = -const.vrshift;
             else % drawing left eye
                 scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
-                textshift = const.vrshift/2;
+                textshift = const.vrshift;
             end 
 
             eye.eyeIndex = scr.oc.renderPass;
@@ -61,7 +61,7 @@ while ~push_button
             Screen('BeginOpenGL',const.window);
             %Screen('SwapInterval', const.window, 1); % added this to prevent error
             
-            glClearColor(1, 0, 0, 3); % red background
+            glClearColor(0.5, 0.5, 0.5, 3); % red background
 
             glClear(); % clear the buffers - must be done for every frame
             % 

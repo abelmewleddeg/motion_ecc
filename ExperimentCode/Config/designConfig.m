@@ -29,7 +29,7 @@ elseif ~mod(const.block,2) % if even block number
     expDes.polarAngles = (possiblePAs(:,const.PArandi(1,2)))';
  
 end
-
+% expDes.polarAngles = [135 315];
 % this is to fill the response cue arrow
 expDes.fillArrow = 1; % 0 or 1
 
@@ -53,14 +53,15 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.Eccens = 20; %[7, 20, 40]; %[4, 8, 12];
+expDes.Eccens =  [7 20 30];
+expDes.EccensCM = [7 20 30]; %expDes.Eccens;
 
 % limit the practice to only 1 eccentricity
 if const.staircasemode == 0
-    expDes.Eccens = expDes.Eccens(2); % take the middle eccentricity for practice
+    expDes.Eccens = expDes.Eccens(2); % take the middle eccentricity for practice (change back to 2)
 end
 
-expDes.Dirs = 45; %[45, 135, 225, 315];
+expDes.Dirs = [45, 135, 225, 315];
 
 expDes.mainStimTypes = [];
 
@@ -130,12 +131,12 @@ expDes.response = nan(expDes.nb_trials,2);
 
 %% Experiental timing settings
 if const.staircasemode > 0
-    expDes.stimDur_s  = .3;   % 0.5 sec stimulus duration
+    expDes.stimDur_s  = .5;   % 0.5 sec stimulus duration
     expDes.itiDur_s  = .8;      % 2 inter-trial interval (fixation)
     expDes.NumBlocks = 8;
 else
     expDes.stimDur_s  = 1; %.3;   % 0.5 sec stimulus duration
-    expDes.itiDur_s  = .8; %.8;      % 2 inter-trial interval (fixation)
+    expDes.itiDur_s  =.8; %.8;      % 2 inter-trial interval (fixation)
     expDes.NumBlocks = 1;
 end
 expDes.total_s = (expDes.nb_trials*(expDes.stimDur_s+expDes.itiDur_s));

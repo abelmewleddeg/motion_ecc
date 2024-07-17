@@ -1,6 +1,6 @@
 function [expDes, const, frameCounter, vbl] = my_blank(my_key, scr, const, expDes, frameCounter, vbl, color)
 
-disp('my_blank')
+%disp('my_blank')
 
 if nargin < 6
     error('At least 6 arguments required')
@@ -24,13 +24,14 @@ end
         if ~const.expStop
 
             if const.VRdisplay==0
-                disp('my_blank_nonVR')
+                %disp('my_blank_nonVR')
                  const.newcenter = [0 0];
+                 const.VRcenter = scr.windCenter_px + const.newcenter; 
                 % draw stimuli here, better at the start of the drawing loop
                 my_fixation(scr,const,color)
 
             elseif const.VRdisplay==1
-                disp('my_blank_VR')
+                %disp('my_blank_VR')
 
             
                 % just doing for 1 eye b/c that's how Hope did it
@@ -52,26 +53,27 @@ end
             
                     if scr.oc.renderPass % drawing right eye
                         scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
-                        const.newcenter = [-const.vrshift/2 0];
+                        const.newcenter = [-const.vrshift -const.vrVershift];
             
                     else % drawing left eye
                         scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
-                        const.newcenter = [const.vrshift/2 0];
+                        const.newcenter = [const.vrshift -const.vrVershift];
                     end 
-            
+                    const.VRcenter = scr.windCenter_px + const.newcenter; %setting the VR fixatin center here. 
                     eye.eyeIndex = scr.oc.renderPass;
             
                     Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
                     modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
                     %modelView = eye.modelView;
-            
+                    % const.black
+
                     Screen('BeginOpenGL',const.window);
                     
-                    glClearColor(0, 1, 0, 3); % red background
-            
+                    glClearColor(0.5, 0.5, 0.5, 3); % grey background
+
                     glClear(); % clear the buffers - must be done for every frame
-                    %glColor3f(1,1,1);
-                    %glColor4f(1,1, 1, 1);
+                    glColor3f(1,1,1);
+                    % glColor4f(1,1, 1, 1);
             
                    
                     % % Clear the screen
@@ -85,13 +87,13 @@ end
                     glLoadMatrixd(modelView);  
             
                     glPushMatrix;
-                    glTranslatef(0,0,-1);
+                    glTranslatef(0,0,-2);
 
                     glEnable(GL.COLOR_MATERIAL); % Enable color tracking
                     glShadeModel(GL.SMOOTH); % Use smooth shading for color interpolation
                     glColor4f(1,1, 1, 1);
                     
-                    glCallList(const.fixation)
+                    % glCallList(const.fixation)
                     %glCallList(const.bsquare)
                      % if scr.oc.renderPass % drawing right eye
                      %     glCallList(const.linesR)
@@ -102,7 +104,8 @@ end
                     Screen('EndOpenGL', const.window);
                     %disp('OPENGL STATUS')
                     %errorCode = glGetError()
-                    % my_fixation(scr,const,const.black)
+                    my_fixation(scr,const,color)
+                    %my_fixation(scr,const,[1 0 0])
                 end
             end
 

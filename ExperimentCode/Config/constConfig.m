@@ -1,4 +1,4 @@
-function [const]=constConfig(scr,const,expDes)
+ function [const]=constConfig(scr,const,expDes)
 % ----------------------------------------------------------------------
 % [const]=constConfig(const)
 % ----------------------------------------------------------------------
@@ -130,7 +130,7 @@ if const.VRdisplay==1
     glNewList(const.fixation, GL.COMPILE);
     glColor4f(1,1,1,1);
     quadratic=gluNewQuadric();
-    gluSphere(quadratic,0.01,64,32);  % hope's values
+    gluSphere(quadratic,0.02,64,32);  % hope's values
     glEndList();
 
     
@@ -164,10 +164,24 @@ if const.VRdisplay==1
     glNewList(const.bsquare, GL.COMPILE);
     glColor3f(0.0, 0.0, 1.0); % Blue color
     glBegin(GL.QUADS);
-    glVertex3f(-3.86, -3.86, -2); % Bottom-left corner
-    glVertex3f(3.86, -3.86, -2); % Bottom-right corner
-    glVertex3f(3.86, 3.86, -2); % Top-right corner
-    glVertex3f(-3.86, 3.86, -2); % Top-left corner
+    zdepth = 0;
+    yshift = 0;
+    glVertex3f(-0.24, -0.178+yshift, zdepth);% glVertex3f(-3.86, -3.86, -2); % Bottom-left corner
+    glVertex3f(0.24,-0.178+yshift,zdepth); % glVertex3f(3.86, -3.86, -2); % Bottom-right corner
+    glVertex3f(0.24, 0.178+yshift, zdepth); % glVertex3f(3.86, 3.86, -2);t % Top-right corner
+    glVertex3f(-0.24, 0.178+yshift, zdepth); % glVertex3f(-3.86, 3.86, -2); % Top-left corner
+    glEnd();
+    glEndList();
+
+     const.csquare = glGenLists(1);
+    glNewList(const.csquare, GL.COMPILE);
+    glColor3f(0.0, 0.0, 1.0); % Blue color
+    glBegin(GL.QUADS);
+    zdepth = 0;
+    glVertex3f(-0.24*3, -0.178*3-yshift, zdepth);% glVertex3f(-3.86, -3.86, -2); % Bottom-left corner
+    glVertex3f(0.24*3,-0.178*3-yshift,zdepth); % glVertex3f(3.86, -3.86, -2); % Bottom-right corner
+    glVertex3f(0.24*3, 0.178*3-yshift, zdepth); % glVertex3f(3.86, 3.86, -2);t % Top-right corner
+    glVertex3f(-0.24*3, 0.17*3-yshift, zdepth); % glVertex3f(-3.86, 3.86, -2); % Top-left corner
     glEnd();
     glEndList();
 
