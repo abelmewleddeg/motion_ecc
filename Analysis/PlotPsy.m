@@ -1,7 +1,7 @@
 %% Load variables
 close all;
 clearvars
-i_subj = '14';
+i_subj = '20';
 block_num = 2;
 git_dir = 'C:\Users\rokers lab 2\Documents\Github';
 data_dir_fn = 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/data/StaircaseMode2';
@@ -512,23 +512,24 @@ xticks(1:3);xticklabels({'7','20','30'}); %yticks(0:0.05:0.25);
 
 fnb = fullfile(pf_path,['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'__Sensitivity bar plot'])
 saveas(gcf,fnb,'png');
-tableName = fullfile('C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code\Data',['S',sprintf(const.subjID),'session_',sprintf('%d',const.block)])
+tablePath = fullfile('C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code\data');
+tableName = fullfile(tablePath,['S',sprintf(const.subjID),'session_',sprintf('%d',const.block),'.mat'])
 save(tableName,'result')
-if isfile(['S',sprintf(const.subjID),'session_',sprintf('%d',const.block-1),'.mat'])
-    load(['S',sprintf(const.subjID),'session_',sprintf('%d',const.block),'.mat'],'result')
+if isfile(fullfile(tablePath,['S',sprintf(const.subjID),'session_',sprintf('%d',const.block-1),'.mat']))
+    load(fullfile(tablePath,['S',sprintf(const.subjID),'session_',sprintf('%d',const.block),'.mat']));
     result2 = result;
-    load(['S',sprintf(const.subjID),'session_',sprintf('%d',const.block-1),'.mat'],'result')
+    load(fullfile(tablePath,['S',sprintf(const.subjID),'session_',sprintf('%d',const.block-1),'.mat']));
     result1  = result;
     AggResult = vertcat(result2,result1);
 end
-tableName = fullfile('C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code\Data',['S',sprintf(const.subjID),'Agg'])
-save(tableName,'result')
+tableName = fullfile(tablePath,['S',sprintf(const.subjID),'Agg']);
+save(tableName,'AggResult')
 
 
 
 %% calculating aggregate sensitivity and Bias
 close all
-load(['S',sprintf(const.subjID),'Agg'])
+load(tableName);
 pts = repmat([0.85;1.15;1.85;2.15;2.85;3.15],1,2);
 d = AggResult;
 d.rvt = d.rvt*-1
@@ -589,3 +590,13 @@ saveas(gcf,fnb,'png');
 [h7 p7] = ttest(AggResult.Sensitivity(find(AggResult.rvt == -1 & AggResult.Eccentricities == 7)),AggResult.Sensitivity(find(AggResult.rvt == 1 & AggResult.Eccentricities == 7)));
 [h20 p20] = ttest(AggResult.Sensitivity(find(AggResult.rvt == -1 & AggResult.Eccentricities == 20)),AggResult.Sensitivity(find(AggResult.rvt == 1 & AggResult.Eccentricities == 20)));
 [h30 p30] = ttest(AggResult.Sensitivity(find(AggResult.rvt == -1 & AggResult.Eccentricities == 30)),AggResult.Sensitivity(find(AggResult.rvt == 1 & AggResult.Eccentricities == 30)));
+
+% Update my table
+d = LMEtable; % rename variable
+d.sub = d.("Subject Number"); % remove space from variable 
+d.rvt = d.("Radial/Tangential"); % remove / from variable
+d = removevars(d, "Subject Number"); 
+d = removevars(d,"Radial/Tangential")
+AggResult.sub(1:48) = repmat(6,1,48)
+LMEtable = vertcat(d,AggResult);
+save(fullfile(tablePath,'LMEtable'),'LMEtable')
