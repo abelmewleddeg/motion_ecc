@@ -1,7 +1,7 @@
 function [expDes, const, frameCounter, vbl] = my_VRstim(my_key, scr, const, expDes, frameCounter, trialID, vbl)
 
 %disp('my_VRstim')
-
+%Initialize openGL
 if const.VRdisplay==1
     global GL;
     InitializeMatlabOpenGL(1);
@@ -11,37 +11,39 @@ movieDurationSecs=expDes.stimDur_s;   % Abort after 0.5 seconds.
 currPhase = const.phaseLine(1,trialID);
 %% Stimulus Properties             
 
-%disp('~~~~~ CONST ~~~~~~')
+const.stimContrast = .5; % stimulus contrast value
 
-const.stimContrast = 0.5;
-
-const.speedDeg = 8*(expDes.trialMat(trialID,3)/expDes.EccensCM(1)); %in degrees per second
-const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 % grating and noise can be rotated, but this is only very meaningful for
 % grating
 %const.stimOri = 90;                                     % 90 deg (vertical orientation)
 
 if strcmp(expDes.stimulus, 'grating')
     % stimulus spatial frequency
-    const.stimSF_cpd = 2;  % cycle per degree
-    const.stimSF_cpdCM = ( const.stimSF_cpd*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.EccensCM(1)+0.75));
+    const.stimSF_cpd =2;  % cycle per degree
+    const.stimSF_cpdCM = ( const.stimSF_cpd*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.EccensCM(1)+0.75)); % spatial frequency cortically magnified
     const.stimSF_cpp = const.stimSF_cpdCM/vaDeg2pix(1, scr);  % cycle per pixel
     const.stimSF_radians = const.stimSF_cpp*(2*pi);         % in radians
     const.stimSF_ppc = ceil(1/const.stimSF_cpp);            % pixel per cycle
+    const.speedDeg = 8*const.stimSF_cpdCM % speed in cycles per second
+    const.speedDeg = const.speedDeg*(expDes.trialMat(trialID,3)/expDes.EccensCM(1))
+    const.speedPixel = (const.speedDeg*360)*scr.ifi;  %vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 elseif strcmp(expDes.stimulus, 'perlinNoise')
     % stimulus scalar for noise
     const.scalar4noiseTarget = 0.05; % unitless
-    const.scalar4noiseTarget = ( const.scalar4noiseTarget*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.EccensCM(1)+0.75));
-
+    const.scalar4noiseTarget = ( const.scalar4noiseTarget*(17.3/expDes.trialMat(trialID,3)+0.75))/((17.3/expDes.EccensCM(1)+0.75)); % stimulus scalar for noise stim after cortical magnification.
+    const.speedDeg = 8;
+    const.speedDeg = const.speedDeg*(expDes.trialMat(trialID,3)/expDes.EccensCM(1)); % speed in degrees per second
+    const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi;
 end
-
+% const.speedDeg = const.speedDeg*(expDes.trialMat(trialID,3)/expDes.EccensCM(1)); % speed in degrees per second
+% const.speedPixel = vaDeg2pix(const.speedDeg,scr)*scr.ifi; % speed in pixels per frame
 %% Define width of the cosine ramp (and check that smaller than stimulus/surround)
 
 % starting value (set this and the code below will decrease if too large)
 const.stimCosEdge_deg = 0.3;
 const.stimCosEdge_pix = vaDeg2pix(const.stimCosEdge_deg, scr);
-const.stimRadius_deg = 1.5;
-const.stimRadius_degCM = (const.stimRadius_deg*(17.3/expDes.EccensCM(1)+0.75))/((17.3/expDes.trialMat(trialID,3)+0.75));
+const.stimRadius_deg = 1.5; 
+const.stimRadius_degCM = (const.stimRadius_deg*(17.3/expDes.EccensCM(1)+0.75))/((17.3/expDes.trialMat(trialID,3)+0.75)); % stim size after cortical magnification
 const.stimRadiuspix = vaDeg2pix(const.stimRadius_degCM, scr);
 
 
@@ -91,14 +93,13 @@ elseif strcmp(expDes.stimulus, 'grating')
 end
 
 if const.VRdisplay==1 
-    Screen('BeginOpenGL', const.window)
+    Screen('BeginOpenGL', const.window) % bind stimulus to 
     %glBindTexture(GL.TEXTURE_2D, const.squarewavetex);
     % glBegin(GL.QUADS)
     % glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0, -3.0);
     % glTexCoord2f(.25, 0.0); glVertex3f(1.0, -1.0, -3.0);
     % glTexCoord2f(.25, .33); glVertex3f(1.0, 1.0, -3.0);
-    % glTexCoord2f(0.0, .33); glVertex3f(-1.0, 1.0, -3.0);
-    % glEnd();
+    % glTexCoord2f(0.0, .33); glVertex3f(-1.0, 1.0, -3.0);    % glEnd();
 
     %const.squarewavetex = repmat([0 1 0 1 0 1 0 1], 800, 100); %rand(500,500)*255;
     const.sphereStim = glGenLists(1);
@@ -119,7 +120,7 @@ if const.VRdisplay==1
     glEndList();
     
     %glBindTexture(GL.TEXTURE_2D, 0);
-    Screen('EndOpenGL', const.window)
+    Screen('EndOpenGL', const.window);
 end
 
 % center ramp
@@ -128,7 +129,10 @@ x = meshgrid(-const.grating_halfw:const.grating_halfw, 1); % + const.stimSF_ppc,
 mask = ones(length(x),length(x)).*0.5;
 [mask(:,:,2), filterparam] = create_cosRamp(mask, distance_fromRadius, const.stimCosEdge_pix, 1, [], []); % 1 for initialize mask
 const.centermask=Screen('MakeTexture', const.window, mask);
-%%
+%% 
+tiltSign = expDes.trialMat(trialID, 5); % -1 or 1 ()
+testDirection = expDes.trialMat(trialID,4); 
+
 if const.staircasemode > 0
     % which staircase + what iteration
     staircaseIndx = expDes.trialMat(trialID,6);
@@ -138,61 +142,34 @@ if const.staircasemode > 0
     % staircase iteration goes the other way
     if const.staircasemode == 1
         if ~(expDes.trialMat(trialID, 5)* expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold > 0)
-            expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1;
+            expDes.trialMat(trialID, 5) = expDes.trialMat(trialID, 5)*-1; % correcting for cases where the cw staircase shoiws ccw stimuli and vice versa
         end
-        
-    elseif const.staircasemode == 2
-        
+        tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
+    elseif const.staircasemode == 2       
         tiltAmount = qpQuery(expDes.stairs{staircaseIndx});
-        
         if tiltAmount==0
             expDes.trialMat(trialID, 5) = 0;
         else
             clockSign = tiltAmount/abs(tiltAmount);
             expDes.trialMat(trialID, 5) = clockSign;  
         end
-        
+    elseif const.staircasemode == 3
+        tiltAmount = expDes.stairs{staircaseIndx}.trialAngles(currStaircaseIteration)
+        clockSign = tiltAmount/abs(tiltAmount);
+        expDes.trialMat(trialID, 5) = clockSign; 
     end
+elseif const.staircasemode == 0
+     tiltAmount = 20*tiltSign;
 end
     
 %disp('End of my_stim loop1:')
 %expDes.trialMat(trialID, 5);
 
-tiltSign = expDes.trialMat(trialID, 5); % -1 or 1 ()
-
-testDirection = expDes.trialMat(trialID,4); % e.g. 90, 180 drift direction
+% e.g. 90, 180 drift direction
 
 % eccentricity
 const.stimEccpix = vaDeg2pix(expDes.trialMat(trialID,3),scr);
 xDist = sqrt((const.stimEccpix^2)/2); yDist = sqrt((const.stimEccpix^2)/2);
-
-% visible size
-
-
-new_vrshift1 = sin(deg2rad(7))*200*(1080/386);%sin(deg2rad((12*7)/1080)*90)*200; % + const.vrshift+ 
-% 12*7 is the eccentricity to pixels
-new_vrshift2 = sin(deg2rad(20))*200*(1080/386); %sin(deg2rad((12*20)/1080)*90)*200; % 12*7 is the eccentricity to pixels
-new_vrshift3 = sin(deg2rad(30))*200*(1080/386); %sin(deg2rad((12*30)/1080)*90)*200; % 12*7 is the eccentricity to pixels
-% erase later
-const.stimEccpix1 = vaDeg2pix(7,scr);
-const.stimEccpix2 = vaDeg2pix(20,scr);
-const.stimEccpix3 = vaDeg2pix(30,scr);
-
-% xDist1 = sqrt((new_vrshift1^2)/2); yDist1 = sqrt((new_vrshift1^2)/2);
-% xDist2 = sqrt((new_vrshift2^2)/2); yDist2 = sqrt((new_vrshift2^2)/2);
-% xDist3 = sqrt((new_vrshift3^2)/2); yDist3 = sqrt((new_vrshift3^2)/2);
-% % 
-xDist1 = sqrt((const.stimEccpix1^2)/2); yDist1 =  sqrt((const.stimEccpix1^2)/2);
-xDist2 = sqrt((const.stimEccpix2^2)/2); yDist2 = sqrt((const.stimEccpix2^2)/2);
-xDist3 = sqrt((const.stimEccpix3^2)/2); yDist3 = sqrt((const.stimEccpix3^2)/2);
-
-% dstRect1 = create_dstRect(const.visiblesize, xDist1,  yDist1, scr, 45, const);
-% dstRect2 = create_dstRect(const.visiblesize, xDist2,  yDist2, scr, 45, const);
-% dstRect3 = create_dstRect(const.visiblesize, xDist3,  yDist3, scr, 45, const);
-%
-
-%expDes.trialMat(trialID,2)
-
 waitframes = 1;
 vblendtime = vbl + movieDurationSecs;
 
@@ -202,26 +179,26 @@ phasenow = 90;
 
 %% STAIRCASE FOR TILT ANGLE
 
-if const.staircasemode > 0
-    % this should be a matrix of nans initialized in const. (col per staircase- each with the counter?)
-    % if expDes.stair_counter(1, staircaseIndx) == 1
-    %     % disp('first iteration of staircase')
-    % end
-    
-    if const.staircasemode == 1
-        % expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold
-        tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
-    end
-
-    % disp('Sign to start staircase:')
-    % disp(tiltSign)
-    % disp('Tilt value:')
-    % disp(tiltAmount)
-    % disp('staircaseIndx:')
-    % disp(staircaseIndx)
-else
-    tiltAmount = 20*tiltSign; % constant value for now AM change back to 20*tiltSign later
-end
+% if const.staircasemode > 0
+%     % this should be a matrix of nans initialized in const. (col per staircase- each with the counter?)
+%     % if expDes.stair_counter(1, staircaseIndx) == 1
+%     %     % disp('first iteration of staircase')
+%     % end
+% 
+%     if const.staircasemode == 1
+%         % expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold
+%         tiltAmount = expDes.stairs{staircaseIndx}(currStaircaseIteration).threshold;
+%     end
+% 
+%     % disp('Sign to start staircase:')
+%     % disp(tiltSign)
+%     % disp('Tilt value:')
+%     % disp(tiltAmount)
+%     % disp('staircaseIndx:')
+%     % disp(staircaseIndx)
+% else
+%     tiltAmount = 20*tiltSign; % constant value for now AM change back to 20*tiltSign later
+% end
 
 % textureSize = 100;
 % whiteSquare = ones(textureSize,textureSize,4)*255;
@@ -245,6 +222,7 @@ while ~(const.expStop) && (vbl < vblendtime)
              auxParams = [const.stimContrast, currPhase, const.scalar4noiseTarget, phasenow];
         elseif strcmp(expDes.stimulus, 'grating')
             auxParams = [currPhase+(phasenow), const.stimSF_cpp, const.stimContrast, 0];
+            % auxParams = [const.stimContrast, currPhase, const.stimSF_cpp, phasenow];
         end
         
         
@@ -275,44 +253,21 @@ while ~(const.expStop) && (vbl < vblendtime)
 
                 eye = PsychVRHMD('GetEyePose', scr.hmd, scr.oc.renderPass, scr.oc.globalHeadPose);
                     
-                    
-
                 if scr.oc.renderPass % drawing right eye
                     scr.oc.modelViewDataRight = [scr.oc.modelViewDataRight; eye.modelView];
                     % newdstRect = dstRect - [const.vrshift/2 const.vrVershift const.vrshift/2 const.vrVershift]; % + [-1*const.vrshift 0 -1*const.vrshift 0]; %cm2pix(286,scr)
                     % const.newcenter = [-const.vrshift/2 -const.vrVershift];
                     const.newcenter = [-const.vrshift -const.vrVershift];
                     const.VRcenter = scr.windCenter_px + const.newcenter; %setting the VR fixatin center here.
-                    % newdstRect1 = dstRect1 - [const.vrshift const.vrVershift const.vrshift const.vrVershift]; %+ [new_vrshift1 0 new_vrshift1 0]; % + [-1*const.vrshift 0 -1*const.vrshift 0]; %cm2pix(286,scr)
-                    % 
-                    % 
-                    % newdstRect2 = dstRect2 - [const.vrshift const.vrVershift const.vrshift const.vrVershift]; %+ [new_vrshift2 0 new_vrshift2 0]; % + [-1*const.vrshift 0 -1*const.vrshift 0]; %cm2pix(286,scr)
-                    % 
-                    % newdstRect3 = dstRect3 - [const.vrshift const.vrVershift const.vrshift const.vrVershift]; %+ [new_vrshift3 0 new_vrshift3 0]; % + [-1*const.vrshift 0 -1*const.vrshift 0]; %cm2pix(286,scr)
-                    % 
-
                 else % drawing left eye
                     scr.oc.modelViewDataLeft = [scr.oc.modelViewDataLeft; eye.modelView];
                     % newdstRect = dstRect + [const.vrshift/2 -const.vrVershift const.vrshift/2 -const.vrVershift]; %cm2pix(286,scr)
                     % const.newcenter = [const.vrshift/2 -const.vrVershift];
                      const.newcenter = [const.vrshift -const.vrVershift];
-                    const.VRcenter = scr.windCenter_px + const.newcenter; %setting the VR fixatin center here.
-                   
-                    % newdstRect1 = dstRect1 + [const.vrshift -const.vrVershift const.vrshift -const.vrVershift] %+ [new_vrshift1 0 new_vrshift1 0]; %cm2pix(286,scr)
-                    % const.newcenter = [const.vrshift -const.vrVershift];
-                    % 
-                    % newdstRect2 = dstRect2 + [const.vrshift -const.vrVershift const.vrshift -const.vrVershift] %+ [new_vrshift2 0 new_vrshift2 0]; %cm2pix(286,scr)
-                    % %const.newcenter = [const.vrshift -const.vrVershift];
-                    % 
-                    % newdstRect3 = dstRect3 + [const.vrshift -const.vrVershift const.vrshift -const.vrVershift] %+ [new_vrshift3 0 new_vrshift3 0]; %cm2pix(286,scr)
-                    % %const.newcenter = [const.vrshift -const.vrVershift];
+                     const.VRcenter = scr.windCenter_px + const.newcenter; %setting the VR fixatin center here.
                 end 
                 dstRect = create_dstRect(const.visiblesize, xDist, yDist, scr, expDes.trialMat(trialID,2), const);
-                % dstRect1 = create_dstRect(const.visiblesize, xDist1,  yDist1, scr, 45, const);
-                % dstRect2 = create_dstRect(const.visiblesize, xDist2,  yDist2, scr, 45, const);
-                % dstRect3 = create_dstRect(const.visiblesize, xDist3,  yDist3, scr, 45, const);
                 eye.eyeIndex = scr.oc.renderPass;
-
                 Screen('SelectStereoDrawBuffer',const.window,scr.oc.renderPass); % openGL must be closed
                 modelView = [1 0 0 0; 0 1 0 0; 0 0 1 -scr.oc.viewingDistance; 0 0 0 1]; %eye.modelView;
                 my_fixation(scr,const,const.black)
@@ -322,9 +277,7 @@ while ~(const.expStop) && (vbl < vblendtime)
 
                 glClear(); % clear the buffers - must be done for every frame
 
-
                 glColor3f(0,0,1);
-
 
                 % Clear the screen
                 glClear(GL.COLOR_BUFFER_BIT);
@@ -350,27 +303,7 @@ while ~(const.expStop) && (vbl < vblendtime)
                 Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect, const.mapdirection(testDirection)+tiltAmount, ...
                     [], [], [], [],[], auxParams); % tex4testing
 
-                % Screen('DrawTexture', const.window, const.squarewavetex, [], newdstRect1, const.mapdirection(testDirection)+tiltAmount, ...
-                %     [], [], [], [],[], auxParams); % tex4testing
-                %  Screen('DrawTexture', const.window, const.squarewavetex, [], newdstRect2, const.mapdirection(testDirection)+tiltAmount, ...
-                %     [], [], [], [],[], auxParams);
-                %   Screen('DrawTexture', const.window, const.squarewavetex, [], newdstRect3, const.mapdirection(testDirection)+tiltAmount, ...
-                %     [], [], [], [],[], auxParams);
-                my_fixation(scr,const,const.black)
-                % 
-                % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect1, const.mapdirection(testDirection)+tiltAmount, ...
-                %    [], [], [], [],[], auxParams);
-                % 
-                % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect2, const.mapdirection(testDirection)+tiltAmount, ...
-                %    [], [], [], [],[], auxParams); %[textCoords';vertices']); %
-                % 
-                % Screen('DrawTexture', const.window, const.squarewavetex, [], dstRect3, const.mapdirection(testDirection)+tiltAmount, ...
-                %   [], [], [], [],[], auxParams);
-                %   % %[textCoords';vertices']); %
-
-                % Draw stimuli here, better at the start of the drawing loop
-
-
+                my_fixation(scr,const,const.black);           
 
                 % FlushEvents('KeyDown');
                 %my_targetsphere(scr,const,const.black)
@@ -401,8 +334,7 @@ while ~(const.expStop) && (vbl < vblendtime)
                 M = Screen('GetImage', const.window,[],[],0,3);
                 imwrite(M,fullfile(const.moviefolder, [num2str(movieframe_n),'.png']));
                 movieframe_n = movieframe_n + 1;
-            end
-            
+            end            
             % FlushEvents('KeyDown');
 
         end
@@ -424,6 +356,4 @@ expDes.tiltangle(trialID) = tiltAmount;
 
 %disp('End of my_stim:')
 % expDes.trialMat(trialID, 5)
-
-
 end

@@ -325,7 +325,7 @@ const.mapdirection = containers.Map(directionids,ptbdirection);
 
 %% Saving procedure :
 
-const.expStart = 0;
+const.expStart = 1;
 
 % .mat file
 save(const.const_fileMat,'const');

@@ -90,6 +90,15 @@ if const.staircasemode > 0
             expDes.correctness{jj} = nan(1,expDes.nb_repeat); % check that this account for c and cc
             disp('DONE initializing staircases.')
         end
+    elseif const.staircasemode == 3
+        for jj = 1:expDes.numStaircases
+            expDes.stairs{jj}.tiltAngles = [-40, -35, -25, -8, 8, 25, 35, 40];
+            trialsPerCondition = expDes.nb_repeat*2/ length(expDes.stairs{jj}.tiltAngles);
+            trialAngles = repmat( expDes.stairs{jj}.tiltAngles, 1, trialsPerCondition);
+            % Randomize the order of trials
+            expDes.stairs{jj}.trialAngles = trialAngles(randperm(expDes.nb_repeat*trialsPerCondition));
+            expDes.correctness{jj} = nan(1,expDes.nb_repeat);
+        end
     end
 end
 

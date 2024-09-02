@@ -29,7 +29,7 @@ elseif ~mod(const.block,2) % if even block number
     expDes.polarAngles = (possiblePAs(:,const.PArandi(1,2)))';
  
 end
-% expDes.polarAngles = [135 315];
+expDes.polarAngles = [135 315];
 % this is to fill the response cue arrow
 expDes.fillArrow = 1; % 0 or 1
 
@@ -43,6 +43,8 @@ expDes.rng = rng(const.block);
 
 if const.staircasemode == 0 % for practice
     expDes.nb_repeat = 6; 
+elseif const.staircasemode == 3
+     expDes.nb_repeat = 8;
 else
     expDes.nb_repeat = 30; % 30 clockwise and 30 counteclockwise (ish); for either staircase method
 end
@@ -53,8 +55,8 @@ if ~ (mod(expDes.nb_repeat,2)==0)
     disp('expDes.nb_repeat MUST BE EVEN - clockwise and counterclockwise trials per condition must be distributed equally')
 end
 
-expDes.Eccens =  [7 20 30];
-expDes.EccensCM = [7 20 30]; %expDes.Eccens;
+expDes.Eccens =  [4 8 12];
+expDes.EccensCM = [4 8 12]; % [7 20 30]; %expDes.Eccens;
 
 % limit the practice to only 1 eccentricity
 if const.staircasemode == 0
@@ -97,6 +99,11 @@ if const.staircasemode == 1
     expDes.numStaircases = 2*numClock;
     staircaseLabels = (1:expDes.numStaircases)';
 elseif const.staircasemode == 2
+    expDes.numStaircases = numClock;
+    staircaseLabels = (1:expDes.numStaircases)';
+    staircaseLabels = repmat(staircaseLabels, 2, 1, 1); % double this (to keep consistent)
+    clockwiseStim = clockwiseStim*nan; % non informative in this case, just change to nan
+elseif const.staircasemode == 3 % method of constants
     expDes.numStaircases = numClock;
     staircaseLabels = (1:expDes.numStaircases)';
     staircaseLabels = repmat(staircaseLabels, 2, 1, 1); % double this (to keep consistent)

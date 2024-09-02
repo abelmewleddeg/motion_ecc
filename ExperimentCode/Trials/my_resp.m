@@ -3,7 +3,7 @@ waitframes = 1;
 responseDir = nan;
 
 %disp('my_resp')
-if const.VRdisplay==1
+if const.VRdisplay==1 % determine arrow dimensions for VR vs non-VR conditons
     global GL;
     InitializeMatlabOpenGL(1);
     lined = 1.5;
@@ -11,7 +11,7 @@ if const.VRdisplay==1
 else
     lined = 4;
     arrowd = 10;
-end
+end 
 % simulatedPsiParams = [0, 10, 0];
 %
 % % Function handle that will take stimulus parameters x and simulate
@@ -21,7 +21,7 @@ end
 % % Freeze random number generator so output is repeatable
 % rng('default'); rng(2004,'twister');
 % rng(6);
-
+% arrow dimensions
 if expDes.trialMat(trialID,4) == 45
     x2 = scr.windCenter_px(1) - const.visiblesizeResp/lined;
     y2 = scr.windCenter_px(2) + const.visiblesizeResp/lined;
@@ -265,7 +265,7 @@ end
 expDes.response(trialID,1) = responseDir;
 
 %% STAIRCASE
-if const.staircasemode > 0
+if const.staircasemode > 0  %&& const.staircasemode < 3
     staircaseIndx = expDes.trialMat(trialID,6);
     currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
 
@@ -342,16 +342,32 @@ if const.staircasemode > 0
                     tempsaveExpDes.stairs{i} = rmfield(tempsaveExpDes.stairs{i}, 'precomputedOutcomeProportions');
                 end
                 save(const.design_fileMat,'tempsaveExpDes'); % note, not saving entire struct because it causes a delay
-
+            elseif const.staircasemode == 3 
+                if expDes.tiltangle(trialID, 1)*responseDir > 0
+                    expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
+                    % feedbackRGB = [0 0 255]; %[0 0 1];
+                elseif expDes.tiltangle(trialID, 1)*responseDir < 0
+                    expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
+                    % feedbackRGB = [255 0 0]; %[1 0 0];
+                end
             end
-
         end
         % iterate over that particular staircase (not really used for
         % bayesian, just printing the #)
         expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
 
     end
-
+% elseif const.staircasemode == 3
+%     staircaseIndx = expDes.trialMat(trialID,6);
+%     currStaircaseIteration = expDes.stair_counter(1, staircaseIndx);
+%     if expDes.tiltangle(trialID, 1)*responseDir > 0
+%         expDes.response(trialID, 2) = 1; % "correct" for overall response matrix
+%         % feedbackRGB = [0 0 255]; %[0 0 1];
+%     elseif expDes.tiltangle(trialID, 1)*responseDir < 0
+%         expDes.response(trialID, 2) = 0; % "correct" for overall response matrix
+%         % feedbackRGB = [255 0 0]; %[1 0 0];
+%     end
+%     expDes.stair_counter(1, staircaseIndx) = expDes.stair_counter(1, staircaseIndx)+1;
 else
     if expDes.tiltangle(trialID, 1)*responseDir > 0
         expDes.response(trialID, 2) = 1; % "correct" for overall response matrix

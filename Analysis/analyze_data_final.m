@@ -5,8 +5,8 @@
 
 clear all
 close all
-
-load('data/LMEtable.mat');
+data_dir = "C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code"
+load(fullfile(data_dir,'data/LMEtable.mat'));
 %%
 d = LMEtable; % rename variable
 % d.sub = d.("Subject Number"); % remove space from variable 
@@ -19,7 +19,7 @@ h = gscatter(g.Eccentricities, g.mean_Sensitivity, g.rvt);
 set(h, 'linestyle', '-');
 
 
-% TODO: add errorbars
+% add errorbars
 hold on 
 g_std = groupsummary(d, ["Eccentricities", "rvt"], "std", "Sensitivity");
 g_std.stder = g_std.std_Sensitivity/sqrt(numel(unique(d.sub)));
@@ -43,8 +43,10 @@ lm = fitlme(d, 'Sensitivity ~  rvt * Eccentricities + (1|sub)')
 lm = fitlme(d, 'Bias ~ Eccentricities + rvt + (1|sub)')
 
 %% Barplots?
-d = LMEtable;
-d.rvt = d.rvt*-1;
+% d = LMEtable;
+    if  d.Directions(1) == d.PolarAngles(1) | d.Directions(1) == d.PolarAngles(1) +180 | d.Directions(1) == d.PolarAngles(1) - 180
+        d.rvt = d.rvt*-1; %include a check here
+    end
 d.BiasMagnitude = abs(d.Bias)
 g = groupsummary(d, ["Eccentricities", "rvt"], "mean")
 gp = groupsummary(d, ["Eccentricities", "PolarAngles","rvt"], "mean")
@@ -55,11 +57,15 @@ figure;
 
 % TODO: add errorbars
 hold on
-g_std = groupsummary(d, ["Eccentricities", "rvt"], "std", "Sensitivity");
-g_stdbias = groupsummary(d, ["Eccentricities", "rvt"], "std","BiasMagnitude");
-g_std.stder = g_std.std_Sensitivity/sqrt(4);
-g_stdbias.stder = g_stdbias.std_BiasMagnitude/sqrt(4);
-
+s = groupsummary(d, ["sub","Eccentricities", "rvt"], "mean","Sensitivity");
+sbias = groupsummary(d, ["sub","Eccentricities", "rvt"], "mean","BiasMagnitude");
+g_std = groupsummary(s, ["Eccentricities","rvt"], "std", "mean_Sensitivity");
+g_stdbias = groupsummary(sbias, ["Eccentricities","rvt"], "std","mean_BiasMagnitude");
+g_std.stder = g_std.std_mean_Sensitivity/sqrt(numel(unique(d.sub)));
+g_stdbias.stder = g_stdbias.std_mean_BiasMagnitude/sqrt(numel(unique(d.sub)));
+% g_std.stder = g_std.std_Sensitivity/sqrt(48);
+% g_stdbias.stder = g_stdbias.std_BiasMagnitude/sqrt(48);
+% 
 
 % reshape variables
 gms = (reshape(g.mean_Sensitivity,2,3))';
@@ -74,7 +80,7 @@ legend({'radial','tangential'},'Location','northwest')
 xlabel('Eccentricities (degrees)'); ylabel('Sensitivity (1/\sigma)');
 xticks(1:3);xticklabels({'7','20','30'}); yticks(0:0.05:0.25)
 title('Sensitivity bar plot')
-fn = fullfile(cd,'/data','__Sensitivity bar plot')
+fn = fullfile(data_dir,'/data','__Sensitivity bar plot')
 saveas(gcf,fn,'png');
 
 figure;bar(gmsb,1)
@@ -84,7 +90,7 @@ legend({'radial','tangential'},'Location','northwest')
 xticks(1:3);xticklabels({'7','20','30'}); %yticks(0:0.05:0.25);
 title('Bias Magnitude bar plot');
 xlabel('Eccentricities (degrees)'); ylabel('Bias Magnitude (\mu)');
-fnb = fullfile(cd,'/data','__Bias Magnitude bar plot')
+fnb = fullfile(data_dir,'/data','__Bias Magnitude bar plot')
 saveas(gcf,fnb,'png');
 %% plot comparing tangential at every location
 ind = d.rvt ~= 1;
@@ -102,12 +108,65 @@ legend({' Dir 45',' Dir 225'});
 % yline(mean(d2.Bias),'r')
 title('Bias Direction Comparison')
 
-%% try doing it rania's way
+
+%% ttest
+% [h7 p7] = ttest(d.Sensitivity(find(d.rvt == -1 & d.Eccentricities == 7)),d.Sensitivity(find(d.rvt == 1 & d.Eccentricities == 7)));
+% [h20 p20] = ttest(d.Sensitivity(find(d.rvt == -1 & d.Eccentricities == 20)),d.Sensitivity(find(d.rvt == 1 & d.Eccentricities == 20)));
+% [h30 p30] = ttest(d.Sensitivity(find(d.rvt == -1 & d.Eccentricities == 30)),d.Sensitivity(find(d.rvt == 1 & d.Eccentricities == 30)));
+% % summarize the data per subject first
+s = groupsummary(d, ["sub","Eccentricities", "rvt"], "mean","Sensitivity")
+% s = groupsummary(d, ["PolarAngles","Eccentricities", "rvt","Directions"], "mean")
+[h7 p7] = ttest(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 7)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 7)));
+[h20 p20] = ttest(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 20)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 20)),Alpha = 0.05);
+[h30 p30] = ttest(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 30)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 30)),Alpha = 0.05);
+
+Es1 = meanEffectSize(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 7)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 7)),Paired=true,Effect="Cohen");
+Es2 = meanEffectSize(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 20)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 20)),Paired=true,Effect="Cohen");
+Es3 = meanEffectSize(s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 30)),s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 30)),Paired=true,Effect="Cohen");
+%% plotting radial tangential difference for each participant
+% at every polar angle
+s.rvt = s.rvt*-1 % make sure s.rvt == 1 fir radial conditions
+a = (s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 7)) - s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 7)))./s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 7));
+b = (s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 20)) -s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 7)))./s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 20));
+c = (s.mean_Sensitivity(find(s.rvt == 1 & s.Eccentricities == 30)) - s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 30)))./s.mean_Sensitivity(find(s.rvt == -1 & s.Eccentricities == 30));
+diff = [a';b';c']
+figure;boxplot(diff')
+hold on
+scatter([1 2 3],diff',20,'filled','MarkerEdgeColor',[0 0 0],'LineWidth',1);%'.','MarkerSize',20);
+legend({'1','2','3','4','5','6'},'Location','northwest')
+Ymax = (max(diff,[],'all')+0.02);
+ylabel('Radial/Tangential Sensitivity Difference (%)');%
+% ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); %ylabel('Sensitivity Difference (1/\sigma)');
+    xticklabels({'7','20','30'});yticks(0:0.05:0.4); yticklabels({'0','5','10','15','20','25','30','35','40'})
+title('Radial Advantage box plot');
+filename6 = ('Difference Bar');
+
+%%  plotting radial tangential difference per polar angle
+pa = groupsummary(d, ["PolarAngles","Eccentricities", "rvt"], "mean","Sensitivity");
+pa.rvt = pa.rvt*-1
+x = (pa.mean_Sensitivity(find(pa.rvt == 1 & pa.Eccentricities == 7)) - pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 7)))./pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 7));
+y = (pa.mean_Sensitivity(find(pa.rvt == 1 & pa.Eccentricities == 20)) -pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 7)))./pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 20));
+z = (pa.mean_Sensitivity(find(pa.rvt == 1 & pa.Eccentricities == 30)) - pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 30)))./pa.mean_Sensitivity(find(pa.rvt == -1 & pa.Eccentricities == 30));
+diff = [x';y';z']
+figure;boxplot(diff')
+hold on
+scatter([1 2 3],diff',20,'filled','MarkerEdgeColor',[0 0 0],'LineWidth',1);%'.','MarkerSize',20);
+legend({'1','2','3','4','5','6'},'Location','northwest')
+Ymax = (max(diff,[],'all')+0.02);
+ylabel('Radial/Tangential Sensitivity Difference (%)');%
+ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); %ylabel('Sensitivity Difference (1/\sigma)');
+xticklabels({'7','20','30'});yticks(0:0.05:0.4); yticklabels({'0','5','10','15','20','25','30','35','40'})
+title('Radial Advantage box plot');
+filename6 = ('Difference Bar');
+
+legend({'45','225','135','315'},'Location','northwest')
+%% LME
+
 d.sub = categorical(d.sub);
 d.PolarAngles = categorical(d.PolarAngles);
-d.Eccentricities = categorical(d.Eccentricities);
+% d.Eccentricities = categorical(d.Eccentricities);
+d.Eccentricities = double(d.Eccentricities);
 d.rvt = categorical(d.rvt);
-lme = fitlme(d, 'Sensitivity ~ rvt + Eccentricities + PolarAngles + rvt*Eccentricities + (1|sub)')
-
-%% Barplots?
-
+%d.rvt = double(d.rvt);
+lme = fitlme(d, 'Sensitivity ~  rvt + Eccentricities + rvt*Eccentricities + (1|sub)')
+ 
