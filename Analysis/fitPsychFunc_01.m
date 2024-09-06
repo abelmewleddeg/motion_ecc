@@ -2,22 +2,22 @@
 close all;
 clearvars
 i_subj = '24';
-block_num = 1 ; % we are not using block 1 for subjects 10 and 13. analye blocks 2 and 3 instead
+block_num = 2; % we are not using block 1 for subjects 10 and 13. analye blocks 2 and 3 instead
 git_dir = 'C:\Users\rokers lab 2\Documents\Github';
-data_dir_fn = 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/data/StaircaseMode2';
-data_dir = fullfile(data_dir_fn,i_subj);% '*0*.mat'));
+main_dir = 'Z:\UsersShare\Abel\motionEcc_project' %insert vision directory or 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/
+% data_dir_fn = data/';
+data_dir = fullfile(main_dir,'Data/StaircaseMode2',i_subj); %data_dir = fullfile(data_dir_fn,i_subj);% '*0*.mat'));
 
 des = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*design*.mat')));
 const  = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*const*.mat')));
 load(fullfile(const.folder,const.name)); load(fullfile(des.folder,des.name))
 expDes.trialMat(:,7) = expDes.response(:,1);
-addAnchors = 1
+addAnchors = 1;
 %% Psychometric Plots
-rootpath =  ("C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\"); %vision Directory
+rootpath =  fullfile(main_dir,'Figures/');%("C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\"); %vision Directory
 pMatrix = nan(length(expDes.stairs)/2,3);
-addpath(fullfile(git_dir,'psignifit'))
-% addpath(genpath('psignifit')) % not working
-
+% addpath(fullfile(git_dir,'psignifit'))
+addpath(genpath(fullfile(git_dir,'psignifit')))
 %set psignifit plot parameters here
 options.sigmoidName  = 'norm';
 options.fixedPars      = [nan;  nan; 0; 0.01;nan];
@@ -35,16 +35,17 @@ Bias = [];
 figure;
 if addAnchors == 1 % combine the experiment with anchor points to the existing data. 
     expDes2 = expDes
-    i_subj = '00';
-    block_num = 4; 
-    data_dir_fn2 = 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/data/StaircaseMode3';
-    data_dir2 = fullfile(data_dir_fn2,i_subj);
+    i_subj = '24';
+    block_num = 3; 
+    % data_dir_fn2 = 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/data/StaircaseMode3';
+    data_dir2 = fullfile(main_dir,'Data/StaircaseMode3',i_subj);
     des = (dir(fullfile(data_dir2, sprintf('Block%d%',block_num),'*design*.mat')));
-    load(fullfile(des.folder,des.name))
+    load(fullfile(des.folder,des.name));
     expDes3 = expDes
     expDes3.trialMat(:,7) = expDes3.response(:,1);
     expDes2.trialMat = vertcat(expDes2.trialMat,expDes3.trialMat);
-
+    expDes2.response = vertcat(expDes2.response,expDes3.response);
+    expDes2.correctness = vertcat(expDes2.correctness,expDes3.correctness);
     for i = 1:24
         for ii  = 1:16
             expDes2.stairs{1,i}.trialData(60+ii).stim = expDes3.stairs{1,i}.trialAngles(ii)
@@ -333,7 +334,7 @@ elseif const.staircasemode == 2 % QUEST+
         eccName = currP(1,3);
         DirName = currP(1,4);
         pf_path = fullfile(rootpath,"\StaircaseMode2\psychometric_function",sprintf(const.subjID));
-        pf_filename = ['S',sprintf(const.subjID),'_PF_',sprintf('m%i',DirName)];
+        pf_filename = ['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'_PF_',sprintf('m%i',DirName)];
         if ~isfolder(pf_path)
             mkdir(pf_path);
         end
@@ -532,7 +533,10 @@ xticks(1:3);xticklabels({'7','20','30'}); %yticks(0:0.05:0.25);
 
 fnb = fullfile(pf_path,['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'__Bias Magnitude bar plot']); % plot name and path
 saveas(gcf,fnb,'png');
-tablePath = fullfile('C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code\data');
+tablePath = fullfile(main_dir,'Data/Analysis',i_subj); %fullfile('C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code\data');
+if ~isfolder(tablePath)
+    mkdir(tablePath);
+end
 tableName = fullfile(tablePath,['S',sprintf(const.subjID),'session_',sprintf('%d',const.block),'.mat'])
 save(tableName,'result') % save table for 1 session
 % combine result table from both sessions

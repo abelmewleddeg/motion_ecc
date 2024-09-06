@@ -16,19 +16,19 @@ function [expDes, const] = runTrials(scr,const,expDes,my_key,textExp)
 % Output(s):
 % none
 % ----------------------------------------------------------------------
-    
+
 %% initialize staircases
 
 if const.staircasemode > 0
-    
+
     lowerBound = -20; % -20
     upperBound = 20; % 20
     expDes.stair_counter = ones(1,expDes.numStaircases);
-    
+
     if const.staircasemode == 1 % updown
         expDes.minStairThreshold = lowerBound;
         expDes.maxStairThreshold = upperBound; % deg
-        
+
         for jj = 1:expDes.numStaircases
 
             % find whether this staircase is starting at clock or counterclockwise
@@ -43,31 +43,31 @@ if const.staircasemode > 0
                 expDes.initStairCaseTilt = expDes.minStairThreshold;
             end
 
-            %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest'); 
-            expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt'); 
+            %expDes.stairs = upDownStaircase(1,1,expDes.initStairCaseHeading,[4 0.5 8],'pest');
+            expDes.stairs{jj} = upDownStaircase(1,1,expDes.initStairCaseTilt,[3 0.3],'levitt');
             expDes.stairs{jj}.minThreshold = expDes.minStairThreshold;
-            expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;  
+            expDes.stairs{jj}.maxThreshold = expDes.maxStairThreshold;
 
             expDes.stairs{jj}.strength = []; % must preallocate fields that will be added later, so struct fields are the same between new and old staircase structs
             expDes.stairs{jj}.direction = [];
-            expDes.stairs{jj}.reversals = []; 
+            expDes.stairs{jj}.reversals = [];
             expDes.correctness{jj} = nan(1,expDes.nb_repeat);
         end
     elseif const.staircasemode == 2
-         lowerBound = -30; % -20 (4/11/24)
-         upperBound = 30; % 20 (4/11/24)
-        incremBound = (upperBound-lowerBound) ./ 40; %(2*(upperBound-lowerBound)); % do we want this increment to be relative?  ## incremBound = (upperBound-lowerBound) ./ 80 (4/11/24)
-        
-        
+        lowerBound = -30; % -20 (4/11/24)
+        upperBound = 30; % 20 (4/11/24)
+        incremBound = (upperBound-lowerBound) ./ 40; %(2*(upperBound-lowerBound)); % increment bound is set relative to the upper and lower bounds
+
+
         searchLB = lowerBound/2;
         searchUB = upperBound/2;
-        
+
         stdFL = (upperBound-lowerBound)/8;
         stdFU = (upperBound-lowerBound)/4;
         stdI = (stdFU-stdFL) / 100;
-        
+
         lapseR = 0; % do we want to set this to a different value?
-        
+
         disp('initialize staircases...')
         for jj = 1:expDes.numStaircases
 
@@ -82,7 +82,7 @@ if const.staircasemode > 0
             end
 
             tmp = lowerBound:incremBound:upperBound;
-            
+
             tmp(tmp==0) = nearZeroVal;
 
             expDes.stairs{jj} = qpInitialize('stimParamsDomainList',{tmp}, 'psiParamsDomainList', ...
@@ -116,9 +116,6 @@ const.instrct = 0; %change it back after
 keyCode = instructions(scr,const,my_key,textExp.instruction);
 tic
 
-% can delete this but delete everywhere
-expDes.task = nan(expDes.nb_trials, 2);
-
 if keyCode(my_key.escape), return, end
 
 FlushEvents('KeyDown');
@@ -136,23 +133,23 @@ blockTracker = 1;
 
 %%
 % simulatedPsiParams = [0, 3, 0];
-% 
+%
 % % Function handle that will take stimulus parameters x and simulate
 % % a trial according to the parameters above.
 % const.simulatedObserverFun = @(x) qpSimulatedObserver(x,@qpPFNormal,simulatedPsiParams);
-% 
+%
 % % Freeze random number generator so output is repeatable
 % rng('default'); rng(2004,'twister');
 % rng(6);
 for ni=1:expDes.nb_trials
-    
+
     const.instrct = 1;
     % add block structure
     % make sure approxtruial per block is defined in designconfig (line
     % 70-71 in the example code). initialize blocktracker outside the loop
     % (line 42 in runtrials).
-  
-     % for breaks
+
+    % for breaks
     if mod(ni,expDes.ApprxTrialperBlock)==0 && ni ~= 0 && ni ~= expDes.nb_trials && ~const.expStop
         blockbreak = sprintf(' Completed %s/%s blocks. Press [space] to continue. ',num2str(blockTracker), num2str(expDes.NumBlocks));
         textExp.blockbreak = {blockbreak};
@@ -161,7 +158,7 @@ for ni=1:expDes.nb_trials
         FlushEvents('KeyDown');
         blockTracker = blockTracker+1;
     end
-    
+
     %fprintf('TRIAL %i ... ', ni)
 
     if ~const.expStop
@@ -173,10 +170,10 @@ for ni=1:expDes.nb_trials
         expDes.respCue_onsets(ni) = vbl-t0; % log the onset of each response cue
         [expDes, const, frameCounter, vbl] = my_resp(my_key, scr, const, expDes, frameCounter, ni, vbl);
         expDes.rt_onset(ni) = vbl-t0; % log the onset of each response
-        
+
         performance_PC = 100*(nansum(expDes.response(:,2))/sum(~isnan(expDes.response(:,2))));
         disp(sprintf('CUMULATIVE PERCENT CORRECT: %s', num2str(performance_PC)))
-        
+
     end
 end
 

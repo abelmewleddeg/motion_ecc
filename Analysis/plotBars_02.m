@@ -5,8 +5,9 @@
 
 clear all
 close all
-data_dir = "C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code"
-load(fullfile(data_dir,'data/LMEtable.mat'));
+main_dir = 'Z:\UsersShare\Abel\motionEcc_project'
+data_dir = fullfile(main_dir,'Data/Analysis') %"C:\Users\rokers lab 2\Documents\motionEcc_Project\2024_MotionAssymetries\code"
+load(fullfile(data_dir,'LMEtable.mat'));
 %%
 d = LMEtable; % rename variable
 % d.sub = d.("Subject Number"); % remove space from variable 
@@ -80,7 +81,7 @@ legend({'radial','tangential'},'Location','northwest')
 xlabel('Eccentricities (degrees)'); ylabel('Sensitivity (1/\sigma)');
 xticks(1:3);xticklabels({'7','20','30'}); yticks(0:0.05:0.25)
 title('Sensitivity bar plot')
-fn = fullfile(data_dir,'/data','__Sensitivity bar plot')
+fn = fullfile(main_dir,'/Figures/StaircaseMode2','__Sensitivity bar plot')
 saveas(gcf,fn,'png');
 
 figure;bar(gmsb,1)
@@ -90,23 +91,23 @@ legend({'radial','tangential'},'Location','northwest')
 xticks(1:3);xticklabels({'7','20','30'}); %yticks(0:0.05:0.25);
 title('Bias Magnitude bar plot');
 xlabel('Eccentricities (degrees)'); ylabel('Bias Magnitude (\mu)');
-fnb = fullfile(data_dir,'/data','__Bias Magnitude bar plot')
+fnb = fullfile(main_dir,'/Figures/StaircaseMode2','__Bias Magnitude bar plot')
 saveas(gcf,fnb,'png');
 %% plot comparing tangential at every location
-ind = d.rvt ~= 1;
-d11 = d(ind,:);
-ind2 = d11.Eccentricities == 30
-d2 = d11(ind2,:)
-d2_mean = groupsummary(d2,["PolarAngles","Directions"],"mean");
-d2Bar = reshape(d2_mean.mean_Bias,2,4)'
-figure;  bar(d2Bar([1 3],:),1); xlabel('Polar Angles');ylabel('Bias (degrees)');
-title('Bias Direction Comparison')
-legend({' Dir 135',' Dir 315'});
-figure; bar(d2Bar([2 4],:),1); xlabel('Polar Angles');ylabel('Bias (degrees)');
-xticklabels({'135','315'});
-legend({' Dir 45',' Dir 225'});
-% yline(mean(d2.Bias),'r')
-title('Bias Direction Comparison')
+% ind = d.rvt ~= 1;
+% d11 = d(ind,:);
+% ind2 = d11.Eccentricities == 30
+% d2 = d11(ind2,:)
+% d2_mean = groupsummary(d2,["PolarAngles","Directions"],"mean");
+% d2Bar = reshape(d2_mean.mean_Bias,2,4)'
+% figure;  bar(d2Bar([1 3],:),1); xlabel('Polar Angles');ylabel('Bias (degrees)');
+% title('Bias Direction Comparison')
+% legend({' Dir 135',' Dir 315'});
+% figure; bar(d2Bar([2 4],:),1); xlabel('Polar Angles');ylabel('Bias (degrees)');
+% xticklabels({'135','315'});
+% legend({' Dir 45',' Dir 225'});
+% % yline(mean(d2.Bias),'r')
+% title('Bias Direction Comparison')
 
 
 %% ttest
@@ -139,8 +140,8 @@ ylabel('Radial/Tangential Sensitivity Difference (%)');%
 % ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); %ylabel('Sensitivity Difference (1/\sigma)');
     xticklabels({'7','20','30'});yticks(0:0.05:0.4); yticklabels({'0','5','10','15','20','25','30','35','40'})
 title('Radial Advantage box plot');
-filename6 = ('Difference Bar');
-
+filename6 = fullfile(main_dir,'/Figures/StaircaseMode2/Difference Bar');
+saveas(gcf,filename6,'png');
 %%  plotting radial tangential difference per polar angle
 pa = groupsummary(d, ["PolarAngles","Eccentricities", "rvt"], "mean","Sensitivity");
 pa.rvt = pa.rvt*-1
@@ -156,10 +157,11 @@ Ymax = (max(diff,[],'all')+0.02);
 ylabel('Radial/Tangential Sensitivity Difference (%)');%
 ylim([0 Ymax]);xlabel('Eccentricities (degrees)'); %ylabel('Sensitivity Difference (1/\sigma)');
 xticklabels({'7','20','30'});yticks(0:0.05:0.4); yticklabels({'0','5','10','15','20','25','30','35','40'})
-title('Radial Advantage box plot');
-filename6 = ('Difference Bar');
+title('Radial Advantage box plot'); 
+filename7 = fullfile(main_dir,'/Figures/StaircaseMode2/Difference Bar2');
+legend({'45','225','135','315'},'Location','northwest');
+saveas(gcf,filename7,'png');
 
-legend({'45','225','135','315'},'Location','northwest')
 %% LME
 
 d.sub = categorical(d.sub);

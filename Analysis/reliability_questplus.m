@@ -1,6 +1,22 @@
-% reliablbility plots
+%% Load variables
 close all;
+clearvars
+i_subj = '26';
+block_num = 2; % we are not using block 1 for subjects 10 and 13. analye blocks 2 and 3 instead
+git_dir = 'C:\Users\rokers lab 2\Documents\Github';
+main_dir = 'Z:\UsersShare\Abel\motionEcc_project' %insert vision directory or 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/
+% data_dir_fn = data/';
+data_dir = fullfile(main_dir,'Data/StaircaseMode2',i_subj); %data_dir = fullfile(data_dir_fn,i_subj);% '*0*.mat'));
+
+des = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*design*.mat')));
+const  = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*const*.mat')));
+load(fullfile(const.folder,const.name)); load(fullfile(des.folder,des.name))
 expDes.trialMat(:,7) = expDes.response(:,1);
+addAnchors = 1;
+
+%% reliablbility plots
+rootpath =  fullfile(main_dir,'Figures/')
+% expDes.trialMat(:,7) = expDes.response(:,1);
 pMatrix = nan(length(expDes.stairs)/2,3);
 figure;
 %addpath(genpath(const.MainDirectory,'/psignifit'));
@@ -113,17 +129,22 @@ Bias6 = nan(24,12);
     text(max(Utilt(:,1))/2,0.15 ,['1/\sigma: ' num2str(1/sqrt(fitOutput6(1,i).Fit(2)))],'FontSize',9)
     % %saveas(gcf,'C:\Users\rokers lab 2\Documents\PsyDir 45.png'); 
     set(gcf,'Position',[488 242 1.0186e+03 420]);
-
+    filepath = fullfile(rootpath,'StaircaseMode2/reliability',i_subj)
+     if ~isfolder(filepath)
+            mkdir(filepath);
+     end
+    filename = ['S',sprintf(const.subjID),'__Reliability Plot_',sprintf('PA%i ecc%i Dir%i', PAName,eccName,DirName)]
+    filename2 = fullfile(filepath,filename)
    %  % xticklabels('5','10','15','20','25','30','35','40','45','50','55','60')
-   filename = ['C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\StaircaseMode2\reliability\',sprintf(const.subjID),['\S',sprintf(const.subjID),'_reliability_plot__', sprintf('pa%i_ecc%i_m%i', PAName,eccName,DirName)]];
+   % filename = ['C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\StaircaseMode2\reliability\',sprintf(const.subjID),['\S',sprintf(const.subjID),'_reliability_plot__', sprintf('pa%i_ecc%i_m%i', PAName,eccName,DirName)]];
    % saveas(gcf,filename,'fig');
    % saveas(gcf,filename,'pdf');
-   saveas(gcf,filename,'png');   
+   saveas(gcf,filename2,'png');   
 
  end
- % save('Sens6.mat','Sens6');
- save('Bias6.mat','Bias6');
- save('fitOutput6.mat','fitOutput6');
+ % % save('Sens6.mat','Sens6');
+ % save('Bias6.mat','Bias6');
+ % save('fitOutput6.mat','fitOutput6');
  %% Let's also plot rt here
  rt = [];
 %  for i=1:length(expDes.stairs)
@@ -191,13 +212,14 @@ ylim([0 Ymax]);
 xlabel('Eccentricities(degrees)'); ylabel('Response Time(s)');
 xticklabels({'7','20','30'});%yticks(0:0.2:Ymax);
 title(['S',sprintf(const.subjID),'Response Time bar plot']);
-filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\reactiontime\',sprintf(const.subjID),['\S',sprintf(const.subjID),'_reactiontime']];
+% filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\reactiontime\',sprintf(const.subjID),['\S',sprintf(const.subjID),'_reactiontime']];
 % saveas(gcf,filename,'fig');
 % saveas(gcf,filename,'pdf');
-% saveas(gcf,filename,'png');
-save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RT1'],'RT');
-save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RTW1'],'w');
-save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RTWW1'],'ww');
+filenameRT = fullfile(filepath,i_subj,'RT')
+saveas(gcf,filenameRT,'png');
+% save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RT1'],'RT');
+% save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RTW1'],'w');
+% save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RTWW1'],'ww');
 
 % hold on 
 % stder = (std(wxx3')/sqrt(4))'

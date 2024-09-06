@@ -10,7 +10,7 @@ rng('default');
 Screen('Preference', 'TextRenderer', 0);
 KbName('UnifyKeyNames');
 
-PsychDebugWindowConfiguration;
+% PsychDebugWindowConfiguration;
  
 
 % Initialization
@@ -20,8 +20,8 @@ const.miniWindow = 0;  % for debugging purposes on   ly
 const.makemovie =0;   % capture movie of trial (slows down   performance)
 
 % staircasemode = [0=no staircase/practice; 1=updown; 2=bayesian] 
-const.staircasemode = 0;
-const.VRdisplay = 0; % display binocular stimulus either on screen or headset
+const.staircasemode = 3;
+const.VRdisplay = 1; % display binocular stimulus either on screen or headset
 %const.VRconnect =1; % here headset is working and connected
  
 Screen('Preference', 'SkipSyncTests', 1);

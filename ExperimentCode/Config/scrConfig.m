@@ -45,12 +45,12 @@ scr.scr_num = max(Screen('Screens')); % use max screen (typically external monit
 [scrX_mm, scrY_mm] = Screen('DisplaySize',scr.scr_num);
 scr.scrX_cm = scrX_mm/10; scr.scrY_cm = scrY_mm/10;
 
-filepath = fullfile(sursuppRootPath, 'parameters.tsv');
-params = readtable(filepath, "FileType","text",'Delimiter', '\t');
+% filepath = fullfile(sursuppRootPath, 'parameters.tsv');
+% params = readtable(filepath, "FileType","text",'Delimiter', '\t');
 
 % save other params to const struct
-const.gapRatio = params.gapRatio; 
-const.stimType = params.stimType; % 'noise'; % or 'grating' 
+% const.gapRatio = params.gapRatio; 
+const.stimType = 'noise'; %%params.stimType; % 'noise'; % or 'grating' 
 
 % find screen details
 if const.VRdisplay == 1
