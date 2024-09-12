@@ -120,10 +120,10 @@ Bias6 = nan(24,12);
           %saveas(gcf,'C:\Users\rokers lab 2\Documents\)
             %end
         end
-    
+    title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
     subplot(1,2,2);
     plotPsych(fitOutput6(12,i),plotOptions)
-    % title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
+    title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
     xlabel('Tilt Angle(degrees)'); ylabel('% of clockwise responses');xlim([-20 20]);
     text(max(Utilt(:,1))/2,0.1 ,['\mu ' num2str(fitOutput6(1,i).Fit(1))],'FontSize',9)
     text(max(Utilt(:,1))/2,0.15 ,['1/\sigma: ' num2str(1/sqrt(fitOutput6(1,i).Fit(2)))],'FontSize',9)
@@ -198,7 +198,7 @@ ww = [nanmean(rt4R),nanmean(rt4T),nanmean(rt8R),nanmean(rt8T),nanmean(rt12R),nan
 % w = [radE4,tanE4;radE8,tanE8;radE12,tanE12]
 % wxx = [r4;t4;r8;t8;r12;t12]
 % ww = [radE4,tanE4,radE8,tanE8,radE12,tanE12]
-bar(w)
+bar(w,1)
 hold on 
 RT = vertcat(rt4R,rt4T,rt8R,rt8T,rt12R,rt12T);
 stder = nanstd(RT')/sqrt(size(RT,2))
@@ -215,7 +215,7 @@ title(['S',sprintf(const.subjID),'Response Time bar plot']);
 % filename = ['Z:\UsersShare\Abel\motionEcc_project\Figures\StaircaseMode1\reactiontime\',sprintf(const.subjID),['\S',sprintf(const.subjID),'_reactiontime']];
 % saveas(gcf,filename,'fig');
 % saveas(gcf,filename,'pdf');
-filenameRT = fullfile(filepath,i_subj,'RT')
+filenameRT = fullfile(filepath,[sprintf('S%i_ses_%i',const.subjID_numeric,const.block),'RT']);
 saveas(gcf,filenameRT,'png');
 % save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RT1'],'RT');
 % save(['S',sprintf(const.subjID),'ses_',sprintf('%d',const.block),'RTW1'],'w');

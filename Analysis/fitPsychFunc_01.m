@@ -1,8 +1,8 @@
 %% Load variables
 close all;
 clearvars
-i_subj = '24';
-block_num = 2; % we are not using block 1 for subjects 10 and 13. analye blocks 2 and 3 instead
+i_subj = '14';
+block_num = 1; % we are not using block 1 for subjects 10 and 13. analye blocks 2 and 3 instead
 git_dir = 'C:\Users\rokers lab 2\Documents\Github';
 main_dir = 'Z:\UsersShare\Abel\motionEcc_project' %insert vision directory or 'C:\Users\rokers lab 2\Documents\Github\motion_ecc/
 % data_dir_fn = data/';
@@ -12,7 +12,7 @@ des = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*design*.mat')));
 const  = (dir(fullfile(data_dir, sprintf('Block%d%',block_num),'*const*.mat')));
 load(fullfile(const.folder,const.name)); load(fullfile(des.folder,des.name))
 expDes.trialMat(:,7) = expDes.response(:,1);
-addAnchors = 1;
+addAnchors = 0;
 %% Psychometric Plots
 rootpath =  fullfile(main_dir,'Figures/');%("C:\Users\rokers lab 2\Documents\motionEcc_project\Figures\"); %vision Directory
 pMatrix = nan(length(expDes.stairs)/2,3);
@@ -134,7 +134,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
             subplot(2,3,oi)
             fitOutput = psignifit(Utilt,options);
             plotPsych(fitOutput,plotOptions);
-            xlim([-30 30]);;
+            xlim([-40 40]);;
             title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -191,7 +191,7 @@ if ~isfield(const,'staircasemode') || const.staircasemode == 1
             subplot(2,3,oi)
             fitOutput = psignifit(Utilt,options);
             plotPsych(fitOutput,plotOptions);
-            xlim([-30 30]);;
+            xlim([-40 40]);;
             title(['S',sprintf(const.subjID),sprintf('___PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             % xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -349,6 +349,24 @@ elseif const.staircasemode == 2 % QUEST+
                 Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
                 Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
             end
+           
+            if any(Utilt(:,1)>20)
+                z = find(Utilt(:,1)>20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z,4));
+                Utilt(z,:) = [];
+            end
+            if any(Utilt(:,1)<-20)
+                z2 = find(Utilt(:,1)<-20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z2,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z2,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z2,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z2,4));   
+                Utilt(z2,:) = [];
+            end
+
             oi = floor((i+4)/4);
             figure(1);
             % hold on
@@ -358,7 +376,7 @@ elseif const.staircasemode == 2 % QUEST+
             % plotOptions.lineColor = [0 0.4470 0.7410];
             fitOutput = psignifit(Utilt,options);
             plotPsych(fitOutput,plotOptions);
-            xlim([-30 30]); %xlim([-20 20]);;
+            xlim([-100 100]); %xlim([-20 20]);;
             title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -378,6 +396,23 @@ elseif const.staircasemode == 2 % QUEST+
                 Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
                 Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
             end
+            if any(Utilt(:,1)>20)
+                z = find(Utilt(:,1)>20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z,4));
+                Utilt(z,:) = [];
+            end
+            if any(Utilt(:,1)<-20)
+                z2 = find(Utilt(:,1)<-20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z2,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z2,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z2,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z2,4));   
+                Utilt(z2,:) = [];
+            end
+
             oi = floor((i+4)/4);
             figure(2);
             %hold on
@@ -387,7 +422,7 @@ elseif const.staircasemode == 2 % QUEST+
             % plotOptions.lineColor = [0.85 0.325 0.098];
             fitOutput = psignifit(Utilt,options);
             plotPsych(fitOutput,plotOptions);
-            xlim([-30 30]);
+            xlim([-50 50]);
             title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -406,6 +441,23 @@ elseif const.staircasemode == 2 % QUEST+
                 Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
                 Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
             end
+           if any(Utilt(:,1)>20)
+                z = find(Utilt(:,1)>20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z,4));
+                Utilt(z,:) = [];
+            end
+            if any(Utilt(:,1)<-20)
+                z2 = find(Utilt(:,1)<-20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z2,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z2,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z2,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z2,4));   
+                Utilt(z2,:) = [];
+            end
+
             oi = floor((i+4)/4);
             figure(3);
             %hold on
@@ -415,7 +467,7 @@ elseif const.staircasemode == 2 % QUEST+
             % plotOptions.lineColor = [0 0.4470 0.7410];
             fitOutput = psignifit(Utilt,options);
             radial = plotPsych(fitOutput,plotOptions);
-            xlim([-30 30]);
+            xlim([-40 40]);
             title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -433,6 +485,24 @@ elseif const.staircasemode == 2 % QUEST+
                 Utilt(ix,3) = length(find(x(:,1) == Utilt(ix,1)));
                 Utilt(ix,2) = length(find((x(:,1) == Utilt(ix,1)) & (x(:,2) == 1)));
             end
+            if any(Utilt(:,1)>20)
+                z = find(Utilt(:,1)>20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z,4));
+                Utilt(z,:) = [];
+            end
+            if any(Utilt(:,1)<-20)
+                z2 = find(Utilt(:,1)<-20)
+                Utilt(length(Utilt)+1,1) = mean(Utilt(z2,1));
+                Utilt(length(Utilt),2) = sum(Utilt(z2,2));
+                Utilt(length(Utilt),3) = sum(Utilt(z2,3));
+                % Utilt(length(Utilt),4) = sum(Utilt(z2,4));   
+                Utilt(z2,:) = [];
+            end
+
+
             oi = floor((i+4)/4);
             figure(4);
             %hold on
@@ -444,7 +514,7 @@ elseif const.staircasemode == 2 % QUEST+
             tangential =  plotPsych(fitOutput,plotOptions);
 
             %legend([radial tangential],{'radial','tangential'},'Location','northwest')
-            xlim([-30 30]);
+            xlim([-40 40]);
             title(['S',sprintf(const.subjID),sprintf('__PA%i ecc%i Dir%i', PAName,eccName,DirName)])
             xlabel('Tilt Angle'); ylabel('% of clockwise responses')
             text(min(Utilt(:,1))-1,0.9 ,['\mu: ' num2str(fitOutput.Fit(1))],'FontSize',9, 'fontweight', 'bold' )
@@ -458,11 +528,11 @@ elseif const.staircasemode == 2 % QUEST+
         Sensitivity = [Sensitivity; 1/sqrt(fitOutput.Fit(2))];
         Bias = [Bias; fitOutput.Fit(1)];
     end
-elseif const.staircasemode == 3 % constants
-    NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
-    Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
-    x(:,2) = Allind(~NaNind);
-    Utilt = unique(x(:,1));
+% elseif const.staircasemode == 3 % constants
+%     NaNind = isnan(expDes.trialMat(find(expDes.trialMat(:,6) == i),7)) % to isolate and remove incomplete trials
+%     Allind = expDes.trialMat(find(expDes.trialMat(:,6) == i),7)
+%     x(:,2) = Allind(~NaNind);
+%     Utilt = unique(x(:,1));
 end
 % organize important variables in a table
 subjID = repmat(const.subjID_numeric,24,1);

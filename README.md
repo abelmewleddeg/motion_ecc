@@ -1,5 +1,6 @@
 # Motion Eccentricity Project
-Steps before running this experiment:
+
+1. Steps before running this experiment:
 
 1. Install any dependencies
 
@@ -10,7 +11,8 @@ Steps before running this experiment:
 	- Psignifit: computes the psychometric plots, and computes sensitivity and bias estimates
 - VR dependencies:??
 
-2. If using the VR, check if the Oculus Rift CV1 headset and the two sensors are plugged in. Go to the Meta Quest Link App → devices and check whether they are connected. 
+2. If using VR, you need a gaming PC (most of the data was collected using the Predator Helios 300 computer, an oculus rift VR headset a rotating response dial, and a USB-USBc adapter. 
+Also check if the Oculus Rift CV1 headset and the two sensors are plugged in. Go to the Meta Quest Link App → devices and check whether they are connected. 
 
 To run  the experiment
 
@@ -193,20 +195,15 @@ Data will be saved in:
 
 Folder named Data in the main directory.
 
-~~~~~~~~~~~~~~~~~~
 
-PlotPsy.m will automatically run at the end of every session. 
-PlotPsy produces psychometric plots with sensitivity and bias measures for each staircase. If the up-down staircase is being sued (of const.staircasemode ==1). it will also produce staircase convergence plots.
-
-~~~~~~~~~~~~~~~~~~
-
-Dependencies:
-
-MATLAB (tested with R2019a, R2020a, R2023a)
-Psychtoolbox (tested with v3)
-
-~~~~~~~~~~~~~~~~~~
-
-Tested and works on operating systems:
+This experiment was tested and works on operating systems:
  
 Windows 11
+~~~~~~~~~~~~~~~~~~
+2. Data Analysis
+ For analysis check the README under motionEcc_project/Analysis  
+
+
+
+
+
