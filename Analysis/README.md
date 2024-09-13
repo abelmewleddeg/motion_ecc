@@ -5,7 +5,9 @@ This File will contain a description of every variable saved by the experiment. 
 	2. Can be run independently 
 2. fitPsychFunc_01.m
 	1. Fit your PF and needs to be run prior to other scripts
-	2. Figure Output: psychometric functions per condition (individual subject level)
+	2. Plots bar plots for individual subjects(sensitivity, bias magnitude)
+	3. Figure Output: psychometric functions per condition (individual subject level)
 3. plotBars_02.m
-	1. Plots bar plots for individual subject, and for aggregate (RT, sensitivity, bias magnitude)
+	1. Plots bar plots for aggregate (RT, sensitivity, bias magnitude)
 	2. Also computes sensitivity difference (% increase)
+	3. Also computes LME

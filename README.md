@@ -7,11 +7,12 @@
 - Dependencies for Experimental Code
 	- MATLAB (tested using version 2023b)
 	- Psychtoolbox v3
+	- Meta Quest Link (for VR)
 - Dependencies for analysis
+	- MATLAB (tested using version 2023b)
 	- Psignifit: computes the psychometric plots, and computes sensitivity and bias estimates
-- VR dependencies:??
 
-2. If using VR, you need a gaming PC (most of the data was collected using the Predator Helios 300 computer, an oculus rift VR headset a rotating response dial, and a USB-USBc adapter. 
+2. If using VR, you need a gaming PC (most of the data was collected using the Predator Helios 300 computer, an Oculus Rift CV1 VR headset a rotating response dial, and a USB-USBc adapter. 
 Also check if the Oculus Rift CV1 headset and the two sensors are plugged in. Go to the Meta Quest Link App → devices and check whether they are connected. 
 
 To run  the experiment
