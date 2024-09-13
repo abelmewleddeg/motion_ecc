@@ -25,7 +25,7 @@ options.fixedPars      = [nan;  nan; 0; 0.01;nan];
 options.expType = 'equalAsymptote';
 plotOptions.xLabel         = 'Tilt Angle(degrees)';     % xLabel
 plotOptions.yLabel         = '% of clockwise responses';
-plotOptions.extrapolLength = 1;
+plotOptions.extrapolLength = 2;
 plotOptions.lineWidth      = 2;
 plotOptions.dataSize = 75;
 
